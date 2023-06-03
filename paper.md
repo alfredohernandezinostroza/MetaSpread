@@ -1,30 +1,32 @@
 ---
-title: 'Gala: A Python package for galactic dynamics'
+title: 'MetaSpread: A cancer growth and metastatic spread simulation package in Python'
 tags:
   - Python
-  - astronomy
+  - agent based modelling
   - dynamics
-  - galactic dynamics
-  - milky way
+  - partial differential equations
+  - cancer
+  - metastasis
 authors:
-  - name: Adrian M. Price-Whelan
+  - name: Vinicius Schaedler Damin
     orcid: 0000-0000-0000-0000
     equal-contrib: true
-    affiliation: "1, 2" # (Multiple affiliations must be quoted)
-  - name: Author Without ORCID
+    affiliation: 1
+  - name: Alfredo Hernández-Inostroza
+    orcid: 0000-0002-4708-3275
     equal-contrib: true # (This is how you can denote equal contributions between multiple authors)
     affiliation: 2
-  - name: Author with no affiliation
-    corresponding: true # (This is how to denote the corresponding author)
+  - name: Erida Gjini
     affiliation: 3
+    corresponding: true # (This is how to denote the corresponding author)
 affiliations:
- - name: Lyman Spitzer, Jr. Fellow, Princeton University, USA
+ - name: Department of Electrical and Computer Engineering, Instituto Superior Tecnico, University of Lisbon, Lisbon, Portugal
    index: 1
- - name: Institution Name, Country
+ - name: Department of Biomedical Engineering, Instituto Superior Tecnico, University of Lisbon, Lisbon, Portugal
    index: 2
- - name: Independent Researcher, Country
+ - name: Center for Computational and Stochastic Mathematics, Instituto Superior Tecnico, University of Lisbon, Lisbon, Portugal
    index: 3
-date: 13 August 2017
+date: 30 June 2023
 bibliography: paper.bib
 
 # Optional fields if submitting to a AAS journal too, see this blog post:
@@ -35,15 +37,7 @@ aas-journal: Astrophysical Journal <- The name of the AAS journal.
 
 # Summary
 
-The forces on stars, galaxies, and dark matter under external gravitational
-fields lead to the dynamical evolution of structures in the universe. The orbits
-of these bodies are therefore key to understanding the formation, history, and
-future state of galaxies. The field of "galactic dynamics," which aims to model
-the gravitating components of galaxies to study their structure and evolution,
-is now well-established, commonly taught, and frequently used in astronomy.
-Aside from toy problems and demonstrations, the majority of problems require
-efficient numerical tools, many of which require the same base code (e.g., for
-performing numerical orbit integration).
+*Keywords:* cancer, growth, metastatic spread, multi-scale dynamics, simulation
 
 # Statement of need
 
@@ -66,6 +60,22 @@ visualizations of textbook material [@Binney:2008]. The combination of speed,
 design, and support for Astropy functionality in `Gala` will enable exciting
 scientific explorations of forthcoming data releases from the *Gaia* mission
 [@gaia] by students and experts alike.
+
+# Cancer growth and spread model
+
+We provide a simulation framework in Python for the mathematical model in [@Franssen2019], ,. This paper proposed a hybrid modeling framework where cellular growth and metastatic spread are described and simulated in a spatially explicit manner, accounting for deterministic and stochastic dynamics. The model incorporates several
+key processes such as the interaction between epithelial and mesenchymal cells, the role of the extracellular matrix, diffusion, haptotaxis, circulation of cancer cells in the vasculature and seeding and growth in secondary sites. A 2D model of cancer is developed in Python. For this, we consider two different phenotypes: the Mesenchymallike cancer cells, which are capable of rapidly diffusing through the tissue and can break through the vasculature, but they reproduce at a minor rate compared to the Epithelial-like cells, which in contrast reproduce at a higher rate, but diffuse much more slowly and also can not break through the vasculature wall alone. Their movement is modeled considering 2 partial differential equations. The model includes two more equations: one for the generation of MMP-2, a chemical that favours the spread of cancer cells, and another for the degradation of the extracellular
+matrix, which also favours the haptotactic movement of the cancer cells. For the simulation of the spatiotemporal growth dynamics, the system of PDE’s is discretized, and several 2-dimensional grids are established, representing the primary site and the metastatic sites, in which only the primary site is seeded with an initial number and distribution of cells. In order for the cells to migrate to another site, they must travel through the vasculature, which they do if they intravasate by one of the several randomly selected points in the grid that represent entrances to the vasculature system (see Figure 1). The extravasation to one of the metastatic sites only occurs if they survive. The model is programmed using MESA, [@python-mesa-2020] a Python Package for Agent-based modeling.
+
+# Structure of the simulation platform
+
+# Simulation parameters
+
+# Simulation output, visualization and analysis
+
+# Outlook
+
+# Download, installation and run details
 
 # Mathematics
 
@@ -94,6 +104,7 @@ If you want to cite a software repository URL (e.g. something on GitHub without 
 citation) then you can do it with the example BibTeX entry below for @fidgit.
 
 For a quick reference, the following citation commands can be used:
+
 - `@author:2001`  ->  "Author et al. (2001)"
 - `[@author:2001]` -> "(Author et al., 2001)"
 - `[@author1:2001; @author2:2001]` -> "(Author1 et al., 2001; Author2 et al., 2002)"
