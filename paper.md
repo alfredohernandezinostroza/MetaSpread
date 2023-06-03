@@ -17,6 +17,7 @@ authors:
     equal-contrib: true # (This is how you can denote equal contributions between multiple authors)
     affiliation: 2
   - name: Erida Gjini
+orcid: 
     affiliation: 3
     corresponding: true # (This is how to denote the corresponding author)
 affiliations:
@@ -120,7 +121,6 @@ Figure sizes can be customized by adding an optional second parameter:
 
 # Acknowledgements
 
-We acknowledge contributions from Brigitta Sipocz, Syrtis Major, and Semyeong
-Oh, and support from Kathryn Johnston during the genesis of this project.
+We acknowledge contributions fromMMurillo Teixeira
 
 # References
