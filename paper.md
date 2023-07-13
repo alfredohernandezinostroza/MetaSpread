@@ -143,8 +143,6 @@ T_{\mathrm{E}} & \texttt{doublingTimeM} & \text{ Mesenchymal doubling time } & 2
 \end{equation*}
 $$
 
-
-
 # Simulation output, visualization and analysis
 
 ![Initial conditions of a sample run.\label{example-image-1}](D:\Documents\OneDrive\OneDrive%20-%20Universidad%20de%20Chile\Journey\cancer-sim\repo\example-image-1.png)
@@ -182,11 +180,10 @@ $$
 \end{aligned}
 $$
 
-$$
-
 Where, once discretized take up the form:
 
 $$
+
 \begin{aligned}
 c_{E}{}_{i,j}^{n+1} = & \mathcal{P}_{0} c{_{E}^{n}}_{i-1,j} +\mathcal{P}_{1} c{_{E}^{n}}_{i+1,j} +\mathcal{P}_{2} c{_{E}^{n}}_{i,j+1} +\mathcal{P}_{3} c{_{E}^{n}}_{i,j-1} +\mathcal{P}_{4} c{_{E}^{n}}_{i,j}\\
 c_{M}{}^{n+1} = & \mathcal{P}_{0} c{_{M}^{n}}_{i-1,j} +\mathcal{P}_{1} c{_{M}^{n}}_{i+1,j} +\mathcal{P}_{2} c{_{M}^{n}}_{i,j+1} +\mathcal{P}_{3} c{_{M}^{n}}_{i,j-1} +\mathcal{P}_{4} c{_{M}^{n}}_{i,j}\\
@@ -208,7 +205,7 @@ $$
 \end{aligned}
 $$
 
-$$
+
 
 # # Acknowledgements
 
