@@ -135,7 +135,7 @@ $$
 
 ![Initial conditions of a sample run.\label{example-image-1}](example-image-1.png)
 
-![Example results for the amount of cells in the vasculature\label{example-image-2}](example-image-2.png)
+<!-- ![Example results for the amount of cells in the vasculature\label{example-image-2}](example-image-2.png) -->
 
 # Outlook
 
