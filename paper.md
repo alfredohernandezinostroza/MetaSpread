@@ -76,11 +76,11 @@ The algorithm that will be executed on each step is detailed in the following fl
 # Simulation parameters
 
 $$
-\begin{array}{|c|c|c|c|c|}
+\begin{array}{|c|c|c|c|}
 \hline
- & \text{Variable name} & \text{ Description } & \text{Value} & \\
+ & \text{Variable name} & \text{ Description } & \text{Value}  \\
 \hline
-\Delta t & \texttt{th} & \text{ Time step } & 1\times 10^{-3} & \\
+\Delta t & \texttt{th} & \text{ Time step } & 1\times 10^{-3}  \\
 \hline
 \begin{array}{ c }
 \Delta x\\
@@ -88,44 +88,44 @@ $$
 \end{array} & \begin{array}{ c }
 \texttt{xh}\\
 \texttt{yh}
-\end{array} & \text{ Space step } & 5\times 10^{-3} & \\
+\end{array} & \text{ Space step } & 5\times 10^{-3}  \\
 \hline
 D_{\mathrm{M}} & \texttt{dM} & \begin{array}{ c }
 \text{ Mesenchymal-like cancer cell diffusion }\\
 \text{ coefficient }
-\end{array} & 1\times 10^{-4} & \\
+\end{array} & 1\times 10^{-4}  \\
 \hline
-D_{\mathrm{E}}& \texttt{dE} & \text{ Epithelial-like cancer cell diffusion coefficient } & 5\times 10^{-5} & \\
+D_{\mathrm{E}}& \texttt{dE} & \text{ Epithelial-like cancer cell diffusion coefficient } & 5\times 10^{-5}  \\
 \hline
-\Phi _{M} & \texttt{phiM} & \text{ Mesenchymal hap to tactic sensitivity coefficient } & 5\times 10^{-4} & \\
+\Phi _{M} & \texttt{phiM} & \text{ Mesenchymal hap to tactic sensitivity coefficient } & 5\times 10^{-4}  \\
 \hline
-\Phi _{\mathrm{E}} & \texttt{phiE} & \text{ Epithelial hapto tactic sensi tivity coefficient } & 5\times 10^{-4} & \\
+\Phi _{\mathrm{E}} & \texttt{phiE} & \text{ Epithelial hapto tactic sensi tivity coefficient } & 5\times 10^{-4}  \\
 \hline
-D_{m} & dmmp & \text{ MMP-2 diffusion coefficient } & 1\times 10^{-3} & \\
+D_{m} & \texttt{dmmp} & \text{ MMP-2 diffusion coefficient } & 1\times 10^{-3}  \\
 \hline
-\Theta & \texttt{theta} & \text{ MMP-2 production rate } & 0.195 & \\
+\Theta & \texttt{theta} & \text{ MMP-2 production rate } & 0.195  \\
 \hline
-\Lambda & \texttt{Lambda} & \text{ MMP-2 decay rate } & 0.1 & \\
+\Lambda & \texttt{Lambda} & \text{ MMP-2 decay rate } & 0.1  \\
 \hline
-\Gamma _{1} & \texttt{gamma1} & \text{ ECM degradation rate by MT1-MMP } & 1 & \\
+\Gamma _{1} & \texttt{gamma1} & \text{ ECM degradation rate by MT1-MMP } & 1  \\
 \hline
-\Gamma _{2}& \texttt{gamma2} & \text{ ECM degradation rate by MMP-2 } & 1 & \\
+\Gamma _{2}& \texttt{gamma2} & \text{ ECM degradation rate by MMP-2 } & 1  \\
 \hline
-T_{V} & vasculature\_time & \text{ Time CTCs spend in the vasculature } & 0.18 & \\
+T_{V} & \texttt{vasculature\_time} & \text{ Time CTCs spend in the vasculature } & 0.18  \\
 \hline
-T_{\mathrm{M}} & \texttt{doublingTimeE}& \text{ Epithelial doubling time } & 3 & \\
+T_{\mathrm{M}} & \texttt{doublingTimeE}& \text{ Epithelial doubling time } & 3  \\
 \hline
-T_{\mathrm{E}} & \texttt{doublingTimeM} & \text{ Mesenchymal doubling time } & 2 & \\
+T_{\mathrm{E}} & \texttt{doublingTimeM} & \text{ Mesenchymal doubling time } & 2  \\
 \hline
-\mathcal{P}_{s} & \texttt{single\_cell\_survival} & \text{ Single CTC survival probability } & 5\times 10^{-4} & \\
+\mathcal{P}_{s} & \texttt{single\_cell\_survival} & \text{ Single CTC survival probability } & 5\times 10^{-4}  \\
 \hline
-\mathcal{P}_{C} & \texttt{cluster\_survival} & \text{ CTC cluster sunvival probability } & 2.5\times 10^{-2} & \\
+\mathcal{P}_{C} & \texttt{cluster\_survival} & \text{ CTC cluster sunvival probability } & 2.5\times 10^{-2}  \\
 \hline
-\mathcal{E}_{1} & \texttt{E1} & \text{ Extravasation probability to bones } & \sim 0.5461 & \\
+\mathcal{E}_{1} & \texttt{E1} & \text{ Extravasation probability to bones } & \sim 0.5461  \\
 \hline
-\mathcal{E}_{2} & \texttt{E2} & \text{ Extravasation probability to lungs } & \sim 0.2553 & \\
+\mathcal{E}_{2} & \texttt{E2} & \text{ Extravasation probability to lungs } & \sim 0.2553  \\
 \hline
-\mathcal{E}_{3} & \texttt{E3} & \text{ Extravasation probability to liver } & \sim 0.1986 & \\
+\mathcal{E}_{3} & \texttt{E3} & \text{ Extravasation probability to liver } & \sim 0.1986  \\
 \hline
 \end{array}
 $$
