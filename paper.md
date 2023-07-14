@@ -20,9 +20,9 @@ authors:
     affiliation: 3
     corresponding: true # (This is how to denote the corresponding author)
 affiliations:
- - name: Department of Electrical and Computer Engineering, Instituto Superior Tecnico, University of Lisbon, Lisbon, Portugal
-   index: 1
  - name: Department of Biomedical Engineering, Instituto Superior Tecnico, University of Lisbon, Lisbon, Portugal
+   index: 1
+ - name: Department of Electrical and Computer Engineering, Instituto Superior Tecnico, University of Lisbon, Lisbon, Portugal
    index: 2
  - name: Center for Computational and Stochastic Mathematics, Instituto Superior Tecnico, University of Lisbon, Lisbon, Portugal
    index: 3
