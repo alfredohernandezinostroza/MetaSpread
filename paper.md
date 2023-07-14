@@ -83,66 +83,6 @@ The algorithm that will be executed on each step is detailed in the following fl
 
 # Simulation parameters
 
-$$
-\begin{equation*}
-\begin{array}{|c|c|c|c|c|}
-\hline
- & \text{Variable name} & \text{ Description } & \begin{array}{ c }
-\text{ Default}\\
-\text{ Non-dimensional value }
-\end{array} & \\
-\hline
-\Delta t & \texttt{th} & \text{ Time step } & 1\times 10^{-3} & \\
-\hline
-\begin{array}{ c }
-\Delta x\\
-\Delta y
-\end{array} & \begin{array}{ c }
-\texttt{xh}\\
-\texttt{yh}
-\end{array} & \text{ Space step } & 5\times 10^{-3} & \\
-\hline
-D_{\mathrm{M}} & \texttt{dM} & \begin{array}{ c }
-\text{ Mesenchymal-like cancer cell diffusion }\\
-\text{ coefficient }
-\end{array} & 1\times 10^{-4} & \\
-\hline
-D_{\mathrm{E}}& \texttt{dE} & \text{ Epithelial-like cancer cell diffusion coefficient } & 5\times 10^{-5} & \\
-\hline
-\Phi _{M} & \texttt{phiM} & \text{ Mesenchymal hap to tactic sensitivity coefficient } & 5\times 10^{-4} & \\
-\hline
-\Phi _{\mathrm{E}} & \texttt{phiE} & \text{ Epithelial hapto tactic sensi tivity coefficient } & 5\times 10^{-4} & \\
-\hline
-D_{m} & dmmp & \text{ MMP-2 diffusion coefficient } & 1\times 10^{-3} & \\
-\hline
-\Theta & \texttt{theta} & \text{ MMP-2 production rate } & 0.195 & \\
-\hline
-\Lambda & \texttt{Lambda} & \text{ MMP-2 decay rate } & 0.1 & \\
-\hline
-\Gamma _{1} & \texttt{gamma1} & \text{ ECM degradation rate by MT1-MMP } & 1 & \\
-\hline
-\Gamma _{2}& \texttt{gamma2} & \text{ ECM degradation rate by MMP-2 } & 1 & \\
-\hline
-T_{V} & vasculature\_time & \text{ Time CTCs spend in the vasculature } & 0.18 & \\
-\hline
-T_{\mathrm{M}} & \texttt{doublingTimeE}& \text{ Epithelial doubling time } & 3 & \\
-\hline
-T_{\mathrm{E}} & \texttt{doublingTimeM} & \text{ Mesenchymal doubling time } & 2 & \\
-\hline
-\mathcal{P}_{s} & \texttt{single\_cell\_survival} & \text{ Single CTC survival probability } & 5\times 10^{-4} & \\
-\hline
-\mathcal{P}_{C} & \texttt{cluster\_survival} & \text{ CTC cluster sunvival probability } & 2.5\times 10^{-2} & \\
-\hline
-\mathcal{E}_{1} & \texttt{E1} & \text{ Extravasation probability to bones } & \sim 0.5461 & \\
-\hline
-\mathcal{E}_{2} & \texttt{E2} & \text{ Extravasation probability to lungs } & \sim 0.2553 & \\
-\hline
-\mathcal{E}_{3} & \texttt{E3} & \text{ Extravasation probability to liver } & \sim 0.1986 & \\
-\hline
-\end{array}
-\end{equation*}
-$$
-
 # Simulation output, visualization and analysis
 
 ![Initial conditions of a sample run.\label{example-image-1}](D:\Documents\OneDrive\OneDrive%20-%20Universidad%20de%20Chile\Journey\cancer-sim\repo\example-image-1.png)
@@ -171,39 +111,6 @@ Possible extensions:
 
 The dimensionless model, as described by Franssen et al. [@Franssen2019] corresponds to:
 
-$$
-\begin{aligned}
-\frac{\partial c_{\mathrm{E}}}{\partial t} & =D_{\mathrm{E}} \nabla ^{2} c_{\mathrm{E}} -\Phi _{\mathrm{E}} \nabla \cdot ( c_{\mathrm{E}} \nabla w)\\
-\frac{\partial c_{\mathrm{M}}}{\partial t} & =D_{\mathrm{M}} \nabla ^{2} c_{\mathrm{M}} -\Phi _{\mathrm{M}} \nabla \cdot ( c_{\mathrm{M}} \nabla w)\\
-\frac{\partial m}{\partial t} & =D_{m} \nabla ^{2} m+\Theta c_{\mathrm{M}} -\Lambda m\\
-\frac{\partial w}{\partial t} & =-( \Gamma _{1} c_{\mathrm{M}} +\Gamma _{2} m) w
-\end{aligned}
-$$
-
-Where, once discretized take up the form:
-
-$$
-
-\begin{aligned}
-c_{E}{}_{i,j}^{n+1} = & \mathcal{P}_{0} c{_{E}^{n}}_{i-1,j} +\mathcal{P}_{1} c{_{E}^{n}}_{i+1,j} +\mathcal{P}_{2} c{_{E}^{n}}_{i,j+1} +\mathcal{P}_{3} c{_{E}^{n}}_{i,j-1} +\mathcal{P}_{4} c{_{E}^{n}}_{i,j}\\
-c_{M}{}^{n+1} = & \mathcal{P}_{0} c{_{M}^{n}}_{i-1,j} +\mathcal{P}_{1} c{_{M}^{n}}_{i+1,j} +\mathcal{P}_{2} c{_{M}^{n}}_{i,j+1} +\mathcal{P}_{3} c{_{M}^{n}}_{i,j-1} +\mathcal{P}_{4} c{_{M}^{n}}_{i,j}\\
-m_{i,j}^{n+1} = & D_{m}\frac{\Delta t_{a}}{( \Delta x_{a})^{2}}\left( m_{i+1,j}^{n} +m_{i-1,j}^{n} +m_{i,j+1}^{n} +m_{i,j-1}^{n}\right)\\
- & +m_{i,j}^{n}\left( 1-4D_{m}\frac{\Delta t_{a}}{( \Delta x_{a})^{2}} -\Delta t\Lambda \right) +\Delta t_{a} \Theta c{_{M}^{n}}_{i,j}\\
-w_{i,j}^{n+1} = & w_{i,j}^{n}\left[ 1-\Delta t_{a}\left( \Gamma _{1} c{_{M}^{n}}_{i,j} +\Gamma _{2} m_{i,j}^{n}\right)\right]
-\end{aligned}
-$$
-
-Where:
-
-$$
-\begin{aligned}
-\mathcal{P}_{0} : & \mathcal{P}_{i-1,j}^{n} :=\frac{\Delta t}{(\Delta x)^{2}}\left[ D_{k} -\frac{\Phi _{k}}{4}\left( w_{i+1,j}^{n} -w_{i-1,j}^{n}\right)\right]\\
-\mathcal{P}_{1} : & \mathcal{P}_{i+1,j}^{n} :=\frac{\Delta t}{(\Delta x)^{2}}\left[ D_{k} +\frac{\Phi _{k}}{4}\left( w_{i+1,j}^{n} -w_{i-1,j}^{n}\right)\right]\\
-\mathcal{P}_{2} : & \mathcal{P}_{i,j+1}^{n} :=\frac{\Delta t}{(\Delta x)^{2}}\left[ D_{k} +\frac{\Phi _{k}}{4}\left( w_{i,j+1}^{n} -w_{i,j-1}^{n}\right)\right]\\
-\mathcal{P}_{3} : & \mathcal{P}_{i,j-1}^{n} :=\frac{\Delta t}{(\Delta x)^{2}}\left[ D_{k} -\frac{\Phi _{k}}{4}\left( w_{i,j+1}^{n} -w_{i,j-1}^{n}\right)\right]\\
-\mathcal{P}_{4} : & \mathcal{P}_{i,j}^{n} :=1-(\mathcal{P}_{0} +\mathcal{P}_{1} +\mathcal{P}_{2} +\mathcal{P}_{3})
-\end{aligned}
-$$
 
 
 
