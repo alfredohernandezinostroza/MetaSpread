@@ -1,28 +1,28 @@
 ---
 title: 'MetaSpread: A cancer growth and metastatic spread simulation package in Python'
 tags:
-  - Python
+  - python
   - agent based modelling
   - dynamics
   - partial differential equations
   - cancer
   - metastasis
 authors:
-  - name: Vinicius Schaedler Damin
-    orcid: 0000-0000-0000-0000
-    equal-contrib: true
-    affiliation: 1
   - name: Alfredo Hernández-Inostroza
     orcid: 0000-0002-4708-3275
     equal-contrib: true # (This is how you can denote equal contributions between multiple authors)
+    affiliation: 1
+  - name: Vinicius Schaedler Damin
+    orcid: 0000-0000-0000-0000
+    equal-contrib: true
     affiliation: 2
   - name: Erida Gjini
+    orcid: 0000-0002-0493-3102
     affiliation: 3
-    corresponding: true # (This is how to denote the corresponding author)
 affiliations:
- - name: Department of Electrical and Computer Engineering, Instituto Superior Tecnico, University of Lisbon, Lisbon, Portugal
-   index: 1
  - name: Department of Biomedical Engineering, Instituto Superior Tecnico, University of Lisbon, Lisbon, Portugal
+   index: 1
+ - name: Department of Electrical and Computer Engineering, Instituto Superior Tecnico, University of Lisbon, Lisbon, Portugal
    index: 2
  - name: Center for Computational and Stochastic Mathematics, Instituto Superior Tecnico, University of Lisbon, Lisbon, Portugal
    index: 3
@@ -33,6 +33,7 @@ bibliography: paper.bib
 # https://blog.joss.theoj.org/2018/12/a-new-collaboration-with-aas-publishing
 aas-doi: 10.3847/xxxxx <- update this with the DOI from AAS once you know it.
 aas-journal: Astrophysical Journal <- The name of the AAS journal.
+[NAME]: MetaSpread
 ---
 
 # Summary
@@ -133,9 +134,28 @@ T_{\mathrm{E}} & \texttt{doublingTimeM} & \text{ Mesenchymal doubling time } & 2
 \end{array}
 $$
 
+
 # Simulation output, visualization and analysis
 
+![Initial conditions of a sample run.\label{example-image-1}](D:\Documents\OneDrive\OneDrive%20-%20Universidad%20de%20Chile\Journey\cancer-sim\repo\example-image-1.png)
+
+![Example results for the amount of cells in the vasculature\label{example-image-2}](D:\Documents\OneDrive\OneDrive%20-%20Universidad%20de%20Chile\Journey\cancer-sim\repo\example-image-2.png)
+
 # Outlook
+
+Possible extensions:
+
+- Computational challenges (interface with a webpage, etc)
+
+- EMT TME transformation
+
+- Evolution or mutations of cells
+
+- Immune system
+
+- Healthy tissue cells
+
+- Interaction with drugs
 
 # Download, installation and run details
 
