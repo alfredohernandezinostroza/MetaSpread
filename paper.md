@@ -77,6 +77,19 @@ matrix, which also favours the haptotactic movement of the cancer cells. For the
 
 # Download, installation and run details
 
+# Mathematical model
+
+The dimensionless model, as described by Franssen et al. [@Franssen2019] corresponds to:
+
+$$
+\begin{aligned}
+\frac{\partial c_{\mathrm{E}}}{\partial t} & =D_{\mathrm{E}} \nabla ^{2} c_{\mathrm{E}} -\Phi _{\mathrm{E}} \nabla \cdot ( c_{\mathrm{E}} \nabla w)\\
+\frac{\partial c_{\mathrm{M}}}{\partial t} & =D_{\mathrm{M}} \nabla ^{2} c_{\mathrm{M}} -\Phi _{\mathrm{M}} \nabla \cdot ( c_{\mathrm{M}} \nabla w)\\
+\frac{\partial m}{\partial t} & =D_{m} \nabla ^{2} m+\Theta c_{\mathrm{M}} -\Lambda m\\
+\frac{\partial w}{\partial t} & =-( \Gamma _{1} c_{\mathrm{M}} +\Gamma _{2} m) w
+\end{aligned}
+$$
+
 # Mathematics
 
 Single dollars ($) are required for inline mathematics e.g. $f(x) = e^{\pi/x}$
