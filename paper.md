@@ -1,28 +1,28 @@
 ---
 title: 'MetaSpread: A cancer growth and metastatic spread simulation package in Python'
 tags:
-  - python
+  - Python
   - agent based modelling
   - dynamics
   - partial differential equations
   - cancer
   - metastasis
 authors:
-  - name: Alfredo Hernández-Inostroza
-    orcid: 0000-0002-4708-3275
-    equal-contrib: true # (This is how you can denote equal contributions between multiple authors)
-    affiliation: 1
   - name: Vinicius Schaedler Damin
     orcid: 0000-0000-0000-0000
     equal-contrib: true
+    affiliation: 1
+  - name: Alfredo Hernández-Inostroza
+    orcid: 0000-0002-4708-3275
+    equal-contrib: true # (This is how you can denote equal contributions between multiple authors)
     affiliation: 2
   - name: Erida Gjini
-    orcid: 0000-0002-0493-3102
     affiliation: 3
+    corresponding: true # (This is how to denote the corresponding author)
 affiliations:
- - name: Department of Biomedical Engineering, Instituto Superior Tecnico, University of Lisbon, Lisbon, Portugal
-   index: 1
  - name: Department of Electrical and Computer Engineering, Instituto Superior Tecnico, University of Lisbon, Lisbon, Portugal
+   index: 1
+ - name: Department of Biomedical Engineering, Instituto Superior Tecnico, University of Lisbon, Lisbon, Portugal
    index: 2
  - name: Center for Computational and Stochastic Mathematics, Instituto Superior Tecnico, University of Lisbon, Lisbon, Portugal
    index: 3
@@ -33,7 +33,6 @@ bibliography: paper.bib
 # https://blog.joss.theoj.org/2018/12/a-new-collaboration-with-aas-publishing
 aas-doi: 10.3847/xxxxx <- update this with the DOI from AAS once you know it.
 aas-journal: Astrophysical Journal <- The name of the AAS journal.
-[NAME]: MetaSpread
 ---
 
 # Summary
