@@ -159,7 +159,7 @@ $$
 % c_{E}{}_{i,j}^{n+1} = & \mathcal{P}_{0} c{_{E}^{n}}_{i-1,j} +\mathcal{P}_{1} c{_{E}^{n}}_{i+1,j} +\mathcal{P}_{2} c{_{E}^{n}}_{i,j+1} +\mathcal{P}_{3} c{_{E}^{n}}_{i,j-1} +\mathcal{P}_{4} c{_{E}^{n}}_{i,j}\\
 % c_{M}{}^{n+1} = & \mathcal{P}_{0} c{_{M}^{n}}_{i-1,j} +\mathcal{P}_{1} c{_{M}^{n}}_{i+1,j} +\mathcal{P}_{2} c{_{M}^{n}}_{i,j+1} +\mathcal{P}_{3} c{_{M}^{n}}_{i,j-1} +\mathcal{P}_{4} c{_{M}^{n}}_{i,j}\\
 m_{i,j}^{n+1} = & D_{m}\frac{\Delta t_{a}}{( \Delta x_{a})^{2}}\left( m_{i+1,j}^{n} +m_{i-1,j}^{n} +m_{i,j+1}^{n} +m_{i,j-1}^{n}\right)\\
-%  & +m_{i,j}^{n}\left( 1-4D_{m}\frac{\Delta t_{a}}{( \Delta x_{a})^{2}} -\Delta t\Lambda \right) +\Delta t_{a} \Theta c{_{M}^{n}}_{i,j}\\
+ & \Theta c_{M}^{n}_{i,j}\\
 w_{i,j}^{n+1} = & w_{i,j}^{n}\left[ 1-\Delta t_{a}\left( \Gamma _{1} c{_{M}^{n}}_{i,j} +\Gamma _{2} m_{i,j}^{n}\right)\right]
 \end{aligned}
 $$
