@@ -76,7 +76,6 @@ The algorithm that will be executed on each step is detailed in the following fl
 # Simulation parameters
 
 $$
-\begin{equation*}
 \begin{array}{|c|c|c|c|c|}
 \hline
  & \text{Variable name} & \text{ Description } & \begin{array}{ c }
@@ -132,7 +131,6 @@ T_{\mathrm{E}} & \texttt{doublingTimeM} & \text{ Mesenchymal doubling time } & 2
 \mathcal{E}_{3} & \texttt{E3} & \text{ Extravasation probability to liver } & \sim 0.1986 & \\
 \hline
 \end{array}
-\end{equation*}
 $$
 
 # Simulation output, visualization and analysis
