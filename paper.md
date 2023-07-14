@@ -78,10 +78,7 @@ The algorithm that will be executed on each step is detailed in the following fl
 $$
 \begin{array}{|c|c|c|c|c|}
 \hline
- & \text{Variable name} & \text{ Description } & \begin{array}{ c }
-\text{ Default}\\
-\text{ Non-dimensional value }
-\end{array} & \\
+ & \text{Variable name} & \text{ Description } & \text{Value} & \\
 \hline
 \Delta t & \texttt{th} & \text{ Time step } & 1\times 10^{-3} & \\
 \hline
