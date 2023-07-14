@@ -136,9 +136,9 @@ $$
 
 # Simulation output, visualization and analysis
 
-![Initial conditions of a sample run.\label{example-image-1}](D:\Documents\OneDrive\OneDrive%20-%20Universidad%20de%20Chile\Journey\cancer-sim\repo\example-image-1.png)
+![Initial conditions of a sample run.\label{example-image-1}](example-image-1.png)
 
-![Example results for the amount of cells in the vasculature\label{example-image-2}](D:\Documents\OneDrive\OneDrive%20-%20Universidad%20de%20Chile\Journey\cancer-sim\repo\example-image-2.png)
+![Example results for the amount of cells in the vasculature\label{example-image-2}](example-image-2.png)
 
 # Outlook
 
