@@ -8,12 +8,12 @@ tags:
   - cancer
   - metastasis
 authors:
-  - name: Vinicius Schaedler Damin
-    orcid: 0000-0000-0000-0000
-    equal-contrib: true
-    affiliation: 1
   - name: Alfredo Hernández-Inostroza
     orcid: 0000-0002-4708-3275
+    equal-contrib: true
+    affiliation: 1
+  - name: Vinicius Schaedler Damin
+    orcid: 0000-0000-0000-0000
     equal-contrib: true # (This is how you can denote equal contributions between multiple authors)
     affiliation: 2
   - name: Erida Gjini
