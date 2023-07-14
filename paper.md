@@ -156,10 +156,10 @@ Where, once discretized take up the form:
 
 $$
 \begin{aligned}
-% c_{E}{}_{i,j}^{n+1} = & \mathcal{P}_{0} c{_{E}^{n}}_{i-1,j} +\mathcal{P}_{1} c{_{E}^{n}}_{i+1,j} +\mathcal{P}_{2} c{_{E}^{n}}_{i,j+1} +\mathcal{P}_{3} c{_{E}^{n}}_{i,j-1} +\mathcal{P}_{4} c{_{E}^{n}}_{i,j}\\
-% c_{M}{}^{n+1} = & \mathcal{P}_{0} c{_{M}^{n}}_{i-1,j} +\mathcal{P}_{1} c{_{M}^{n}}_{i+1,j} +\mathcal{P}_{2} c{_{M}^{n}}_{i,j+1} +\mathcal{P}_{3} c{_{M}^{n}}_{i,j-1} +\mathcal{P}_{4} c{_{M}^{n}}_{i,j}\\
+c_{Ei,j}^{n+1} = & \mathcal{P}_{0} c^{n}_{Ei-1,j} +\mathcal{P}_{1} c^{n}_{Ei+1,j} +\mathcal{P}_{2} c^{n}_{Ei,j+1} +\mathcal{P}_{3} c^{n}_{Ei,j-1} +\mathcal{P}_{4} c^{n}_{Ei,j}\\
+c_{Mi,j}^{n+1} = & \mathcal{P}_{0} c^{n}_{Mi-1,j} +\mathcal{P}_{1} c^{n}_{Mi+1,j} +\mathcal{P}_{2} c^{n}_{Mi,j+1} +\mathcal{P}_{3} c^{n}_{Mi,j-1} +\mathcal{P}_{4} c^{n}_{Mi,j}\\
 m_{i,j}^{n+1} = & D_{m}\frac{\Delta t_{a}}{( \Delta x_{a})^{2}}\left( m_{i+1,j}^{n} +m_{i-1,j}^{n} +m_{i,j+1}^{n} +m_{i,j-1}^{n}\right)\\
-  & \Theta c^{n}_{i,j}\\
+ & +m_{i,j}^{n}\left( 1-4D_{m}\frac{\Delta t_{a}}{( \Delta x_{a})^{2}} -\Delta t\Lambda \right) +\Delta t_{a} \Theta c^{n}_{Mi,j}\\
 w_{i,j}^{n+1} = & w_{i,j}^{n}\left[ 1-\Delta t_{a}\left( \Gamma _{1} c{_{M}^{n}}_{i,j} +\Gamma _{2} m_{i,j}^{n}\right)\right]
 \end{aligned}
 $$
