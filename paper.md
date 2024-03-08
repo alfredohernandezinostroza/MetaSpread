@@ -142,7 +142,7 @@ $$
 \end{array} & \begin{array}{ c }
 \texttt{xh}\\
 \texttt{xah}
-\end{array} & \text{ Space step \\ Abiotic space step } & 5\times 10^{-3}  \\
+\end{array} & \text{ Space step Abiotic space step } & 5\times 10^{-3}  \\
 \hline
 D_{\mathrm{M}} & \texttt{dM} & \begin{array}{ c }
 \text{ Mesenchymal-like cancer cell diffusion }\\
