@@ -127,6 +127,69 @@ When run interactively, starting from the main menu, the following possibilities
 
 # Simulation parameters
 
+$$
+\begin{array}{|c|c|c|c|}
+\hline
+ & \text{Variable name} & \text{ Description } & \text{Value}  \\
+\hline
+\Delta t & \texttt{th} & \text{ Time step } & 1\times 10^{-3}  \\
+\hline
+\Delta t_a & \texttt{tha} & \text{ Abiotic time step } & 1\times 10^{-3}  \\
+\hline
+\begin{array}{ c }
+\Delta x\\
+\Delta x_a
+\end{array} & \begin{array}{ c }
+\texttt{xh}\\
+\texttt{xah}
+\end{array} & \text{ Space step \\ Abiotic space step } & 5\times 10^{-3}  \\
+\hline
+D_{\mathrm{M}} & \texttt{dM} & \begin{array}{ c }
+\text{ Mesenchymal-like cancer cell diffusion }\\
+\text{ coefficient }
+\end{array} & 1\times 10^{-4}  \\
+\hline
+D_{\mathrm{E}}& \texttt{dE} & \text{ Epithelial-like cancer cell diffusion coefficient } & 5\times 10^{-5}  \\
+\hline
+\Phi _{M} & \texttt{phiM} & \text{ Mesenchymal hap to tactic sensitivity coefficient } & 5\times 10^{-4}  \\
+\hline
+\Phi _{\mathrm{E}} & \texttt{phiE} & \text{ Epithelial hapto tactic sensitivity coefficient } & 5\times 10^{-4}  \\
+\hline
+D_{m} & \texttt{dmmp} & \text{ MMP-2 diffusion coefficient } & 1\times 10^{-3}  \\
+\hline
+\Theta & \texttt{theta} & \text{ MMP-2 production rate } & 0.195  \\
+\hline
+\Lambda & \texttt{Lambda} & \text{ MMP-2 decay rate } & 0.1  \\
+\hline
+\Gamma _{1} & \texttt{gamma1} & \text{ ECM degradation rate by MT1-MMP } & 1  \\
+\hline
+\Gamma _{2}& \texttt{gamma2} & \text{ ECM degradation rate by MMP-2 } & 1  \\
+\hline
+T_{V} & \texttt{vasculature\_time} & \text{ Steps CTCs spend in the vasculature } & 180  \\
+\hline
+T_{\mathrm{M}} & \texttt{doublingTimeE}& \text{ Epithelial doubling time } & 3  \\
+\hline
+T_{\mathrm{E}} & \texttt{doublingTimeM} & \text{ Mesenchymal doubling time } & 2  \\
+\hline
+\mathcal{P}_{s} & \texttt{single\_cell\_survival} & \text{ Single CTC survival probability } & 5\times 10^{-4}  \\
+\hline
+\mathcal{P}_{C} & \texttt{cluster\_survival} & \text{ CTC cluster survival probability } & 2.5\times 10^{-2}  \\
+\hline
+\mathcal{E}_{1,...,n} & \texttt{E1} & \text{ Extravasation probabilities} & \sim [0.54615461, 0.2553, 0.1986]  \\
+\hline
+\mathcal{P}_{d} & \texttt{disaggregation\_prob} & \text{ Individual cancer cell dissagregation probability} & 0.5  \\
+\hline
+Q & \texttt{carrying\_capacity} & \text{ Maximum amount of cells per grid point} & 4  \\
+\hline
+U_P & \texttt{normal\_vessels\_primary} & \text{ Amount of normal vessels present on the primary grid} & 2  \\
+\hline
+V_P & \texttt{ruptured\_vessels\_primary} & \text{ Amount of ruptured vessels present on the primary grid} & 8  \\
+\hline
+U_{2,...,n} & \texttt{secondary\_sites\_vessels} & \text{ Amount of vessels present on the secondary sites} & [10, 10]  \\
+\hline
+\end{array}
+$$
+
 # Simulation output, visualization and analysis
 
 To illustrate the performance and capability of MetaSpread, we provide some figures and visualization of the simulations output. In Figure 2 we show a snapshot of cell distribution after approximately 5 days of growth. In Figure 3 we show a later snapshot of our simulations for cancer cell spread and ECM and MMP2 evolution. In Figure 4 we show temporal dynamics of summary variables, e.g. total cell counts over time up to 12.5 days, possible to be computed after simulation data post-processing. In movies S1-S2 we show how the simulation platform can be used for studying the biological effect of different perturbations in parameters. These movies illustrate animations of the spatiotemporal evolution of a tumor on the primary site in two cases: (S1) diffusion-dominated and (S2) haptotaxis-dominated cellular movement. The first leads to a regular spatiotemporal pattern of growth, more isotropic and round, the second leads to a more irregular growth over space with cellular protrusions extending in some directions.
