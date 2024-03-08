@@ -28,8 +28,6 @@ affiliations:
    index: 3
 date: 9 March 2023
 bibliography: paper.bib
-header-includes:
-- \usepackage{pdflscape}
 
 ---
 
@@ -131,8 +129,6 @@ When run interactively, starting from the main menu, the following possibilities
 
 - **Video generation:** The user can choose the Videos option to generate videos animated from the consecutive snapshots of the spatial dynamics generated from the graphical analysis step.
 
-\begin{landscape}
-
 # Simulation parameters
 
 $$
@@ -208,15 +204,15 @@ U_{2,...,n} & \texttt{secondary\_sites\_vessels} & \text{ Amount of vessels pres
 \end{array}
 $$
 
-\end{landscape}
-
 # Simulation output, visualization and analysis
 
 To illustrate the performance and capability of MetaSpread, we provide some figures and visualization of the simulations output. In Figure 2 we show a snapshot of cell distribution after approximately 5 days of growth. In Figure 3 we show a later snapshot of our simulations for cancer cell spread and ECM and MMP2 evolution. In Figure 4 we show temporal dynamics of summary variables, e.g. total cell counts over time up to 12.5 days, possible to be computed after simulation data post-processing. In movies S1-S2 we show how the simulation platform can be used for studying the biological effect of different perturbations in parameters. These movies illustrate animations of the spatiotemporal evolution of a tumor on the primary site in two cases: (S1) diffusion-dominated and (S2) haptotaxis-dominated cellular movement. The first leads to a regular spatiotemporal pattern of growth, more isotropic and round, the second leads to a more irregular growth over space with cellular protrusions extending in some directions.
 
-![Initial conditions of a sample run.\label{example-image-1}](example-image-1.png)
+![**Early snapshot of our simulations for cancer cell spread in the primary tumour (grid 1) after approximately 5 days.** Parameters as default (Table ) with initial distribution centered around (1,1) and total initial size = cells. The blue color denotes mesenchymal cells, the orange color denotes epithelial cells. The intensity of the color represents the number of cells (from 0 to Q) in that particular grid point. The red grid points represent entry-points to the vasculature, with circles intact vessels and crosses representing ruptured vessels.](Figure_1.png)
 
 <!-- ![Example results for the amount of cells in the vasculature\label{example-image-2}](example-image-2.png) -->
+
+![**Later snapshot of our simulations for cancer cell spread and ECM and MMP2 evolution in the primary and secondary metastatic site, grid 1 (left) and grid 2 (right) after approximately 12.5 days.** Parameters as default (Table ) with initial distribution centered around (1,1) and total initial size = cells. In the top row, the blue color denotes mesenchymal cells, the orange color denotes epithelial cells. The intensity of the color represents the number of cells (from 0 to Q) in that particular grid point. The red grid points represent entry-points to the vasculature, with circles intact vessels and crosses representing ruptured vessels. In the middle row, we plot the corresponding evolution of the density of the extracellular matrix at the same time points. In the last row we plot the spatial distribution of MMP2.](6 images.png)
 
 # Outlook
 
