@@ -33,7 +33,7 @@ bibliography: paper.bib
 
 # Summary
 
-We develop and provide MetaSpread, an open source simulation framework and interactive program in Python, based on a mathematical model of tumor growth and metastatic spread, designed by [franssen2019]. This paper proposed a hybrid modeling and computational framework where cellular growth and metastatic spread are described and simulated in a spatially explicit manner, accounting for stochastic individual cell dynamics and deterministic dynamics of abiotic factors. This model incorporates several key processes such as the growth and movement of epithelial and mesenchymal cells, the role of the extracellular matrix, diffusion, haptotaxis, circulation and survival of cancer cells in the vasculature, and seeding and growth in secondary sites. In the software that we develop, these growth and metastatic dynamics are programmed using MESA, [@python-mesa-2020] a Python Package for Agent-based modeling.
+We develop and provide MetaSpread, an open source simulation framework and interactive program in Python for tumor growth and metastatic spread, , based on a mathematical model by [@franssen2019]. This paper proposed a hybrid modeling and computational framework where cellular growth and metastatic spread are described and simulated in a spatially explicit manner, accounting for stochastic individual cell dynamics and deterministic dynamics of abiotic factors. This model incorporates several key processes such as the growth and movement of epithelial and mesenchymal cells, the role of the extracellular matrix, diffusion, haptotaxis, circulation and survival of cancer cells in the vasculature, and seeding and growth in secondary sites. In the software that we develop, these growth and metastatic dynamics are programmed using MESA, [@python-mesa-2020] a Python Package for Agent-based modeling.
 
 *Keywords:* cancer, growth, metastatic spread, multi-scale dynamics, simulation
 
@@ -55,7 +55,7 @@ $$
 \end{aligned}
 $$
 
-Discretizing equations 1 and 2 in space and time, we obtain:
+For the simulation of the spatio-temporal growth dynamics, and metastatic spread, the system of PDE's is discretized, and several 2-dimensional grids are established, representing the primary site and the metastatic sites. Discretizing equations for $c_E$ and $c_M$ in space and time, we obtain:
 
 $$
 \begin{aligned}
@@ -78,9 +78,9 @@ $$
 
 represent the probabilities for a cell to move up, down, left, right, or stay in place, and where $k=E,M$ can refer to an epithelial-like or mesenchymal-like cell. Each cell on every grid point $(x_i,y_j)$ is modeled as an individual agent, which obeys probability rules for growth and movement. There is a maximal carrying capacity for each grid point given by $Q,$ (assumed equal to 4 in [@franssen2019]), to represent competition for space. There exist a doubling time $T_E$ and $T_M$ for epithelial and mesenchymal cells at which all the cells present in all grids will reproduce, duplicating in place, but never exceeding $Q$.
 
-For the simulation of the spatio-temporal growth dynamics, and metastatic spread, the system of PDE's is discretized, and several 2-dimensional grids are established, representing the primary site and the metastatic sites. Only the primary site is seeded with an initial number and distribution of cells. In order for the cells to migrate to another site, they must travel through the vasculature, which they do if they intravasate by one of the several randomly selected points in the grid that represent entrances to the vasculature system. The extravasation to one of the metastatic sites only occurs if they survive, a process that is modeled with net probabilistic rules considering time spent in the vasculature, cluster disaggregation, cell type, and potential biases to different destinations.
+Only the primary site is seeded with an initial number and distribution of cells. In order for the cells to migrate to another site, they must travel through the vasculature, which they do if they intravasate by one of the several randomly selected points in the grid that represent entrances to the vasculature system. The extravasation to one of the metastatic sites only occurs if they survive, a process that is modeled with net probabilistic rules considering time spent in the vasculature, cluster disaggregation, cell type, and potential biases to different destinations.
 
-For the abiotic factors the discretization takes the form (see Appendices in [@franssen2019]):
+For the abiotic factors $m$ and $w$, the discretization takes the form (see Appendices in [@franssen2019]):
 
 $$
 \begin{aligned}
@@ -90,7 +90,7 @@ w_{i,j}^{n+1} = & w_{i,j}^{n}\left[ 1-\Delta t_{a}\left( \Gamma _{1} c{_{M}^{n}}
 \end{aligned}
 $$
 
-Where $i,j$ reflect the grid ($i,j$) and $n$ the time-point. In this discretization two different time and spatial steps are used for the cell population and the abiotic factors (ECM and MMP-2), namely delta t and delta x, and delta t a and delta x a, respectively.
+where $i,j$ reflect the grid point ($i,j$) and $n$ the time-point. In this discretization two different time and spatial steps are used for the cell population (E and M cells) and the abiotic factors (ECM and MMP-2), namely $\Delta t$ and $\Delta x$, $\Delta t_a$ and $\Delta x_a$ respectively.
 
 # Simulation parameters
 
@@ -110,29 +110,32 @@ The program can be run both interactively through the command line, or with expl
 
 When run interactively, starting from the main menu, the following possibilities are offered: 
 
+![]()
+
 - **Run a new simulation:** the user can choose the *New Simulation* option to run a new simulation, with the arguments to be specified by the user being the maximal time for the dynamics, and the frequency of saving data (temporal resolution). Any other simulation parameter (see  Table 1 ) will be taken from the *simulation\_configs.csv* file in the main folder. At the end of the simulation the dynamics of the grids, including agents (cells and vasculature points), the vasculature dynamics and the MMP2 and ECM are saved in a properly identified directory, including a *configs.csv* recording the used parameters for this particular simulation. The file *CellsData.csv* in this directory will include all the information of all cells and vasculature points in the simulation, for every time step.
-
-- **Load an existing simulation** The user can select *Load Simulation* from the main menu, and an existing simulation will be loaded, and continued for further time steps with the same parameters in its *configs.csv* file. The only parameters that the user has to select are the new temporal resolution and the maximum extra steps for the simulation to run.
-
-- **Post-process data from a simulation** The generated *CellsData.csv* contains the information of every cancer cell at every time step and every grid of the simulation. In order to facilitate the study of the results, we provide with several post-processing methods: Data analysis, Graphical analysis and Video generation.
   
-  - Besides, the ECM and MMP2 folders will contain the values of both abiotic factors for each time step, no postprocessing needed.
+  - In addition, in the ECM and MMP2 folders there will be files containing the values of these factors for each time step, not requiring any postprocessing.
   
   - The vasculature folder will contain several *.json* files with the state of the vasculature at each time step. That is, they will contain a dictionary showing the clusters that were present at each time step. Further information can be extracted by using the **data analysis** option.
+  - The folder *Time when grids got populated* will have a file that will simply show the time step for which each grid (primary or secondary site) got populated.
+
+- **Load an existing simulation** The user can select *Load Simulation* from the main menu, and an existing simulation will be loaded, and can be continued for further time steps with the same parameters in its *configs.csv* file. The only parameters that the user has to select are the new temporal resolution and the maximum extra steps for the simulation to run.
+
+- **Post-process data from a simulation** The generated *CellsData.csv* contains the information of every cancer cell at every time step and every grid of the simulation. In order to facilitate the study of the results, we provide the user with several post-processing options: Data analysis, Graphical analysis and Video generation.
   
-  - The folder *Time when grids got populated* will have a file that will simply show the time step for which each grid got populated.
+  ![](postprocessing_menu.png)
 
 - **Data analysis:** several results will be summarized in *.csv* files, such as the vasculature and tumor dynamics. 
   
-  - The files that account for cell growth, vasculature evolution, and tumor radius and diameter evolution consist of columns that register the state of a metric in each time step along the simulation. These easily allows plotting graphs of dynamics later on.
+  - The files that account for total number of cells, vasculature evolution (total numbers of CTCs and clusters, cells and phenotypes), and tumor radius (the maximum of all cell distances from the centroid of mass) and diameter (maximum of all cell-to-cell distances) evolution, consist of columns that register the state of a metric in each time step along the simulation. These easily allows plotting graphs of dynamics later on.
   
-  - The tumor growth files consist of 8 rows, where each 4 pairs correspond to the x and y coordinates of an agent in the simulation. The order of the rows from top to bottom correspond to mesenchymal, epithelial, normal vasculature points and ruptured vasculature points. These allow for easily plotting the positions of the agents, and thus, the state of the tumor, at each time step.
+  - The tumor growth files for each time point consist of 8 rows: the first 2 rows correspond to x and y coordinates of mesenchymal cells. The second 2 rows correspond to the x and y coordinates of epithelial cells, the next 2 rows correspond to x and y coordinates of regular vasculature points, and the final 2 rows correspond to the coordinates of ruptured vessels. These allow for easily plotting the positions of the agents, and thus, the state of the tumor, at each time step.
   
-  - The histogram files consists of two columns: one for the bins, and one for the frequency. The bins are for accounting the amount of grid points that have X amount of cells.
+  - The histogram files summarize the spatial distribution of cells for each time point. Each file consists of two columns: one for the bins, and one for the frequency. The bins represent the possible number of cells in each grid point, from 0 to $Q$, and the frequency the number of grid points that have that amount cells.
 
-- **Graphical analysis:** in order to run this step, it is necessary to run the data analysis option first. When selected, plots of the tumor distribution, ECM, MMP-2 for each grid for all the amount of time points specified by the user will be produced. Furthermore, it will also produce other plots such as the dynamics of the cells in the vasculature, histograms of the cell number distribution over grid points, radius and diameter of the tumor over time, and cells number growth over time (total size of the tumor in each grid).
+- **Graphical analysis:** in order to run this step, it is necessary to run the data analysis option first. When selected, the used will be prompted to introduce the number of figures to describe the snapshot of the dynamics at equally spaced intervals between 0 and the final time of the simulation. Then, plots of the tumor distribution, ECM, MMP-2 for each grid. Furthermore, it will also produce other plots such as the dynamics of the cells in the vasculature, histograms of the cell number distribution over grid points, radius and diameter of the tumor over time, and total size of the tumor in each grid.
 
-- **Video generation:** The user can choose the Videos option to generate videos animated from the consecutive snapshots of the spatial dynamics generated from the graphical analysis step.
+- **Video generation:** The user can choose the Videos option to generate animations from the figures generated in the *graphical analysis* step. When selected, the user will be prompted to introduce the framerate at which the videos should be saved.
 
 # Simulation parameters
 
@@ -213,7 +216,7 @@ $$
 
 # Simulation output, visualization and analysis
 
-To illustrate the performance and capability of MetaSpread, we provide some figures and visualization of the simulations output. In Figure 2 we show a snapshot of cell distribution after approximately 5 days of growth. In Figure 3 we show a later snapshot of our simulations for cancer cell spread and ECM and MMP2 evolution. In Figure 4 we show temporal dynamics of summary variables, e.g. total cell counts over time up to 12.5 days, possible to be computed after simulation data post-processing. In movies S1-S2 we show how the simulation platform can be used for studying the biological effect of different perturbations in parameters. These movies illustrate animations of the spatiotemporal evolution of a tumor on the primary site in two cases: (S1) diffusion-dominated and (S2) haptotaxis-dominated cellular movement. The first leads to a regular spatiotemporal pattern of growth, more isotropic and round, the second leads to a more irregular growth over space with cellular protrusions extending in some directions.
+To illustrate the performance and capability of MetaSpread, we provide some figures and visualization of the simulations output. In Figure 3 we show a later snapshot of our simulations for cancer cell spread and ECM and MMP2 evolution. In Figure 4 we show temporal dynamics of summary variables, e.g. total cell counts over time up to 12.5 days, possible to be computed after simulation data post-processing. In movies S1-S2 we show how the simulation platform can be used for studying the biological effect of different perturbations in parameters. These movies illustrate animations of the spatiotemporal evolution of a tumor on the primary site in two cases: (S1) diffusion-dominated and (S2) haptotaxis-dominated cellular movement. The first leads to a regular spatiotemporal pattern of growth, more isotropic and round, the second leads to a more irregular growth over space with cellular protrusions extending in some directions.
 
 ![**Early snapshot of our simulations for cancer cell spread in the primary tumour (grid 1) after approximately 5 days.** Parameters as in Table 1 with initial distribution centered around (1,1) and total initial size = 388 cells. The blue color denotes mesenchymal cells, the orange color denotes epithelial cells. The intensity of the color represents the number of cells (from 0 to Q = 4) in that particular grid point. The red grid points represent entry-points to the vasculature, with circles intact vessels and crosses representing ruptured vessels.](Figure_1.png)
 
@@ -221,13 +224,17 @@ To illustrate the performance and capability of MetaSpread, we provide some figu
 
 ![**Later snapshot of our simulations for cancer cell spread and ECM and MMP2 evolution in the primary and secondary metastatic site, grid 1 (left) and grid 2 (right) after approximately 12.5 days.** Parameters as in Table 1 with initial distribution centered around (1,1) and total initial size = cells. In the top row, the blue color denotes mesenchymal cells, the orange color denotes epithelial cells. The intensity of the color represents the number of cells (from 0 to Q) in that particular grid point. The red grid points represent entry-points to the vasculature, with circles intact vessels and crosses representing ruptured vessels. In the middle row, we plot the corresponding evolution of the density of the extracellular matrix at the same time points. In the last row we plot the spatial distribution of MMP2.](6 images.png)
 
+**Dynamics of total cell counts over time up to 12.5 days.** Top panels: In the primary and secondary tumor grid. Here we illustrate the functionality of the package to yield summaries of the spatiotemporal evolution of the cancer dynamics in the primary and in the metastatic site(s), namely total count of epithelial ($E(t)$) and mesenchymal ($M(t)$) cells. Middle panels: Dynamics in the vasculature, where cells can persist as single cells (CTC) or as multicellular clusters. As it can be seen, the majority of cells in the vasculature circulate in the form of clusters (green line) with only a minority being single CTCs (the difference between the red and the green line). Bottom panels: radius and diameter of the spatio-temporal spread, and distribution histogram of the cells over spatial grid points. The figure is obtained from the simulations corresponding to Figure 3.
+
 # Outlook
 
-While the model originating from our program [@franssen2019] is simpler than later models developed for cancer invasion [@franssen2021novel;@macnamara2020computational;@chaplain2020multiscale], we believe the simple framework enables already deep study of the basic population dynamic processes involved in early tumor dynamics and metastatic growth, and engagement with interesting and important biology (reviewed in [@franssen2019]. A sufficient but not too hard level of complexity makes it a perfect tool for interaction by non-specialists in the mathematical field, medical doctors and for researchers willing to explore hypotheses with it, perform simulations or extract from it pedagogical value for students and the wider public. There are several directions for extensions of the algorithm and simulation package. These include improving the computational efficiency and speed of the simulation, which now requires about 24 hours for 28.000 time steps, corresponding to about 12 days. Another venue for extension could be including interaction with the immune system, developing explicitly the interaction of the cancer cells with healthy cells, implementing the effect of treatment, for example adaptive therapies [@west2023survey], mutations and EMT transition. Regarding the metastatic spread, a novelty would be to consider different parameters in different grids, allowing for differential suitability for growth and colonization by arriving cancer cells, which in the current formulation is captured only by the biases in arrival probabilities [@newton2015spatiotemporal]. On the computational side the main challenge relies on making the code flexible for parallel computing so that both the spatial and temporal resolution can be increased, and the scope of the phenomena investigated can be expanded, including cell-level heterogeneity. Finally, an interesting improvement would be the addition of an interactive interface that allows for better visualization of the tumor at different time steps, allowing for zooming in and out, changing the color of the cells, and more.
+While the model originating from our program [@franssen2019] is simpler than later models developed for cancer invasion [@franssen2021novel;@macnamara2020computational;@chaplain2020multiscale], we believe the simple framework enables already deep study of the basic population dynamic processes involved in early tumor dynamics and metastatic growth, and engagement with interesting and important biology (reviewed in [@franssen2019]. A sufficient but not too hard level of complexity makes it a perfect tool for interaction by non-specialists in the mathematical field, medical doctors and for researchers willing to explore hypotheses with it, perform simulations or extract from it pedagogical value for students and the wider public. There are several directions for extensions of the algorithm and simulation package. These include improving the computational efficiency and speed of the simulation, which now requires about 24 hours for 28.000 time steps, corresponding to about 12 days. Another venue for extension could be including interaction with the immune system, developing explicitly the interaction of the cancer cells with healthy cells, implementing the effect of treatment, for example adaptive therapies [@west2023survey], mutations and EMT transition. Regarding the metastatic spread, a novelty would be to consider different parameters in different grids, allowing for differential suitability for growth and colonization by arriving cancer cells, which in the current formulation is captured only by the biases in arrival probabilities [@newton2015spatiotemporal]. On the computational side the main challenge relies on making the code flexible for parallel computing so that both the spatial and temporal resolution can be increased, and the scope of the phenomena investigated can be expanded, including cell-level heterogeneity [@waclaw_spatial_2015;@opasic2020cancersim]. Finally, an interesting improvement would be the addition of an upgraded interface that allows the user to interact with the results in an user-friendly way, at arbitrary time steps, allowing to probe the tumor dynamics at different degrees of spatial resolution, and selecting for enhanced visualization or analysis options.
 
 # Supporting information
 
-Movie S1: Example 1 of spatiotemporal evolution of tumor growth in the primary site (default parameters, diffusion-dominated movement). Movie S2: Example 2 of spatiotemporal evolution of tumor growth in the primary site (parameters with haptotaxis-dominated movement of cells).
+Movie S1: Example 1 of spatiotemporal evolution of tumor growth in the primary site (default parameters, diffusion-dominated movement). Movie S2: Example 2 of spatiotemporal evolution of tumor growth in the primary site (parameters with haptotaxis-dominated movement of cells). All the parameters are as default, except for the diffusion coefficients $D_M$ and $D_E$, where in movie 2 they correspond to 
+
+$1 \cdot 10^{-10}$ and $0.5 \cdot 10^{-11}$, respectively.
 
 # Acknowledgements
 
