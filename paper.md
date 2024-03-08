@@ -11,16 +11,19 @@ authors:
   - name: Alfredo Hernández-Inostroza
     orcid: 0000-0002-4708-3275
     equal-contrib: true
+    corresponding: true
     affiliation: 1
   - name: Erida Gjini
+    orcid: 0000-0002-4708-3275
     affiliation: 2
+    equal-contrib: false
     corresponding: true # (This is how to denote the corresponding author)
 affiliations:
  - name: Department of Biomedical Engineering, Instituto Superior Tecnico, University of Lisbon, Lisbon, Portugal
    index: 1
  - name: Center for Computational and Stochastic Mathematics, Instituto Superior Tecnico, University of Lisbon, Lisbon, Portugal
    index: 2
-date: 9 March 2023
+date: 12 March 2024
 bibliography: paper.bib
 
 ---
@@ -113,6 +116,7 @@ When run interactively, starting from the main menu, the following possibilities
   - In addition, in the ECM and MMP2 folders there will be files containing the values of these factors for each time step, not requiring any postprocessing.
   
   - The vasculature folder will contain several *.json* files with the state of the vasculature at each time step. That is, they will contain a dictionary showing the clusters that were present at each time step. Further information can be extracted by using the **data analysis** option.
+  
   - The folder *Time when grids got populated* will have a file that will simply show the time step for which each grid (primary or secondary site) got populated.
 
 - **Load an existing simulation** The user can select *Load Simulation* from the main menu, and an existing simulation will be loaded, and can be continued for further time steps with the same parameters in its *configs.csv* file. The only parameters that the user has to select are the new temporal resolution and the maximum extra steps for the simulation to run.
