@@ -28,6 +28,8 @@ affiliations:
    index: 3
 date: 9 March 2023
 bibliography: paper.bib
+header-includes:
+- \usepackage{pdflscape}
 
 ---
 
@@ -129,6 +131,8 @@ When run interactively, starting from the main menu, the following possibilities
 
 - **Video generation:** The user can choose the Videos option to generate videos animated from the consecutive snapshots of the spatial dynamics generated from the graphical analysis step.
 
+\begin{landscape}
+
 # Simulation parameters
 
 $$
@@ -203,6 +207,8 @@ U_{2,...,n} & \texttt{secondary\_sites\_vessels} & \text{ Amount of vessels pres
 \hline
 \end{array}
 $$
+
+\end{landscape}
 
 # Simulation output, visualization and analysis
 
