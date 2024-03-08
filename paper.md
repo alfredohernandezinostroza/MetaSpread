@@ -93,9 +93,7 @@ Where $i,j$ reflect the grid ($i,j$) and $n$ the time-point. In this discretizat
 
 # Simulation parameters
 
-![Test]
-
-![Test2]()
+![**Diagram summarizing the key algorithmic steps of our simulation program in Python, MetaSpread**](program_flow.png)
 
 The biological parameters of the model and the simulation values are summarized in Table 1, tailored to breast cancer progression and early-stage dynamics prior to any treatment and in a pre-angiogenic phase (less than 0.2 cm in diameter). We provide the default values used by @[franssen2019], as informed by biological and empirical considerations (see also Table 1 and references therein in @[franssen2019franssen2019mics represent a two-dimensional cross-section of a small avascular tumor and run on a 2-dimensional discrete grid (spatial domain $[0,1] \times [0,1]$ corresponding to physical domain of size $[0,0.2]\text{ cm} \times [0,0.2]\text{ cm}$), where each grid element corresponds to a spatial unit of dimension $(\Delta x,\Delta y)$, and where position $x_i,y_j$ corresponds to $i \Delta x$ and $j \Delta y$. Cancer cells are modeled as discrete agents whose growth and migration dynamics follow probabilistic rules, whereas the abiotic factors MMP2 and extracellular matrix dynamics follow the deterministic PDE evolution, discretized by an explicit five-point central difference discretization scheme together with zero-flux boundary conditions. The challenge of the simulation lies in coupling deterministic and agent-based stochastic dynamics, and in formulating the interface between the primary tumor Grid 1 and the metastatic sites (Grids 2,..$k$). Each grid shares the same parameters, but there can be biases in connectivity parameters between grids ($\mathcal{E}_{k}$ parameters).
 
@@ -111,7 +109,7 @@ The program can be run both interactively through the command line, or with expl
 
 When run interactively, starting from the main menu, the following possibilities are offered: 
 
-- **Run a new simulation:** the user can choose the *New Simulation* option to run a new simulation, with the arguments to be specified by the user being the maximal time for the dynamics, and the frequency of saving data (temporal resolution). Any other simulation parameter (see Table ) will be taken from the *simulation\_configs.csv* file in the main folder. At the end of the simulation the dynamics of the grids, including agents (cells and vasculature points), the vasculature dynamics and the MMP2 and ECM are saved in a properly identified directory, including a *configs.csv* recording the used parameters for this particular simulation. The file *CellsData.csv* in this directory will include all the information of all cells and vasculature points in the simulation, for every time step.
+- **Run a new simulation:** the user can choose the *New Simulation* option to run a new simulation, with the arguments to be specified by the user being the maximal time for the dynamics, and the frequency of saving data (temporal resolution). Any other simulation parameter (see  Table 1 ) will be taken from the *simulation\_configs.csv* file in the main folder. At the end of the simulation the dynamics of the grids, including agents (cells and vasculature points), the vasculature dynamics and the MMP2 and ECM are saved in a properly identified directory, including a *configs.csv* recording the used parameters for this particular simulation. The file *CellsData.csv* in this directory will include all the information of all cells and vasculature points in the simulation, for every time step.
 
 - **Load an existing simulation** The user can select *Load Simulation* from the main menu, and an existing simulation will be loaded, and continued for further time steps with the same parameters in its *configs.csv* file. The only parameters that the user has to select are the new temporal resolution and the maximum extra steps for the simulation to run.
 
@@ -201,6 +199,8 @@ U_{2,...,n} & \texttt{secondary\_sites\_vessels} & \text{ Amount of vessels pres
 \hline
 - & \texttt{epithelial\_proportion} & \text{ Proportion of epithelial-like cells to be seeded on the primary site} & 0.4  \\
 \hline
+- & \texttt{number\_of\_initial\_cells} & \text{Number of cells to be seeded at the primary site} & 388  \\
+\hline
 \end{array}
 $$
 
@@ -208,11 +208,11 @@ $$
 
 To illustrate the performance and capability of MetaSpread, we provide some figures and visualization of the simulations output. In Figure 2 we show a snapshot of cell distribution after approximately 5 days of growth. In Figure 3 we show a later snapshot of our simulations for cancer cell spread and ECM and MMP2 evolution. In Figure 4 we show temporal dynamics of summary variables, e.g. total cell counts over time up to 12.5 days, possible to be computed after simulation data post-processing. In movies S1-S2 we show how the simulation platform can be used for studying the biological effect of different perturbations in parameters. These movies illustrate animations of the spatiotemporal evolution of a tumor on the primary site in two cases: (S1) diffusion-dominated and (S2) haptotaxis-dominated cellular movement. The first leads to a regular spatiotemporal pattern of growth, more isotropic and round, the second leads to a more irregular growth over space with cellular protrusions extending in some directions.
 
-![**Early snapshot of our simulations for cancer cell spread in the primary tumour (grid 1) after approximately 5 days.** Parameters as default (Table ) with initial distribution centered around (1,1) and total initial size = cells. The blue color denotes mesenchymal cells, the orange color denotes epithelial cells. The intensity of the color represents the number of cells (from 0 to Q) in that particular grid point. The red grid points represent entry-points to the vasculature, with circles intact vessels and crosses representing ruptured vessels.](Figure_1.png)
+![**Early snapshot of our simulations for cancer cell spread in the primary tumour (grid 1) after approximately 5 days.** Parameters as in Table 1 with initial distribution centered around (1,1) and total initial size = 388 cells. The blue color denotes mesenchymal cells, the orange color denotes epithelial cells. The intensity of the color represents the number of cells (from 0 to Q = 4) in that particular grid point. The red grid points represent entry-points to the vasculature, with circles intact vessels and crosses representing ruptured vessels.](Figure_1.png)
 
 <!-- ![Example results for the amount of cells in the vasculature\label{example-image-2}](example-image-2.png) -->
 
-![**Later snapshot of our simulations for cancer cell spread and ECM and MMP2 evolution in the primary and secondary metastatic site, grid 1 (left) and grid 2 (right) after approximately 12.5 days.** Parameters as default (Table ) with initial distribution centered around (1,1) and total initial size = cells. In the top row, the blue color denotes mesenchymal cells, the orange color denotes epithelial cells. The intensity of the color represents the number of cells (from 0 to Q) in that particular grid point. The red grid points represent entry-points to the vasculature, with circles intact vessels and crosses representing ruptured vessels. In the middle row, we plot the corresponding evolution of the density of the extracellular matrix at the same time points. In the last row we plot the spatial distribution of MMP2.](6 images.png)
+![**Later snapshot of our simulations for cancer cell spread and ECM and MMP2 evolution in the primary and secondary metastatic site, grid 1 (left) and grid 2 (right) after approximately 12.5 days.** Parameters as in Table 1 with initial distribution centered around (1,1) and total initial size = cells. In the top row, the blue color denotes mesenchymal cells, the orange color denotes epithelial cells. The intensity of the color represents the number of cells (from 0 to Q) in that particular grid point. The red grid points represent entry-points to the vasculature, with circles intact vessels and crosses representing ruptured vessels. In the middle row, we plot the corresponding evolution of the density of the extracellular matrix at the same time points. In the last row we plot the spatial distribution of MMP2.](6 images.png)
 
 # Outlook
 
