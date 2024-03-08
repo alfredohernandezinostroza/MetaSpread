@@ -232,8 +232,6 @@ While the model originating from our program @[franssen2019] is simpler than lat
 
 Movie S1: Example 1 of spatiotemporal evolution of tumor growth in the primary site (default parameters, diffusion-dominated movement). Movie S2: Example 2 of spatiotemporal evolution of tumor growth in the primary site (parameters with haptotaxis-dominated movement of cells).
 
-
-
 # Acknowledgements
 
 We acknowledge the contribution of Murillo Texeira.
