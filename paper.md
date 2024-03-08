@@ -136,13 +136,11 @@ $$
 \hline
 \Delta t_a & \texttt{tha} & \text{ Abiotic time step } & 1\times 10^{-3}  \\
 \hline
-\begin{array}{ c }
-\Delta x\\
-\Delta x_a
-\end{array} & \begin{array}{ c }
-\texttt{xh}\\
-\texttt{xah}
-\end{array} & \text{ Space step Abiotic space step } & 5\times 10^{-3}  \\
+\Delta x & 
+\texttt{xh}& \text{ Space step } & 5\times 10^{-3}  \\
+\hline
+\Delta x_a & 
+\texttt{xha}& \text{ Abiotic space step } & 5\times 10^{-3}  \\
 \hline
 D_{\mathrm{M}} & \texttt{dM} & \begin{array}{ c }
 \text{ Mesenchymal-like cancer cell diffusion }\\
@@ -186,6 +184,18 @@ U_P & \texttt{normal\_vessels\_primary} & \text{ Amount of normal vessels presen
 V_P & \texttt{ruptured\_vessels\_primary} & \text{ Amount of ruptured vessels present on the primary grid} & 8  \\
 \hline
 U_{2,...,n} & \texttt{secondary\_sites\_vessels} & \text{ Amount of vessels present on the secondary sites} & [10, 10]  \\
+\hline
+- & \texttt{n\_center\_points\_for\_tumor} & \text{ Amount of center-most grid points where the primary cells are going to be seeded} & 97  \\
+\hline
+- & \texttt{n\_center\_points\_for\_vessels} & \text{ Amount of center-most grid points where the vessels will not be able to spawn} & 200  \\
+\hline
+- & \texttt{gridsize} & \text{Length in gridpoints of the grid's side} & 201  \\
+\hline
+- & \texttt{grids\_number} & \text{ Amount of grids, including the primary site} & 3  \\
+\hline
+- & \texttt{mesenchymal\_proportion} & \text{ Proportion of mesenchymal-like cells to be seeded on the primary site} & 0.6  \\
+\hline
+- & \texttt{epithelial\_proportion} & \text{ Proportion of epithelial-like cells to be seeded on the primary site} & 0.4  \\
 \hline
 \end{array}
 $$
