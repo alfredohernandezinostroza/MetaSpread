@@ -204,20 +204,7 @@ U_{2,...,n} & \texttt{secondary\_sites\_vessels} & \text{ Amount of vessels pres
 \end{array}
 $$
 
-+-------------------+------------+----------+----------+
-| Header 1          | Header 2   | Header 3 | Header 4 |
-|                   |            |          |          |
-+:=================:+:==========:+:========:+:========:+
-| row 1, column 1   | column 2   | column 3 | column 4 |
-+-------------------+------------+----------+----------+
-| row 2             | cells span columns               |
-+-------------------+------------+---------------------+
-| row 3             | cells      | - body              |
-+-------------------+ span rows  | - elements          |
-| row 4             |            | - here              |
-+===================+============+=====================+
-| Footer                                               |
-+===================+============+=====================+
+
 
 # Simulation output, visualization and analysis
 
