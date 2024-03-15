@@ -148,7 +148,7 @@ When run interactively, starting from the main menu, the following possibilities
 | $$ \Delta x  $$      | `xh`                              | Space step                                                                    | $$  5\times 10^{-3}   $$   |
 | $$ \Delta x_a  $$    | `xha`                             | Abiotic space step                                                            | $$  5\times 10^{-3}   $$   |
 | $$ D_{M}  $$         | `dM`                              | Mesenchymal-like cancer<br>cell diffusion coefficient                         | $$  1\times 10^{-4}   $$   |
-| $$ D_{E} $$          | `dE`                              | Epithelial-like cancer cell diffusion coefficient                             | $$  5\times 10^{-5}   $$   |
+| $$ D_{E} $$          | `dE`                              | Epithelial-like cancer \\ cell diffusion coefficient                             | $$  5\times 10^{-5}   $$   |
 | $$ \Phi _{M}  $$     | `phiM`                            | Mesenchymal haptotactic sensitivity coefficient                               | $$  5\times 10^{-4}   $$   |
 | $$ \Phi _{E}  $$     | `phiE`                            | Epithelial haptotactic sensitivity coefficient                                | $$  5\times 10^{-4}   $$   |
 | $$ D_{m}  $$         | `dmmp`                            | MMP-2 diffusion coefficient                                                   | $$  1\times 10^{-3}   $$   |
@@ -177,9 +177,10 @@ When run interactively, starting from the main menu, the following possibilities
 
 : Baseline parameter setup and values used in the computational simulations of MetaSpread. We follow the values estimated and used by [@franssen2019]. These parameters are specified in the config file corresponding to each run of the simulation. The non-dimensional values are obtained exactly following [@franssen2019; @anderson2000mathematical], by scaling time and space with $\tau=L^2/D$ where $D$ is a reference diffusion coefficient, and $\tilde{t}=t/\tau$, $\tilde{x}=x/L,\tilde{y}=y/L$, where the original length scale is $L=0.2 cm$. []{label=”table”}
 
-|                         | Variable | Description | Value |
-| ------------------------| -------- | ----------- | ----- |
-\vspace{-3cm}                                                                                                                 |          |             |       |
+|               | Variable | Description | Value |
+| ------------- | -------- | ----------- | ----- |
+
+\vspace{-3cm}
 
 $$
 \begin{array}{ccll}
@@ -235,7 +236,6 @@ T_{\mathrm{M}} & \texttt{doublingTimeE}&\begin{array}{l}\text{Epithelial doublin
 \end{array}
 $$
 
-                                                                                   
 $$
 \begin{array}{ccll}
 \hline
@@ -307,6 +307,14 @@ $$
 # 
 
 # Simulation output, visualization and analysis
+
+| asda | assa |
+| ---- | ---- |
+|      |      |
+
+
+
+
 
 To illustrate the performance and capability of MetaSpread, we provide some figures and visualization of the simulations output. In Figure 3 we show a later snapshot of our simulations for cancer cell spread and ECM and MMP2 evolution. In Figure 4 we show temporal dynamics of summary variables, e.g. total cell counts over time up to 12.5 days, possible to be computed after simulation data post-processing. In movies S1-S2 we show how the simulation platform can be used for studying the biological effect of different perturbations in parameters. These movies illustrate animations of the spatiotemporal evolution of a tumor on the primary site in two cases: (S1) diffusion-dominated and (S2) haptotaxis-dominated cellular movement. The first leads to a regular spatiotemporal pattern of growth, more isotropic and round, the second leads to a more irregular growth over space with cellular protrusions extending in some directions.)
 
