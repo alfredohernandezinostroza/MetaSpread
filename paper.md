@@ -141,12 +141,9 @@ When run interactively, starting from the main menu, the following possibilities
 
 : Baseline parameter setup and values used in the computational simulations of MetaSpread. We follow the values estimated and used by [@franssen2019]. These parameters are specified in the config file corresponding to each run of the simulation. The non-dimensional values are obtained exactly following [@franssen2019; @anderson2000mathematical], by scaling time and space with $\tau=L^2/D$ where $D$ is a reference diffusion coefficient, and $\tilde{t}=t/\tau$, $\tilde{x}=x/L,\tilde{y}=y/L$, where the original length scale is $L=0.2 cm$. []{label=”table”}
 
-|                                 |Variable                                | Description | Value            |
+|     | Variable | Description | Value |
 | --- | -------- | ----------- | ----- |
-
-
-
-
+\vspace{-1cm}
 $$
 \begin{array}{ccll}
 \hline
@@ -200,7 +197,6 @@ T_{\mathrm{M}} & \texttt{doublingTimeE}&\begin{array}{l}\text{Epithelial doublin
 \hline \phantom{\mathcal{E}_{1,...,n}} & \phantom{\texttt{n\_center\_points\_for\_vessels}}  & &  \phantom{2.5\times 10^{-2}}  
 \end{array}
 $$
-
 $$
 \begin{array}{ccll}
 \hline
