@@ -34,11 +34,9 @@ We develop and provide MetaSpread, an open source simulation framework and inter
 
 *Keywords:* cancer, growth, metastatic spread, multi-scale dynamics, simulation
 
-\newpage
-
 # Statement of need
 
-Models of tumor growth and metastatic spread are critical for understanding the key underlying biological processes and clinical evolution in patients. Mathematical models can be of different level of detail, computational or theoretical, spatial or non-spatial in nature, and can have several mechanisms explicit or implicitly embedded in them, \pagebreak including interaction with resources, biomechanical signals, cellular competition, mutation and migration [@waclaw_spatial_2015;@franssen2021novel;@macnamara2020computational;@chaplain2020multiscale;@sadhukhan2022multi;@opasic2020cancersim]. While theoretical and analytical advances remain crucial in mathematical models of cancer, computational approaches that offer direct simulation platforms for efficient numerical exploration, focused study and hypothesis testing are also very much needed. Here, we contribute to this aspect, by offering an open source simulation framework in Python for spatio-temporal progression of tumor and metastatic spread. We build the simulation framework on a hybrid mathematical model developed by [@franssen2019], extending the previous work by [@anderson1998continuous;@anderson2000mathematical], in close agreement with empirical data [@sabeh2009protease@newton2015spatiotemporal]. This contribution aims to bridge the gap between mathematicians, oncologists, biologists, computer scientists and interested researchers working in the field of cancer metastatic progression, in need of a computational framework for interdisciplinary study and collaboration.
+Models of tumor growth and metastatic spread are critical for understanding the key underlying biological processes and clinical evolution in patients. Mathematical models can be of different level of detail, computational or theoretical, spatial or non-spatial in nature, and can have several mechanisms explicit or implicitly embedded in them, including interaction with resources, biomechanical signals, cellular competition, mutation and migration [@waclaw_spatial_2015;@franssen2021novel;@macnamara2020computational;@chaplain2020multiscale;@sadhukhan2022multi;@opasic2020cancersim]. While theoretical and analytical advances remain crucial in mathematical models of cancer, computational approaches that offer direct simulation platforms for efficient numerical exploration, focused study and hypothesis testing are also very much needed. Here, we contribute to this aspect, by offering an open source simulation framework in Python for spatio-temporal progression of tumor and metastatic spread. We build the simulation framework on a hybrid mathematical model developed by [@franssen2019], extending the previous work by [@anderson1998continuous;@anderson2000mathematical], in close agreement with empirical data [@sabeh2009protease@newton2015spatiotemporal]. This contribution aims to bridge the gap between mathematicians, oncologists, biologists, computer scientists and interested researchers working in the field of cancer metastatic progression, in need of a computational framework for interdisciplinary study and collaboration.
 
 # Cancer growth and spread model
 
@@ -143,7 +141,41 @@ When run interactively, starting from the main menu, the following possibilities
 
 : Comparison of programming languages used in the publishing tool. []{label=”proglangs”}
 
-| Language | Typing          | Garbage Collected | Evaluation | Created |
+|                       | \textbf{Variable name}                   | \textbf{ Description }                                                        | \textbf{Value}    |
+| --------------------- | ---------------------------------------- | ----------------------------------------------------------------------------- | ----------------- |
+| \Delta t              | \texttt{th}                              | Time step                                                                     | 1\times 10^{-3}   |
+| \Delta t_a            | \texttt{tha}                             | Abiotic time step                                                             | 1\times 10^{-3}   |
+| \Delta x              | \texttt{xh}                              | Space step                                                                    | 5\times 10^{-3}   |
+| \Delta x_a            | \texttt{xha}                             | Abiotic space step                                                            | 5\times 10^{-3}   |
+| D_{\mathrm{M}}        | \texttt{dM}                              | Mesenchymal-like cancer cell diffusion coefficient                            | 1\times 10^{-4}   |
+| D_{\mathrm{E}}        | \texttt{dE}                              | Epithelial-like cancer cell diffusion coefficient                             | 5\times 10^{-5}   |
+| \Phi _{M}             | \texttt{phiM}                            | Mesenchymal haptotactic sensitivity coefficient                               | 5\times 10^{-4}   |
+| \Phi _{\mathrm{E}}    | \texttt{phiE}                            | Epithelial haptotactic sensitivity coefficient                                | 5\times 10^{-4}   |
+| D_{m}                 | \texttt{dmmp}                            | MMP-2 diffusion coefficient                                                   | 1\times 10^{-3}   |
+| \Theta                | \texttt{theta}                           | MMP-2 production rate                                                         | 0.195             |
+| \Lambda               | \texttt{Lambda}                          | MMP-2 decay rate                                                              | 0.1               |
+| \Gamma _{1}           | \texttt{gamma1}                          | ECM degradation rate by MT1-MMP                                               | 1                 |
+| \Gamma _{2}           | \texttt{gamma2}                          | ECM degradation rate by MMP-2                                                 | 1                 |
+| T_{V}                 | \texttt{vasculature\_time}               | Steps CTCs spend in the vasculature                                           | 180               |
+| T_{\mathrm{M}}        | \texttt{doublingTimeE}                   | Epithelial doubling time                                                      | 3                 |
+| T_{\mathrm{E}}        | \texttt{doublingTimeM}                   | Mesenchymal doubling time                                                     | 2                 |
+| \mathcal{P}_{s}       | \texttt{single\_cell\_survival}          | Single CTC survival probability                                               | 5\times 10^{-4}   |
+| \mathcal{P}_{C}       | \texttt{cluster\_survival}               | CTC cluster survival probability                                              | 2.5\times 10^{-2} |
+| \mathcal{E}_{1,...,n} | \texttt{E1}                              | Extravasation probabilities                                                   | [0.75, 0.25]      |
+| \mathcal{P}_{d}       | \texttt{disaggregation\_prob}            | Individual cancer cell dissagregation probability                             | 0.5               |
+| Q                     | \texttt{carrying\_capacity}              | Maximum amount of cells per grid point                                        | 4                 |
+| U_P                   | \texttt{normal\_vessels\_primary}        | Nr. of normal vessels present on the primary grid                             | 2                 |
+| V_P                   | \texttt{ruptured\_vessels\_primary}      | Nr. of ruptured vessels present on the primary grid                           | 8                 |
+| U_{2,...,n}           | \texttt{secondary\_sites\_vessels}       | Nr. of vessels present on the secondary sites                                 | [10, 10]          |
+| -                     | \texttt{n\_center\_points\_for\_tumor}   | Nr. of center-most grid points where the primary cells are going to be seeded | 97                |
+| -                     | \texttt{n\_center\_points\_for\_vessels} | Nr. of center-most grid points where the vessels will not be able to spawn    | 200               |
+| -                     | \texttt{gridsize}                        | Length in gridpoints of the grid's side                                       | 201               |
+| -                     | \texttt{grids\_number}                   | Nr. of grids, including the primary site                                      | 3                 |
+| -                     | \texttt{mesenchymal\_proportion}         | Initial proportion of M cells in grid 1                                       | 0.6               |
+| -                     | \texttt{epithelial\_proportion}          | Initial proportion of E cells in grid 1                                       | 0.4               |
+| -                     | \texttt{number\_of\_initial\_cells}      | Initial nr. of total cells                                                    | 388               |
+
+| Language | Variable name   | Garbage Collected | Evaluation | Created |
 | -------- |:---------------:|:-----------------:| ---------- | ------- |
 | Haskell  | static, strong  | yes               | non-strict | 1990    |
 | Lua      | dynamic, strong | yes               | strict     | 1993    |
