@@ -175,7 +175,7 @@ When run interactively, starting from the main menu, the following possibilities
 | $$ -  $$             | `epithelial\_proportion`          | Initial proportion of E cells in grid 1                                       | $$  0.4   $$               |
 | $$ -  $$             | `number\_of\_initial\_cells`      | Initial nr. of total cells                                                    | $$  388   $$               |
 
-: Baseline parameter setup and values used in the computational simulations of MetaSpread. We follow the values estimated and used by [@franssen2019]. These parameters are specified in the config file corresponding to each run of the simulation. The non-dimensional values are obtained exactly following [@franssen2019; @anderson2000mathematical], by scaling time and space with \tau=L^2/D where D is a reference diffusion coefficient, and \tilde{t}=t/\tau, \tilde{x}=x/L,\tilde{y}=y/L, where the original length scale is L=0.2 cm. []{label=”table1”}
+Table: Baseline parameter setup and values used in the computational simulations of MetaSpread. We follow the values estimated and used by [@franssen2019]. These parameters are specified in the config file corresponding to each run of the simulation. The non-dimensional values are obtained exactly following [@franssen2019; @anderson2000mathematical], by scaling time and space with $\tau=L^2/D$ where D is a reference diffusion coefficient, and $\tilde{t}=t/\tau, \tilde{x}=x/L,\tilde{y}=y/L$, where the original length scale is$ L=0.2 cm$. []{label=”table1”}
 
 $$
 \begin{array}{|c|c|l|c|}
