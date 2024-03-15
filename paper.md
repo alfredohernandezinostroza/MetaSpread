@@ -30,17 +30,17 @@ bibliography: paper.bib
 
 # Summary
 
-We develop and provide MetaSpread, an open source simulation framework and interactive program in Python for tumor growth and metastatic spread, , based on a mathematical model by [@franssen2019]. This paper proposed a hybrid modeling and computational framework where cellular growth and metastatic spread are described and simulated in a spatially explicit manner, accounting for stochastic individual cell dynamics and deterministic dynamics of abiotic factors. This model incorporates several key processes such as the growth and movement of epithelial and mesenchymal cells, the role of the extracellular matrix, diffusion, haptotaxis, circulation and survival of cancer cells in the vasculature, and seeding and growth in secondary sites. In the software that we develop, these growth and metastatic dynamics are programmed using MESA, [@python-mesa-2020] a Python Package for Agent-based modeling.
+We develop and provide MetaSpread, an open source simulation framework and interactive program in Python for tumor growth and metastatic spread, based on a mathematical model by [@franssen2019]. This paper proposed a hybrid modeling and computational framework where cellular growth and metastatic spread are described and simulated in a spatially explicit manner, accounting for stochastic individual cell dynamics and deterministic dynamics of abiotic factors. This model incorporates several key processes such as the growth and movement of epithelial and mesenchymal cells, the role of the extracellular matrix, diffusion, haptotaxis, circulation and survival of cancer cells in the vasculature, and seeding and growth in secondary sites. In the software that we develop, these growth and metastatic dynamics are programmed using MESA, [@python-mesa-2020] a Python Package for Agent-based modeling.
 
 *Keywords:* cancer, growth, metastatic spread, multi-scale dynamics, simulation
 
 # Statement of need
 
-Models of tumor growth and metastatic spread are key for understanding the key underlying biological processes and clinical evolution in patients. Mathematical models can be of different level of detail, computational or theoretical, spatial or non-spatial in nature, and can have several mechanisms explicit or implicitly embedded in them, including interaction with resources, biomechanical signals, cellular competition, mutation and migration [@waclaw_spatial_2015;@franssen2021novel;@macnamara2020computational;@chaplain2020multiscale;@sadhukhan2022multi;@opasic2020cancersim]. While theoretical and analytical advances remain crucial in mathematical models of cancer, computational approaches that offer direct simulation platforms for efficient numerical exploration, focused study and hypothesis testing are also very much needed. Here, we contribute to this aspect, by offering an open source simulation framework in Python for spatio-temporal progression of tumor and metastatic spread. We build the simulation framework on a hybrid mathematical model developed by [@franssen2019], extending the previous work by [@anderson1998continuous;@anderson2000mathematical], in close agreement with empirical data [@sabeh2009protease@newton2015spatiotemporal]. This contribution aims to bridge the gap between mathematicians, oncologists, biologists, computer scientists and interested researchers working in the field of cancer metastatic progression, in need of a computational framework for interdisciplinary study and collaboration.
+Models of tumor growth and metastatic spread are critical for understanding the key underlying biological processes and clinical evolution in patients. Mathematical models can be of different level of detail, computational or theoretical, spatial or non-spatial in nature, and can have several mechanisms explicit or implicitly embedded in them, including interaction with resources, biomechanical signals, cellular competition, mutation and migration [@waclaw_spatial_2015;@franssen2021novel;@macnamara2020computational;@chaplain2020multiscale;@sadhukhan2022multi;@opasic2020cancersim]. While theoretical and analytical advances remain crucial in mathematical models of cancer, computational approaches that offer direct simulation platforms for efficient numerical exploration, focused study and hypothesis testing are also very much needed. Here, we contribute to this aspect, by offering an open source simulation framework in Python for spatio-temporal progression of tumor and metastatic spread. We build the simulation framework on a hybrid mathematical model developed by [@franssen2019], extending the previous work by [@anderson1998continuous;@anderson2000mathematical], in close agreement with empirical data [@sabeh2009protease@newton2015spatiotemporal]. This contribution aims to bridge the gap between mathematicians, oncologists, biologists, computer scientists and interested researchers working in the field of cancer metastatic progression, in need of a computational framework for interdisciplinary study and collaboration.
 
 # Cancer growth and spread model
 
-A 2-dimensional multigrid hybrid spatial model of cancer dynamics is developed in Python. Here we combine the stochastic individual based dynamics of singles cells with deterministic dynamics of the abiotic factors. The algorithm for dynamic progression at each time step is depicted in Figure . In the tumor site we consider two different cancer cell phenotypes: epithelial (epithelial-like) and mesenchymal (mesenchymal-like) cells. The epithelial-like cancer cells reproduce at a higher rate, but diffuse more slowly than mesenchymal cells, which reproduce at a lower rate but diffuse more rapidly. Furthermore, epithelial cells cannot break through the vasculature wall alone, as they require the presence of mesenchymal cells to be able to intravasate. The cellular growth and movement in space is modeled considering 2 partial differential equations, where random (diffusion) and non-random (haptotaxis) movement are implemented. The model includes two additional equations: one for the spatio-temporal dynamics of matrix metalloproteinase 2 (MMP-2), a chemical that favors the spread of cancer cells, and another for the degradation of the extracellular matrix (ECM), which also favors the haptotactic movement of the cancer cells. 
+A 2-dimensional multigrid hybrid spatial model of cancer dynamics is developed in Python (see Figure 1 for a snapshot illustration). Here we combine the stochastic individual based dynamics of single cells with deterministic dynamics of the abiotic factors. The algorithm for dynamic progression at each time step is depicted in Figure 2. In the tumor site we consider two different cancer cell phenotypes: epithelial (epithelial-like) and mesenchymal (mesenchymal-like) cells. The epithelial-like cancer cells reproduce at a higher rate, but diffuse more slowly than mesenchymal cells, which reproduce at a lower rate but diffuse more rapidly. Furthermore, epithelial cells cannot break through the vasculature wall alone, as they require the presence of mesenchymal cells to be able to intravasate. The cellular growth and movement in space is modeled considering 2 partial differential equations, where random (diffusion) and non-random (haptotaxis) movement are implemented. The model includes two additional equations: one for the spatio-temporal dynamics of matrix metalloproteinase 2 (MMP-2), a chemical that favors the spread of cancer cells, and another for the degradation of the extracellular matrix (ECM), which also favors the haptotactic movement of the cancer cells. 
 The dimensionless model, as described by [@franssen2019] in Appendix A of their paper, corresponds to 4 PDEs, where the key variables reflect local densities of epithelial cells ($c_E$) and mesenchymal cells ($c_M$), and concentrations of MMP2 ($m$) and extracellular matrix ($w$):
 
 $$
@@ -61,7 +61,7 @@ c_{Mi,j}^{n+1} = & \mathcal{P}_{0} c^{n}_{Mi-1,j} +\mathcal{P}_{1} c^{n}_{Mi+1,j
 \end{aligned}
 $$
 
-Where $\mathcal{P}_0$ to $\mathcal{P}_4$:
+Where $n$ refers to time point, $(i,j)$ refers to the spatial grid point $(i,j)$, and  $\mathcal{P}_0$ to $\mathcal{P}_4$:
 
 $$
 \begin{aligned}
@@ -73,7 +73,7 @@ $$
 \end{aligned}
 $$
 
-represent the probabilities for a cell to move up, down, left, right, or stay in place, and where $k=E,M$ can refer to an epithelial-like or mesenchymal-like cell. Each cell on every grid point $(x_i,y_j)$ is modeled as an individual agent, which obeys probability rules for growth and movement. There is a maximal carrying capacity for each grid point given by $Q,$ (assumed equal to 4 in [@franssen2019]), to represent competition for space. There exist a doubling time $T_E$ and $T_M$ for epithelial and mesenchymal cells at which all the cells present in all grids will reproduce, duplicating in place, but never exceeding $Q$.
+represent the probabilities for a cell to move up, down, left, right, or stay in place, and where $k=E,M$ can refer to an epithelial-like or mesenchymal-like cell. Each cell on every grid point at location $(x_i,y_j)$ is modeled as an individual agent, which obeys probability rules for growth and movement. There is a maximal carrying capacity for each grid point given by $Q,$ (assumed equal to 4 in [@franssen2019]), to represent competition for space. There exist a doubling time $T_E$ and $T_M$ for epithelial and mesenchymal cells at which all the cells present in all grids will reproduce, duplicating in place, but never exceeding $Q$.
 
 Only the primary site is seeded with an initial number and distribution of cells. In order for the cells to migrate to another site, they must travel through the vasculature, which they do if they intravasate by one of the several randomly selected points in the grid that represent entrances to the vasculature system. The extravasation to one of the metastatic sites only occurs if they survive, a process that is modeled with net probabilistic rules considering time spent in the vasculature, cluster disaggregation, cell type, and potential biases to different destinations.
 
@@ -87,7 +87,7 @@ w_{i,j}^{n+1} = & w_{i,j}^{n}\left[ 1-\Delta t_{a}\left( \Gamma _{1} c{_{M}^{n}}
 \end{aligned}
 $$
 
-where $i,j$ reflect the grid point ($i,j$) and $n$ the time-point. In this discretization two different time and spatial steps are used for the cell population (E and M cells) and the abiotic factors (ECM and MMP-2), namely $\Delta t$ and $\Delta x$, $\Delta t_a$ and $\Delta x_a$ respectively.
+where $i,j$ reflect the grid point ($i,j$) and $n$ the time-point. In this discretization two different time and spatial steps are used for the cell population (E and M cells) and the abiotic factors (ECM and MMP-2), namely $\Delta t$ and $\Delta x = \Delta y$, $\Delta t_a$ and $\Delta x_a = \Delta y_a$ respectively.
 
 ![**Early snapshot of our simulations for cancer cell spread in the primary tumour (grid 1) after approximately 5 days.** Parameters as in Table 1 with initial distribution centered around (1,1) and total initial size = 388 cells. The blue color denotes mesenchymal cells, the orange color denotes epithelial cells. The intensity of the color represents the number of cells (from 0 to Q = 4) in that particular grid point. The red grid points represent entry-points to the vasculature, with circles intact vessels and crosses representing ruptured vessels.](Figure_1.png){width=70%}
 
@@ -99,7 +99,7 @@ The biological parameters of the model and the simulation values are summarized 
 
 Cell proliferation is implemented in place by generating a new cell when the doubling time is completed, for each cell in each grid point. But if the carrying capacity gets surpassed, then there is no generation of a new cell. The movement of the cells is implemented through the probabilities in Equations, which are computed at each time point and for each cell and contain the contribution of the random diffusion process and non-random haptotactic movement. If a cell lands in a grid point that contains a vasculature entry point, it is typically removed from the main grid and added to the vasculature. But there are details regarding the type of cells (E or M) and vasculature entry points (normal or ruptured) further described by [@franssen2019].
 
-The vasculature is the structure connecting the primary and secondary sites, and it represents a separate compartment in the simulation framework. Single cells or clusters of cells can enter the vasculature either through a ruptured or normal vessel, and they can remain there for a fixed number of time $T_V$, representing the average time a cancer cell spends in the blood system. Each cell belonging to a cluster in the vasculature can disaggregate with some probability. At the end of the residence time in the vasculature, each cell's survival is determined randomly with probabilities that are different for single and cluster cells, and the surviving cells are randomly distributed on the secondary sites. To implement this vasculature dynamics in the algorithm, the vasculature is represented as a dictionary where the keys refer to the time-step in which there are clusters ready to extravasate. Intravasation at time $t$ corresponds to saving the cells into the dictionary with the associated exit time $t+T_V$.  It is important to note that this parameter on the configuration file must be in time steps units.
+The vasculature is the structure connecting the primary and secondary sites, and it represents a separate compartment in the simulation framework. Single cells or clusters of cells, denominated as circulating tumor cells (CTCs), can enter the vasculature either through a ruptured or normal vessel, and they can remain there for a fixed number of time $T_V$, representing the average time a cancer cell spends in the blood system. Each cell belonging to a cluster in the vasculature can disaggregate with some probability. At the end of the residence time in the vasculature, each cell's survival is determined randomly with probabilities that are different for single and cluster cells, and the surviving cells are randomly distributed on the secondary sites. To implement this vasculature dynamics in the algorithm, the vasculature is represented as a dictionary where the keys refer to the time-step in which there are clusters ready to extravasate. Intravasation at time $t$ corresponds to saving the cells into the dictionary with the associated exit time $t+T_V$.  It is important to note that this parameter on the configuration file must be in time steps units.
 
 Extravasation rules follow the setup in the original paper [@franssen2019], ensuring arriving cells do not violate the carrying capacity. Metastatic growth after extravasation follows the same rules as in the original grid. 
 
@@ -139,77 +139,122 @@ When run interactively, starting from the main menu, the following possibilities
 
 # Simulation parameters
 
+: Comparison of programming languages used in the publishing tool. []{label=”proglangs”}
+
+| Language | Typing          | Garbage Collected | Evaluation | Created |
+| -------- |:---------------:|:-----------------:| ---------- | ------- |
+| Haskell  | static, strong  | yes               | non-strict | 1990    |
+| Lua      | dynamic, strong | yes               | strict     | 1993    |
+| C        | static, weak    | no                | strict     | 1972    |
+
 $$
-\begin{array}{|c|c|c|c|}
+\begin{array}{|c|c|l|c|}
 \hline
- & \text{Variable name} & \text{ Description } & \text{Value}  \\
+ & \textbf{Variable name} & \textbf{ Description } & \textbf{Value}  \\
 \hline
-\Delta t & \texttt{th} & \text{ Time step } & 1\times 10^{-3}  \\
+\Delta t & \texttt{th} & \begin{array}{l} \text{Time step } \end{array} & 1\times 10^{-3}  \\
 \hline
-\Delta t_a & \texttt{tha} & \text{ Abiotic time step } & 1\times 10^{-3}  \\
+\Delta t_a & \texttt{tha} & \begin{array}{l} \text{Abiotic time step }\end{array} & 1\times 10^{-3}  \\
 \hline
 \Delta x & 
-\texttt{xh}& \text{ Space step } & 5\times 10^{-3}  \\
+\texttt{xh}& \begin{array}{l} \text{Space step }\end{array} & 5\times 10^{-3}  \\
 \hline
 \Delta x_a & 
-\texttt{xha}& \text{ Abiotic space step } & 5\times 10^{-3}  \\
+\texttt{xha}& \begin{array}{l} \text{Abiotic space step }\end{array} & 5\times 10^{-3}  \\
 \hline
-D_{\mathrm{M}} & \texttt{dM} & \begin{array}{ c }
-\text{ Mesenchymal-like cancer cell diffusion }\\
-\text{ coefficient }
+D_{\mathrm{M}} & \texttt{dM} & \begin{array}{l}
+\text{Mesenchymal-like cancer}\\
+\text{cell diffusion coefficient }
 \end{array} & 1\times 10^{-4}  \\
 \hline
-D_{\mathrm{E}}& \texttt{dE} & \text{ Epithelial-like cancer cell diffusion coefficient } & 5\times 10^{-5}  \\
+D_{\mathrm{E}}& \texttt{dE} &\begin{array}{l}
+\text{Epithelial-like cancer}\\
+\text{cell diffusion coefficient
+}\end{array} & 5\times 10^{-5}  \\
 \hline
-\Phi _{M} & \texttt{phiM} & \text{ Mesenchymal hap to tactic sensitivity coefficient } & 5\times 10^{-4}  \\
+\Phi _{M} & \texttt{phiM} &\begin{array}{l}\text{Mesenchymal haptotactic}\\
+\text{sensitivity coefficient}\end{array}& 5\times 10^{-4}  \\
 \hline
-\Phi _{\mathrm{E}} & \texttt{phiE} & \text{ Epithelial hapto tactic sensitivity coefficient } & 5\times 10^{-4}  \\
+\Phi _{\mathrm{E}} & \texttt{phiE} &\begin{array}{l}
+\text{Epithelial haptotactic}\\
+\text{sensitivity coefficient }\end{array}& 5\times 10^{-4}  \\
 \hline
-D_{m} & \texttt{dmmp} & \text{ MMP-2 diffusion coefficient } & 1\times 10^{-3}  \\
+D_{m} & \texttt{dmmp} &\begin{array}{l}\text{MMP-2 diffusion coefficient }\end{array}& 1\times 10^{-3}  \\
 \hline
-\Theta & \texttt{theta} & \text{ MMP-2 production rate } & 0.195  \\
+\Theta & \texttt{theta} &\begin{array}{l}\text{MMP-2 production rate }\end{array}& 0.195  \\
 \hline
-\Lambda & \texttt{Lambda} & \text{ MMP-2 decay rate } & 0.1  \\
+\Lambda & \texttt{Lambda} &\begin{array}{l}\text{MMP-2 decay rate }\end{array}& 0.1  \\
 \hline
-\Gamma _{1} & \texttt{gamma1} & \text{ ECM degradation rate by MT1-MMP } & 1  \\
+\Gamma _{1} & \texttt{gamma1} &\begin{array}{l}\text{ECM degradation rate}\\\text{by MT1-MMP }\end{array}& 1  \\
 \hline
-\Gamma _{2}& \texttt{gamma2} & \text{ ECM degradation rate by MMP-2 } & 1  \\
+\Gamma _{2}& \texttt{gamma2} &\begin{array}{l}\text{ECM degradation rate}\\\text{by MMP-2 }\end{array}& 1  \\
 \hline
-T_{V} & \texttt{vasculature\_time} & \text{ Steps CTCs spend in the vasculature } & 180  \\
+T_{V} & \texttt{vasculature\_time} &\begin{array}{l}
+\text{Steps CTCs spend}\\
+\text{in the vasculature }\end{array}& 180  \\
 \hline
-T_{\mathrm{M}} & \texttt{doublingTimeE}& \text{ Epithelial doubling time } & 3  \\
+T_{\mathrm{M}} & \texttt{doublingTimeE}&\begin{array}{l}\text{Epithelial doubling time }\end{array}& 3  \\
 \hline
-T_{\mathrm{E}} & \texttt{doublingTimeM} & \text{ Mesenchymal doubling time } & 2  \\
+T_{\mathrm{E}} & \texttt{doublingTimeM} &\begin{array}{l}\text{Mesenchymal doubling time }\end{array}& 2  \\
 \hline
-\mathcal{P}_{s} & \texttt{single\_cell\_survival} & \text{ Single CTC survival probability } & 5\times 10^{-4}  \\
+\mathcal{P}_{s} & \texttt{single\_cell\_survival} &\begin{array}{l}
+\text{Single CTC}\\
+\text{survival probability }\end{array}& 5\times 10^{-4}  \\
 \hline
-\mathcal{P}_{C} & \texttt{cluster\_survival} & \text{ CTC cluster survival probability } & 2.5\times 10^{-2}  \\
+\mathcal{P}_{C} & \texttt{cluster\_survival} &\begin{array}{l}
+\text{CTC cluster}\\
+\text{survival probability }\end{array}& 2.5\times 10^{-2}  \\
 \hline
-\mathcal{E}_{1,...,n} & \texttt{E1} & \text{ Extravasation probabilities} & \sim [0.54615461, 0.2553, 0.1986]  \\
+\mathcal{E}_{1,...,n} & \texttt{E1} &\begin{array}{l}
+\text{Extravasation probabilities}\end{array}& [0.75, 0.25]  \\
 \hline
-\mathcal{P}_{d} & \texttt{disaggregation\_prob} & \text{ Individual cancer cell dissagregation probability} & 0.5  \\
+\mathcal{P}_{d} & \texttt{disaggregation\_prob} &\begin{array}{l}
+\text{Individual cancer cell}\\
+\text{dissagregation probability}\end{array}& 0.5  \\
 \hline
-Q & \texttt{carrying\_capacity} & \text{ Maximum amount of cells per grid point} & 4  \\
+Q & \texttt{carrying\_capacity} &\begin{array}{l}
+\text{Maximum amount of cells}\\
+\text{per grid point}\end{array}& 4  \\
 \hline
-U_P & \texttt{normal\_vessels\_primary} & \text{ Amount of normal vessels present on the primary grid} & 2  \\
+U_P & \texttt{normal\_vessels\_primary} &\begin{array}{l}
+\text{Nr. of normal vessels present}\\
+\text{on the primary grid}\end{array}& 2  \\
 \hline
-V_P & \texttt{ruptured\_vessels\_primary} & \text{ Amount of ruptured vessels present on the primary grid} & 8  \\
+V_P & \texttt{ruptured\_vessels\_primary} &\begin{array}{l}
+\text{Nr. of ruptured vessels}\\
+\text{present on the primary grid}\end{array}& 8  \\
 \hline
-U_{2,...,n} & \texttt{secondary\_sites\_vessels} & \text{ Amount of vessels present on the secondary sites} & [10, 10]  \\
+U_{2,...,n} & \texttt{secondary\_sites\_vessels} &\begin{array}{l}
+\text{Nr. of vessels present on}\\
+\text{the secondary sites}\end{array}& [10, 10]  \\
 \hline
-- & \texttt{n\_center\_points\_for\_tumor} & \text{ Amount of center-most grid points where the primary cells are going to be seeded} & 97  \\
+- & \texttt{n\_center\_points\_for\_tumor} &\begin{array}{l}
+\text{Nr. of center-most grid}\\
+\text{points where the primary}\\
+\text{cells are going to be seeded}\end{array}& 97  \\
 \hline
-- & \texttt{n\_center\_points\_for\_vessels} & \text{ Amount of center-most grid points where the vessels will not be able to spawn} & 200  \\
+- & \texttt{n\_center\_points\_for\_vessels} &\begin{array}{l}
+\text{Nr. of center-most grid}\\
+\text{points where the vessels}\\
+\text{will not be able to spawn}\end{array}& 200  \\
 \hline
-- & \texttt{gridsize} & \text{Length in gridpoints of the grid's side} & 201  \\
+- & \texttt{gridsize} &\begin{array}{l}
+\text{Length in gridpoints}\\
+\text{of the grid's side}\end{array}& 201  \\
 \hline
-- & \texttt{grids\_number} & \text{ Amount of grids, including the primary site} & 3  \\
+- & \texttt{grids\_number} &\begin{array}{l}
+\text{Nr. of grids, including}\\
+\text{the primary site}\end{array}& 3  \\
 \hline
-- & \texttt{mesenchymal\_proportion} & \text{ Proportion of mesenchymal-like cells to be seeded on the primary site} & 0.6  \\
+- & \texttt{mesenchymal\_proportion} &\begin{array}{l}
+\text{Initial proportion of M}\\
+\text{cells in grid 1}\end{array}& 0.6  \\
 \hline
-- & \texttt{epithelial\_proportion} & \text{ Proportion of epithelial-like cells to be seeded on the primary site} & 0.4  \\
+- & \texttt{epithelial\_proportion} &\begin{array}{l}
+\text{Initial proportion of E}\\
+\text{cells in grid 1}\end{array}& 0.4  \\
 \hline
-- & \texttt{number\_of\_initial\_cells} & \text{Number of cells to be seeded at the primary site} & 388  \\
+- & \texttt{number\_of\_initial\_cells} &\begin{array}{l}\text{Initial nr. of total cells}\end{array}& 388  \\
 \hline
 \end{array}
 $$
