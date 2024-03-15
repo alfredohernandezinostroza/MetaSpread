@@ -149,8 +149,8 @@ When run interactively, starting from the main menu, the following possibilities
 | $$ \Delta x_a  $$    | `xha`                             | Abiotic space step                                                            | $$  5\times 10^{-3}   $$   |
 | $$ D_{M}  $$         | `dM`                              | Mesenchymal-like cancer<br>cell diffusion coefficient                         | $$  1\times 10^{-4}   $$   |
 | $$ D_{E} $$          | `dE`                              | Epithelial-like cancer \\ cell diffusion coefficient                             | $$  5\times 10^{-5}   $$   |
-| $$ \Phi _{M}  $$     | `phiM`                            | Mesenchymal haptotactic sensitivity coefficient                               | $$  5\times 10^{-4}   $$   |
-| $$ \Phi _{E}  $$     | `phiE`                            | Epithelial haptotactic sensitivity coefficient                                | $$  5\times 10^{-4}   $$   |
+| $$ \Phi _{M}  $$     | `phiM`                            | Mesenchymal haptotactic //sensitivity coefficient                               | $$  5\times 10^{-4}   $$   |
+| $$ \Phi _{E}  $$     | `phiE`                            | Epithelial haptotactic <br/>sensitivity coefficient                                | $$  5\times 10^{-4}   $$   |
 | $$ D_{m}  $$         | `dmmp`                            | MMP-2 diffusion coefficient                                                   | $$  1\times 10^{-3}   $$   |
 | $$ \Theta  $$        | `theta`                           | MMP-2 production rate                                                         | $$  0.195   $$             |
 | $$ \Lambda  $$       | `Lambda`                          | MMP-2 decay rate                                                              | $$  0.1   $$               |
@@ -180,7 +180,7 @@ When run interactively, starting from the main menu, the following possibilities
 |               | Variable | Description | Value |
 | ------------- | -------- | ----------- | ----- |
 
-\vspace{-3cm}
+\vspace{-2cm}
 
 $$
 \begin{array}{ccll}
@@ -310,7 +310,6 @@ $$
 
 | asda | assa |
 | ---- | ---- |
-|      |      |
 
 
 
