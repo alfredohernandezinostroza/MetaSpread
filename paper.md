@@ -142,7 +142,7 @@ When run interactively, starting from the main menu, the following possibilities
 : Baseline parameter setup and values used in the computational simulations of MetaSpread. We follow the values estimated and used by [@franssen2019]. These parameters are specified in the config file corresponding to each run of the simulation. The non-dimensional values are obtained exactly following [@franssen2019; @anderson2000mathematical], by scaling time and space with $\tau=L^2/D$ where $D$ is a reference diffusion coefficient, and $\tilde{t}=t/\tau$, $\tilde{x}=x/L,\tilde{y}=y/L$, where the original length scale is $L=0.2 cm$. []{label=”table”}
 
 |                      | **Variable name**                 | **Description**                                                               | **Value**                  |
-|-------:|:----------------------------------- |:-----------------------------| ------------- |
+|-------:|:----------------------------------- |:-----------------------------|:-------------:|
 | $$ \Delta t  $$      | `th`                              | Time step                                                                     | $$  1\times 10^{-3}   $$   |
 | $$ \Delta t_a  $$    | `tha`                             | Abiotic time step                                                             | $$  1\times 10^{-3}   $$   |
 | $$ \Delta x  $$      | `xh`                              | Space step                                                                    | $$  5\times 10^{-3}   $$   |
@@ -161,7 +161,7 @@ When run interactively, starting from the main menu, the following possibilities
 | $$ T_{E}  $$         | `doublingTimeM`                   | Mesenchymal doubling time                                                     | $$  2   $$                 |
 | $$ \mathcal{P}_{s}  $$       | `single\_cell\_survival`          | Single CTC survival probability                                               | $$  5\times 10^{-4}   $$   |
 | $$ \mathcal{P}_{C}  $$       | `cluster\_survival`               | CTC cluster survival probability                                              | $$  2.5\times 10^{-2}   $$ |
-| $$ \mathcal{E}_{1,...,n}  $$ | `E1`                              | Extravasation probabilities                                                   | $$  [0.75, 0.25]  $$       |
+| $$ \mathcal{E}_{1,...,n}  $$ | `extravasation_probs`                              | Extravasation probabilities                                                   | $$  [0.75, 0.25]  $$       |
 | $$ \mathcal{P}_{d}  $$       | `disaggregation\_prob`            | Individual cancer cell dissagregation probability                             | $$  0.5   $$               |
 | $$ Q  $$             | `carrying\_capacity`              | Maximum amount of cells per grid point                                        | $$  4   $$                 |
 | $$ U_P  $$           | `normal\_vessels\_primary`        | Nr. of normal vessels present on the primary grid                             | $$  2   $$                 |
@@ -174,135 +174,6 @@ When run interactively, starting from the main menu, the following possibilities
 | $$ -  $$             | `mesenchymal\_proportion`         | Initial proportion of M cells in grid 1                                       | $$  0.6   $$               |
 | $$ -  $$             | `epithelial\_proportion`          | Initial proportion of E cells in grid 1                                       | $$  0.4   $$               |
 | $$ -  $$             | `number\_of\_initial\_cells`      | Initial nr. of total cells                                                    | $$  388   $$               |
-
-: Baseline parameter setup and values used in the computational simulations of MetaSpread. We follow the values estimated and used by [@franssen2019]. These parameters are specified in the config file corresponding to each run of the simulation. The non-dimensional values are obtained exactly following [@franssen2019; @anderson2000mathematical], by scaling time and space with $\tau=L^2/D$ where $D$ is a reference diffusion coefficient, and $\tilde{t}=t/\tau$, $\tilde{x}=x/L,\tilde{y}=y/L$, where the original length scale is $L=0.2 cm$. []{label=”table”}
-
-|     | Variable | Description | Value |
-| --- | -------- | ----------- | ----- |
-
-\vspace{-2cm}
-
-$$
-\begin{array}{ccll}
-\hline
- & \textbf{Variable name} & \textbf{ Description } & \textbf{Value}  \\
-\hline
-\Delta t & \texttt{th} & \begin{array}{l} \text{Time step } \end{array} & 1\times 10^{-3}  \\
-\hline
-\Delta t_a & \texttt{tha} & \begin{array}{l} \text{Abiotic time step }\end{array} & 1\times 10^{-3}  \\
-\hline
-\Delta x & 
-\texttt{xh}& \begin{array}{l} \text{Space step }\end{array} & 5\times 10^{-3}  \\
-\hline
-\Delta x_a & 
-\texttt{xha}& \begin{array}{l} \text{Abiotic space step }\end{array} & 5\times 10^{-3}  \\
-\hline
-D_{\mathrm{M}} & \texttt{dM} & \begin{array}{l}
-\text{Mesenchymal-like cancer}\\
-\text{cell diffusion coefficient }
-\end{array} & 1\times 10^{-4}  \\
-\hline
-D_{\mathrm{E}}& \texttt{dE} &\begin{array}{l}
-\text{Epithelial-like cancer}\\
-\text{cell diffusion coefficient
-}\end{array} & 5\times 10^{-5}  \\
-\hline
-\Phi _{M} & \texttt{phiM} &\begin{array}{l}\text{Mesenchymal haptotactic}\\
-\text{sensitivity coefficient}\end{array}& 5\times 10^{-4}  \\
-\hline
-\Phi _{\mathrm{E}} & \texttt{phiE} &\begin{array}{l}
-\text{Epithelial haptotactic}\\
-\text{sensitivity coefficient }\end{array}& 5\times 10^{-4}  \\
-\hline
-D_{m} & \texttt{dmmp} &\begin{array}{l}\text{MMP-2 diffusion coefficient }\end{array}& 1\times 10^{-3}  \\
-\hline
-\Theta & \texttt{theta} &\begin{array}{l}\text{MMP-2 production rate }\end{array}& 0.195  \\
-\hline
-\Lambda & \texttt{Lambda} &\begin{array}{l}\text{MMP-2 decay rate }\end{array}& 0.1  \\
-\hline
-\Gamma _{1} & \texttt{gamma1} &\begin{array}{l}\text{ECM degradation rate}\\\text{by MT1-MMP }\end{array}& 1  \\
-\hline
-\Gamma _{2}& \texttt{gamma2} &\begin{array}{l}\text{ECM degradation rate}\\\text{by MMP-2 }\end{array}& 1  \\
-\hline
-T_{V} & \texttt{vasculature\_time} &\begin{array}{l}
-\text{Steps CTCs spend}\\
-\text{in the vasculature }\end{array}& 180  \\
-\hline
-T_{\mathrm{M}} & \texttt{doublingTimeE}&\begin{array}{l}\text{Epithelial doubling time }\end{array}& 3  \\
-\hline
- T_{\mathrm{E}}& \texttt{ doublingTimeM } &\begin{array}{l}
-\text{Mesenchymal doubling time }\end{array}& 2  \\
-\hline \phantom{\mathcal{E}_{1,...,n}} & \phantom{\texttt{n\_center\_points\_for\_vessels}}  & &  \phantom{2.5\times 10^{-2}}  
-\end{array}
-$$
-
-$$
-\begin{array}{ccll}
-\hline
- & \textbf{Variable name} & \textbf{ Description } & \textbf{Value}  \\
-\hline
-\mathcal{P}_{s} & \texttt{single\_cell\_survival} &\begin{array}{l}
-\text{Single CTC}\\
-\text{survival probability }\end{array}& 5\times 10^{-4}  \\
-\hline
-\mathcal{P}_{C} & \texttt{cluster\_survival} &\begin{array}{l}
-\text{CTC cluster}\\
-\text{survival probability }\end{array}& 2.5\times 10^{-2}  \\
-\hline
-\mathcal{E}_{1,...,n} & \texttt{E1} &\begin{array}{l}
-\text{Extravasation probabilities}\end{array}& [0.75, 0.25]  \\
-\hline
-\mathcal{P}_{d} & \texttt{disaggregation\_prob} &\begin{array}{l}
-\text{Individual cancer cell}\\
-\text{dissagregation probability}\end{array}& 0.5  \\
-\hline
-Q & \texttt{carrying\_capacity} &\begin{array}{l}
-\text{Maximum amount of cells}\\
-\text{per grid point}\end{array}& 4  \\
-\hline
-U_P & \texttt{normal\_vessels\_primary} &\begin{array}{l}
-\text{Nr. of normal vessels present}\\
-\text{on the primary grid}\end{array}& 2  \\
-\hline
-V_P & \texttt{ruptured\_vessels\_primary} &\begin{array}{l}
-\text{Nr. of ruptured vessels}\\
-\text{present on the primary grid}\end{array}& 8  \\
-\hline
-U_{2,...,n} & \texttt{secondary\_sites\_vessels} &\begin{array}{l}
-\text{Nr. of vessels present on}\\
-\text{the secondary sites}\end{array}& [10, 10]  \\
-\hline
-- & \texttt{n\_center\_points\_for\_tumor} &\begin{array}{l}
-\text{Nr. of center-most grid}\\
-\text{points where the primary}\\
-\text{cells are going to be seeded}\end{array}& 97  \\
-\hline
-- & \texttt{n\_center\_points\_for\_vessels} &\begin{array}{l}
-\text{Nr. of center-most grid}\\
-\text{points where the vessels}\\
-\text{will not be able to spawn}\end{array}& 200  \\
-\hline
-- & \texttt{gridsize} &\begin{array}{l}
-\text{Length in gridpoints}\\
-\text{of the grid's side}\end{array}& 201  \\
-\hline
-- & \texttt{grids\_number} &\begin{array}{l}
-\text{Nr. of grids, including}\\
-\text{the primary site}\end{array}& 3  \\
-\hline
-- & \texttt{mesenchymal\_proportion} &\begin{array}{l}
-\text{Initial proportion of M}\\
-\text{cells in grid 1}\end{array}& 0.6  \\
-\hline
-- & \texttt{epithelial\_proportion} &\begin{array}{l}
-\text{Initial proportion of E}\\
-\text{cells in grid 1}\end{array}& 0.4  \\
-\hline
-- & \texttt{number\_of\_initial\_cells} &\begin{array}{l}
-\text{Initial nr. of total cells}\end{array}& 388  \\
-\hline
-\end{array}
-$$
 
 # 
 
