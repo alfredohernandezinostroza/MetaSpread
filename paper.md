@@ -147,8 +147,8 @@ When run interactively, starting from the main menu, the following possibilities
 | $ \Delta t_a  $            | `tha`                             | Abiotic time step                                                             | $  1\times 10^{-3}   $   |
 | $ \Delta x  $              | `xh`                              | Space step                                                                    | $  5\times 10^{-3}   $   |
 | $ \Delta x_a  $            | `xha`                             | Abiotic space step                                                            | $  5\times 10^{-3}   $   |
-| $ D_{\mathrm{M}}  $        | `dM`                              | Mesenchymal-like cancer cell diffusion coefficient                            | $  1\times 10^{-4}   $   |
-| $ D_{\mathrm{E}} $         | `dE`                              | Epithelial-like cancer cell diffusion coefficient                             | $  5\times 10^{-5}   $   |
+| $D_{M}$                    | `dM`                              | Mesenchymal-like cancer cell diffusion coefficient                            | $  1\times 10^{-4}   $   |
+| $ D_{E}$                   | `dE`                              | Epithelial-like cancer cell diffusion coefficient                             | $  5\times 10^{-5}   $   |
 | $ \Phi _{M}  $             | `phiM`                            | Mesenchymal haptotactic sensitivity coefficient                               | $  5\times 10^{-4}   $   |
 | $ \Phi _{\mathrm{E}}  $    | `phiE`                            | Epithelial haptotactic sensitivity coefficient                                | $  5\times 10^{-4}   $   |
 | $ D_{m}  $                 | `dmmp`                            | MMP-2 diffusion coefficient                                                   | $  1\times 10^{-3}   $   |
