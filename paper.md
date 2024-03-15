@@ -175,7 +175,7 @@ When run interactively, starting from the main menu, the following possibilities
 | $$ -  $$             | `epithelial\_proportion`          | Initial proportion of E cells in grid 1                                       | $$  0.4   $$               |
 | $$ -  $$             | `number\_of\_initial\_cells`      | Initial nr. of total cells                                                    | $$  388   $$               |
 
-
+: Baseline parameter setup and values used in the computational simulations of MetaSpread. We follow the values estimated and used by [@franssen2019]. These parameters are specified in the config file corresponding to each run of the simulation. The non-dimensional values are obtained exactly following [@franssen2019; @anderson2000mathematical], by scaling time and space with \tau=L^2/D where D is a reference diffusion coefficient, and \tilde{t}=t/\tau, \tilde{x}=x/L,\tilde{y}=y/L, where the original length scale is L=0.2 cm. []{label=”table1”}
 
 $$
 \begin{array}{|c|c|l|c|}
@@ -225,7 +225,16 @@ T_{V} & \texttt{vasculature\_time} &\begin{array}{l}
 \hline
 T_{\mathrm{M}} & \texttt{doublingTimeE}&\begin{array}{l}\text{Epithelial doubling time }\end{array}& 3  \\
 \hline
-T_{\mathrm{E}} & \texttt{doublingTimeM} &\begin{array}{l}\text{Mesenchymal doubling time }\end{array}& 2  \\
+ \hspace{0.25cm} T_{\mathrm{E}} \hspace{0.25cm} & \hspace{1.1cm}\texttt{ doublingTimeM }\hspace{1.1cm} &\begin{array}{l}
+\text{Mesenchymal doubling time }\end{array}& \hspace{0.7cm} 2  \hspace{0.7cm} \\
+\hline
+\end{array}
+$$
+
+$$
+\begin{array}{|c|c|l|c|}
+\hline
+ & \textbf{Variable name} & \textbf{ Description } & \textbf{Value}  \\
 \hline
 \mathcal{P}_{s} & \texttt{single\_cell\_survival} &\begin{array}{l}
 \text{Single CTC}\\
@@ -284,10 +293,13 @@ U_{2,...,n} & \texttt{secondary\_sites\_vessels} &\begin{array}{l}
 \text{Initial proportion of E}\\
 \text{cells in grid 1}\end{array}& 0.4  \\
 \hline
-- & \texttt{number\_of\_initial\_cells} &\begin{array}{l}\text{Initial nr. of total cells}\end{array}& 388  \\
+- & \texttt{number\_of\_initial\_cells} &\begin{array}{l}
+\text{Initial nr. of total cells}\end{array}& 388  \\
 \hline
 \end{array}
 $$
+
+# 
 
 # Simulation output, visualization and analysis
 
