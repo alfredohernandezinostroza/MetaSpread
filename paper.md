@@ -142,7 +142,7 @@ When run interactively, starting from the main menu, the following possibilities
 : Baseline parameter setup and values used in the computational simulations of MetaSpread. We follow the values estimated and used by [@franssen2019]. These parameters are specified in the config file corresponding to each run of the simulation. The non-dimensional values are obtained exactly following [@franssen2019; @anderson2000mathematical], by scaling time and space with $\tau=L^2/D$ where $D$ is a reference diffusion coefficient, and $\tilde{t}=t/\tau$, $\tilde{x}=x/L,\tilde{y}=y/L$, where the original length scale is $L=0.2 cm$. []{label=”table”}
 
 |                      | **Variable name**                 | **Description**                                                               | **Value**                  |
-|-------:|:----------------------------------- |:-----------------------------|:------------- |
+|-------:|:----------------------------------- |:-----------------------------| ------------- |
 | $$ \Delta t  $$      | `th`                              | Time step                                                                     | $$  1\times 10^{-3}   $$   |
 | $$ \Delta t_a  $$    | `tha`                             | Abiotic time step                                                             | $$  1\times 10^{-3}   $$   |
 | $$ \Delta x  $$      | `xh`                              | Space step                                                                    | $$  5\times 10^{-3}   $$   |
@@ -159,14 +159,14 @@ When run interactively, starting from the main menu, the following possibilities
 | $$ T_{V}  $$         | `vasculature\_time`               | Steps CTCs spend in the vasculature                                           | $$  180   $$               |
 | $$ T_{M}  $$         | `doublingTimeE`                   | Epithelial doubling time                                                      | $$  3   $$                 |
 | $$ T_{E}  $$         | `doublingTimeM`                   | Mesenchymal doubling time                                                     | $$  2   $$                 |
-| $$ {P}_{s}  $$       | `single\_cell\_survival`          | Single CTC survival probability                                               | $$  5\times 10^{-4}   $$   |
-| $$ {P}_{C}  $$       | `cluster\_survival`               | CTC cluster survival probability                                              | $$  2.5\times 10^{-2}   $$ |
-| $$ {E}_{1,...,n}  $$ | `E1`                              | Extravasation probabilities                                                   | $$  0.75, 0.25  $$         |
-| $$ {P}_{d}  $$       | `disaggregation\_prob`            | Individual cancer cell dissagregation probability                             | $$  0.5   $$               |
+| $$ \mathcal{P}_{s}  $$       | `single\_cell\_survival`          | Single CTC survival probability                                               | $$  5\times 10^{-4}   $$   |
+| $$ \mathcal{P}_{C}  $$       | `cluster\_survival`               | CTC cluster survival probability                                              | $$  2.5\times 10^{-2}   $$ |
+| $$ \mathcal{E}_{1,...,n}  $$ | `E1`                              | Extravasation probabilities                                                   | $$  [0.75, 0.25]  $$       |
+| $$ \mathcal{P}_{d}  $$       | `disaggregation\_prob`            | Individual cancer cell dissagregation probability                             | $$  0.5   $$               |
 | $$ Q  $$             | `carrying\_capacity`              | Maximum amount of cells per grid point                                        | $$  4   $$                 |
 | $$ U_P  $$           | `normal\_vessels\_primary`        | Nr. of normal vessels present on the primary grid                             | $$  2   $$                 |
 | $$ V_P  $$           | `ruptured\_vessels\_primary`      | Nr. of ruptured vessels present on the primary grid                           | $$  8   $$                 |
-| $$ U_{2,...,n}  $$   | `secondary\_sites\_vessels`       | Nr. of vessels present on the secondary sites                                 | $$  10, 10   $$            |
+| $$ U_{2,...,n}  $$   | `secondary\_sites\_vessels`       | Nr. of vessels present on the secondary sites                                 | $$  [10, 10]   $$          |
 | $$ -  $$             | `n\_center\_points\_for\_tumor`   | Nr. of center-most grid points where the primary cells are going to be seeded | $$  97   $$                |
 | $$ -  $$             | `n\_center\_points\_for\_vessels` | Nr. of center-most grid points where the vessels will not be able to spawn    | $$  200   $$               |
 | $$ -  $$             | `gridsize`                        | Length in gridpoints of the grid's side                                       | $$201 $$                   |
