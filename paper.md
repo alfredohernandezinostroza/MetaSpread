@@ -201,8 +201,8 @@ Movie S1: Example 1 of spatiotemporal evolution of tumor growth in the primary s
 | $$ \Delta x  $$      | $$  1\times 10^{-3} $$ cm  |
 | $$ \Delta t_a  $$    | $$ 40$$ s   |
 | $$ \Delta x_a  $$    | $$  1\times 10^{-3} $$ cm  |
-| $$ D_{M}  $$         | $$1\times 10^{-10}$$ cm²s⁻¹|
-| $$ D_{E} $$          | $$5\times 10^{-11}$$ cm²s⁻¹|
+| $$ D_{M}  $$         | $$1\times 10^{-10} cm²s⁻¹$$|
+| $$ D_{E} $$          | $$5\times 10^{-11}$$ cm²s$^{-}$¹|
 | $$ \Phi _{M}  $$     | $$2.6\times 10^{3}$$ cm²M⁻¹s⁻¹|
 | $$ \Phi _{E}  $$     | $$2.6\times 10^{3}$$ cm²M⁻¹s⁻¹|
 | $$ D_{m}  $$         | $$1\times 10^{-9}$$ cm²s⁻¹ |
