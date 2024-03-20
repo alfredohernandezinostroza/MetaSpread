@@ -193,7 +193,7 @@ While the model underlying our program [@franssen2019] is simpler than later mod
 Movie S1: Example 1 of spatiotemporal evolution of tumor growth in the primary site (default parameters, diffusion-dominated movement). Movie S2: Example 2 of spatiotemporal evolution of tumor growth in the primary site (parameters with haptotaxis-dominated movement of cells). All the parameters are as default, except for the diffusion coefficients $D_M$ and $D_E$, where in movie 2 they correspond to $1 \cdot 10^{-10}$ and $0.5 \cdot 10^{-11}$, respectively. This means 6 orders of magnitude lower diffusion rates for both M cells for E cells, relative to default.
 
 
-: Supplementary table with the original dimensional values for the parameters. []{label="table-sup"}
+: Supplementary table with the original dimensional values for the parameters.\label{table-sup} []{}
 
 |    **Variable**      | **Dimensional Value**                  |
 |-------:|:-------------:|
