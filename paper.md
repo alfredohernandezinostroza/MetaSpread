@@ -147,11 +147,9 @@ When run interactively, starting from the main menu, the following possibilities
 
 # Simulation parameters
 
-The parameters non-dimensional values, as well as their code equivalent name are available in Table \ref{table}. Their dimensional values is available in Table \ref{table-sup}.
-
 : Baseline parameter setup and values used in the computational simulations of MetaSpread. We follow the values estimated and used by [@franssen2019]. These parameters are specified in the config file corresponding to each run of the simulation. The non-dimensional values are obtained exactly following [@franssen2019; @anderson2000mathematical], by scaling time and space with $\tau=L^2/D$ where $D$ is a reference diffusion coefficient, and $\tilde{t}=t/\tau$, $\tilde{x}=x/L,\tilde{y}=y/L$, where the original length scale is $L=0.2 cm$. With these scalings, the final grid size is 201 x 201.\label{table} []{}
 
-|                      | **Variable                    name**| **Description \phantom{Non-dimensional}**                                                               | **Non-dimensional Value**                  |
+|                      | **Variable** $$\text{**name**}$$                 | **Description \phantom{Non-dimensional}**                                                               | **Non-dimensional Value**                  |
 |-------:|:----------------------------------- |:-----------------------------|:-------------:|
 | $$ \Delta t  $$      | `th`                              | Time step                                                                     | $$  1\times 10^{-3}   $$   |
 | $$ \Delta x  $$      | `xh`                              | Space step                                                                    | $$  5\times 10^{-3}   $$   |
@@ -184,6 +182,8 @@ The parameters non-dimensional values, as well as their code equivalent name are
 | $$ -  $$             | `mesenchymal\_proportion`         | Initial proportion of M cells in grid 1                                       | $$  0.6   $$               |
 | $$ -  $$             | `epithelial\_proportion`          | Initial proportion of E cells in grid 1                                       | $$  0.4   $$               |
 | $$ -  $$             | `number\_of\_initial\_cells`      | Initial nr. of total cells                                                    | $$  388   $$               |
+
+The parameters non-dimensional values, as well as their code equivalent name are available in Table \ref{table}. Their dimensional values is available in Table \ref{table-sup}.
 
 # Simulation output, visualization and analysis
 
