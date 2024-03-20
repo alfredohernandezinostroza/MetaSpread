@@ -40,7 +40,7 @@ Models of tumor growth and metastatic spread are critical for understanding the 
 
 # Cancer growth and spread model
 
-A 2-dimensional multigrid hybrid spatial model of cancer dynamics is developed in Python (see Figure 1 for a snapshot illustration). Here we combine the stochastic individual based dynamics of single cells with deterministic dynamics of the abiotic factors. The algorithm for dynamic progression at each time step is depicted in Figure 2. In the tumor site we consider two different cancer cell phenotypes: epithelial (epithelial-like) and mesenchymal (mesenchymal-like) cells. The epithelial-like cancer cells reproduce at a higher rate, but diffuse more slowly than mesenchymal cells, which reproduce at a lower rate but diffuse more rapidly. Furthermore, epithelial cells cannot break through the vasculature wall alone, as they require the presence of mesenchymal cells to be able to intravasate. The cellular growth and movement in space is modeled considering 2 partial differential equations, where random (diffusion) and non-random (haptotaxis) movement are implemented. The model includes two additional equations: one for the spatio-temporal dynamics of matrix metalloproteinase 2 (MMP-2), a chemical that favors the spread of cancer cells, and another for the degradation of the extracellular matrix (ECM), which also favors the haptotactic movement of the cancer cells. 
+A 2-dimensional multigrid hybrid spatial model of cancer dynamics is developed in Python (see Figure 1 for a snapshot illustration). Here we combine the stochastic individual based dynamics of single cells with deterministic dynamics of the abiotic factors. The algorithm for dynamic progression at each time step is depicted in Figure 2. In the tumor site we consider two different cancer cell phenotypes: epithelial (epithelial-like) and mesenchymal (mesenchymal-like) cells. The epithelial-like (E) cancer cells reproduce at a higher rate, but diffuse more slowly than mesenchymal (M) cells, which reproduce at a lower rate but diffuse more rapidly. Furthermore, epithelial cells cannot break through the vasculature wall alone, as they require the presence of mesenchymal cells to be able to intravasate. The cellular growth and movement in space is modeled considering 2 partial differential equations, where random (diffusion) and non-random (haptotaxis) movement are implemented. The model includes two additional equations: one for the spatio-temporal dynamics of matrix metalloproteinase 2 (MMP-2), a chemical that favors the spread of cancer cells, and another for the degradation of the extracellular matrix (ECM), which also favors the haptotactic movement of the cancer cells. 
 The dimensionless model, as described by [@franssen2019] in Appendix A of their paper, corresponds to 4 PDEs, where the key variables reflect local densities of epithelial cells ($c_E$) and mesenchymal cells ($c_M$), and concentrations of MMP2 ($m$) and extracellular matrix ($w$):
 
 \begin{equation}
@@ -201,21 +201,21 @@ Movie S1: Example 1 of spatiotemporal evolution of tumor growth in the primary s
 | $$ \Delta x  $$      | $$  1\times 10^{-3} $$ cm  |
 | $$ \Delta t_a  $$    | $$ 40$$ s   |
 | $$ \Delta x_a  $$    | $$  1\times 10^{-3} $$ cm  |
-| $$ D_{M}  $$         | $$1\times 10^{-10}$$ cm²s$^{-1}$|
-| $$ D_{E} $$          | $$5\times 10^{-11}$$ cm²s$^{-}$¹|
-| $$ \Phi _{M}  $$     | $$2.6\times 10^{3}$$ cm²M⁻¹s⁻¹|
-| $$ \Phi _{E}  $$     | $$2.6\times 10^{3}$$ cm²M⁻¹s⁻¹|
-| $$ D_{m}  $$         | $$1\times 10^{-9}$$ cm²s⁻¹ |
-| $$ \Theta  $$        | $$4.875\times 10^{-6}$$ M⁻¹s⁻¹|
-| $$ \Lambda  $$       | $$2.5\times 10^{-6}$$ s⁻¹  |
-| $$ \Gamma _{1}  $$   | $$1\times 10^{-4}$$ s⁻¹    |
-| $$ \Gamma _{2} $$    | $$1\times 10^{-4}$$ M⁻¹s⁻¹ |
+| $$ D_{M}  $$         | $$1\times 10^{-10}$$ cm$^{2}$s$^{-1}$|
+| $$ D_{E} $$          | $$5\times 10^{-11}$$ cm$^{2}$s$^{-}$$^{1}$|
+| $$ \Phi _{M}  $$     | $$2.6\times 10^{3}$$ cm$^{2}$M$^{-1}$s$^{-1}$|
+| $$ \Phi _{E}  $$     | $$2.6\times 10^{3}$$ cm$^{2}$M$^{-1}$s$^{-1}$|
+| $$ D_{m}  $$         | $$1\times 10^{-9}$$ cm$^{2}$s$^{-1}$ |
+| $$ \Theta  $$        | $$4.875\times 10^{-6}$$ M$^{-1}$s$^{-1}$|
+| $$ \Lambda  $$       | $$2.5\times 10^{-6}$$ s$^{-1}$  |
+| $$ \Gamma _{1}  $$   | $$1\times 10^{-4}$$ s$^{-1}$    |
+| $$ \Gamma _{2} $$    | $$1\times 10^{-4}$$ M$^{-1}$s$^{-1}$ |
 | $$ T_{V}  $$         | $$7.2\times 10^{3}$$ s     |
 | $$ T_{M}  $$         | $$1.2\times 10^{5}$$ s     |
 | $$ T_{E}  $$         | $$8\times 10^{4}$$ s       |
 
 # Acknowledgements
 
-We acknowledge the contributions of Murillo Texeira and Vinicius Schaedler to this project. E. G. acknowledges support by the Portuguese Foundation for Science and Technology (FCT) via CEECIND/03051/2018.
+We acknowledge the contributions of Murillo Texeira and Vinicius Schaedler Damin to this project. E. G. acknowledges support by the Portuguese Foundation for Science and Technology (FCT) via CEECIND/03051/2018.
 
 # References
