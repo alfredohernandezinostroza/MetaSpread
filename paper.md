@@ -14,7 +14,7 @@ authors:
     corresponding: true
     affiliation: 1
   - name: Erida Gjini
-    orcid: 0000-0002-4708-3275
+    orcid: 0000-0002-0493-3102
     affiliation: 2
     equal-contrib: false
     corresponding: true # (This is how to denote the corresponding author)
@@ -97,7 +97,7 @@ where $i,j$ reflect the grid point ($i,j$) and $n$ the time-point. In this discr
 
 The biological parameters of the model and the simulation values are summarized in Table 1, tailored to breast cancer progression and early-stage dynamics prior to any treatment and in a pre-angiogenic phase (less than 0.2 cm in diameter). We provide the default values used by [@franssen2019], as informed by biological and empirical considerations (see also Table 1 and references therein in [@franssen2019]). The dynamics represent a two-dimensional cross-section of a small avascular tumor and run on a 2-dimensional discrete grid (spatial domain $[0,1] \times [0,1]$ corresponding to physical domain of size $[0,0.2]\text{ cm} \times [0,0.2]\text{ cm}$), where each grid element corresponds to a spatial unit of dimension $(\Delta x,\Delta y)$, and where position $x_i,y_j$ corresponds to $i \Delta x$ and $j \Delta y$. Cancer cells are modeled as discrete agents whose growth and migration dynamics follow probabilistic rules, whereas the abiotic factors MMP2 and extracellular matrix dynamics follow the deterministic PDE evolution, discretized by an explicit five-point central difference discretization scheme together with zero-flux boundary conditions. The challenge of the simulation lies in coupling deterministic and agent-based stochastic dynamics, and in formulating the interface between the primary tumor Grid 1 and the metastatic sites (Grids 2,..$k$). Each grid shares the same parameters, but there can be biases in connectivity parameters between grids ($\mathcal{E}_{k}$ parameters).
 
-Cell proliferation is implemented in place by generating a new cell when the doubling time is completed, for each cell in each grid point. But if the carrying capacity gets surpassed, then there is no generation of a new cell. The movement of the cells is implemented through the probabilities in Equations, which are computed at each time point and for each cell and contain the contribution of the random diffusion process and non-random haptotactic movement. If a cell lands in a grid point that contains a vasculature entry point, it is typically removed from the main grid and added to the vasculature. But there are details regarding the type of cells (E or M) and vasculature entry points (normal or ruptured) further described by [@franssen2019].
+Cell proliferation is implemented in place by generating a new cell when the doubling time is completed, for each cell in each grid point. But if the carrying capacity gets surpassed, then there is no generation of a new cell. The movement of the cells is implemented through the probabilities in Equations \ref{probs}, which are computed at each time point and for each cell and contain the contribution of the random diffusion process and non-random haptotactic movement. If a cell lands in a grid point that contains a vasculature entry point, it is typically removed from the main grid and added to the vasculature. But there are details regarding the type of cells (E or M) and vasculature entry points (normal or ruptured) further described by [@franssen2019].
 
 The vasculature is the structure connecting the primary and secondary sites, and it represents a separate compartment in the simulation framework. Single cells or clusters of cells, denominated as circulating tumor cells (CTCs), can enter the vasculature either through a ruptured or normal vessel, and they can remain there for a fixed number of time $T_V$, representing the average time a cancer cell spends in the blood system. Each cell belonging to a cluster in the vasculature can disaggregate with some probability. At the end of the residence time in the vasculature, each cell's survival is determined randomly with probabilities that are different for single and cluster cells, and the surviving cells are randomly distributed on the secondary sites. To implement this vasculature dynamics in the algorithm, the vasculature is represented as a dictionary where the keys refer to the time-step in which there are clusters ready to extravasate. Intravasation at time $t$ corresponds to saving the cells into the dictionary with the associated exit time $t+T_V$.  It is important to note that this parameter on the configuration file must be in time steps units.
 
@@ -194,39 +194,24 @@ Movie S1: Example 1 of spatiotemporal evolution of tumor growth in the primary s
 
 : Supplementary table with the original dimensional values for the parameters. []{label=”table-sup”}
 
-|                      | **Dimensional Value**                  |
+|    **Variable**      | **Dimensional Value**                  |
 |-------:|:-------------:|
-| $$ \Delta t  $$      | $$  1\times 10^{-3}   $$   |
-| $$ \Delta x  $$      | $$  5\times 10^{-3}   $$   |
-| $$ \Delta t_a  $$    | $$  1\times 10^{-3}   $$   |
-| $$ \Delta x_a  $$    | $$  5\times 10^{-3}   $$   |
-| $$ D_{M}  $$         | $$  1\times 10^{-4}   $$   |
-| $$ D_{E} $$          | $$  5\times 10^{-5}   $$   |
-| $$ \Phi _{M}  $$     | $$  5\times 10^{-4}   $$   |
-| $$ \Phi _{E}  $$     | $$  5\times 10^{-4}   $$   |
-| $$ D_{m}  $$         | $$  1\times 10^{-3}   $$   |
-| $$ \Theta  $$        | $$  0.195   $$             |
-| $$ \Lambda  $$       | $$  0.1   $$               |
-| $$ \Gamma _{1}  $$   | $$  1   $$                 |
-| $$ \Gamma _{2} $$    | $$  1   $$                 |
-| $$ T_{V}  $$         | $$  180   $$               |
-| $$ T_{M}  $$         | $$  3   $$                 |
-| $$ T_{E}  $$         | $$  2   $$                 |
-| $$ \mathcal{P}_{s}  $$       | $$  5\times 10^{-4}   $$   |
-| $$ \mathcal{P}_{C}  $$       | $$  2.5\times 10^{-2}   $$ |
-| $$ \mathcal{E}_{1,...,n}  $$                  | $$  [0.75, 0.25]  $$       |
-| $$ \mathcal{P}_{d}  $$       | $$  0.5   $$               |
-| $$ Q  $$             | $$  4   $$                 |
-| $$ U_P  $$           | $$  2   $$                 |
-| $$ V_P  $$           | $$  8   $$                 |
-| $$ U_{2,...,n}  $$   | $$  [10, 10]   $$          |
-| $$ -  $$             | $$  97   $$                |
-| $$ -  $$             | $$  200   $$               |
-| $$ -  $$             | $$201 $$                   |
-| $$ -  $$             | $$  3   $$                 |
-| $$ -  $$             | $$  0.6   $$               |
-| $$ -  $$             | $$  0.4   $$               |
-| $$ -  $$             | $$  388   $$               |
+| $$ \Delta t  $$      | $$ 40$$ s   |
+| $$ \Delta x  $$      | $$  1\times 10^{-3} $$ cm  |
+| $$ \Delta t_a  $$    | $$ 40$$ s   |
+| $$ \Delta x_a  $$    | $$  1\times 10^{-3} $$ cm  |
+| $$ D_{M}  $$         | $$1\times 10^{-10}$$ cm²s⁻¹|
+| $$ D_{E} $$          | $$5\times 10^{-11}$$ cm²s⁻¹|
+| $$ \Phi _{M}  $$     | $$2.6\times 10^{3}$$ cm²M⁻¹s⁻¹|
+| $$ \Phi _{E}  $$     | $$2.6\times 10^{3}$$ cm²M⁻¹s⁻¹|
+| $$ D_{m}  $$         | $$1\times 10^{-9}$$ cm²s⁻¹ |
+| $$ \Theta  $$        | $$4.875\times 10^{-6}$$ M⁻¹s⁻¹|
+| $$ \Lambda  $$       | $$2.5\times 10^{-6}$$ s⁻¹  |
+| $$ \Gamma _{1}  $$   | $$1\times 10^{-4}$$ s⁻¹    |
+| $$ \Gamma _{2} $$    | $$1\times 10^{-4}$$ M⁻¹s⁻¹ |
+| $$ T_{V}  $$         | $$7.2\times 10^{3}$$ s     |
+| $$ T_{M}  $$         | $$1.2\times 10^{5}$$ s     |
+| $$ T_{E}  $$         | $$8\times 10^{4}$$ s       |
 
 # Acknowledgements
 
