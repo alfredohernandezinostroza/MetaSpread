@@ -143,13 +143,15 @@ When run interactively, starting from the main menu, the following possibilities
 
 - **Video generation:** The user can choose the Videos option to generate animations from the figures generated in the *graphical analysis* step. When selected, the user will be prompted to introduce the framerate at which the videos should be saved. When running from the commandline, the user can use `python -m metaspread postprocess videos simulation-folder-name frame-rate`.
 
-- **Run all:** The user can run all the aforementioned steps in order with this option. When running from the commandline, the user can use `python -m metaspread postprocess all simulation-folder-name amount-of-figures frame-rate`.\newpage
+- **Run all:** The user can run all the aforementioned steps in order with this option. When running from the commandline, the user can use `python -m metaspread postprocess all simulation-folder-name amount-of-figures frame-rate`.
 
 # Simulation parameters
 
+The parameters non-dimensional values, as well as their code equivalent name are available in Table \ref{table}. Their dimensional values is available in Table \ref{table-sup}.
+
 : Baseline parameter setup and values used in the computational simulations of MetaSpread. We follow the values estimated and used by [@franssen2019]. These parameters are specified in the config file corresponding to each run of the simulation. The non-dimensional values are obtained exactly following [@franssen2019; @anderson2000mathematical], by scaling time and space with $\tau=L^2/D$ where $D$ is a reference diffusion coefficient, and $\tilde{t}=t/\tau$, $\tilde{x}=x/L,\tilde{y}=y/L$, where the original length scale is $L=0.2 cm$. With these scalings, the final grid size is 201 x 201.\label{table} []{}
 
-|                      | **Variable** $$\text{**name**}$$                 | **Description \phantom{Non-dimensional}**                                                               | **Non-dimensional Value**                  |
+|                      | $$\text{ }$$**Variable** $$\textbf{name}$$                 | **Description \phantom{Non-dimensional}**                                                               | **Non-dimensional Value**                  |
 |-------:|:----------------------------------- |:-----------------------------|:-------------:|
 | $$ \Delta t  $$      | `th`                              | Time step                                                                     | $$  1\times 10^{-3}   $$   |
 | $$ \Delta x  $$      | `xh`                              | Space step                                                                    | $$  5\times 10^{-3}   $$   |
@@ -182,8 +184,6 @@ When run interactively, starting from the main menu, the following possibilities
 | $$ -  $$             | `mesenchymal\_proportion`         | Initial proportion of M cells in grid 1                                       | $$  0.6   $$               |
 | $$ -  $$             | `epithelial\_proportion`          | Initial proportion of E cells in grid 1                                       | $$  0.4   $$               |
 | $$ -  $$             | `number\_of\_initial\_cells`      | Initial nr. of total cells                                                    | $$  388   $$               |
-
-The parameters non-dimensional values, as well as their code equivalent name are available in Table \ref{table}. Their dimensional values is available in Table \ref{table-sup}.
 
 # Simulation output, visualization and analysis
 
