@@ -151,7 +151,7 @@ The parameters non-dimensional values, as well as their code equivalent name are
 
 : Baseline parameter setup and values used in the computational simulations of MetaSpread. We follow the values estimated and used by [@franssen2019]. These parameters are specified in the config file corresponding to each run of the simulation. The non-dimensional values are obtained exactly following [@franssen2019; @anderson2000mathematical], by scaling time and space with $\tau=L^2/D$ where $D$ is a reference diffusion coefficient, and $\tilde{t}=t/\tau$, $\tilde{x}=x/L,\tilde{y}=y/L$, where the original length scale is $L=0.2 cm$. With these scalings, the final grid size is 201 x 201.\label{table} []{}
 
-|                      | $$\text{ }$$**Variable** $$\textbf{name}$$                 | **Description \phantom{Non-dimensional}**                                                               | **Non-dimensional Value**                  |
+|                      | $$\text{ }$$**Variable name**                 | **Description \phantom{Non-dimensional}**                                                               | **Non-dimensional Value**                  |
 |-------:|:----------------------------------- |:-----------------------------|:-------------:|
 | $$ \Delta t  $$      | `th`                              | Time step                                                                     | $$  1\times 10^{-3}   $$   |
 | $$ \Delta x  $$      | `xh`                              | Space step                                                                    | $$  5\times 10^{-3}   $$   |
@@ -202,7 +202,7 @@ While the model underlying our program [@franssen2019] is simpler than later mod
 Movie S1: Example 1 of spatiotemporal evolution of tumor growth in the primary site (default parameters, diffusion-dominated movement). Movie S2: Example 2 of spatiotemporal evolution of tumor growth in the primary site (parameters with haptotaxis-dominated movement of cells). All the parameters are as default, except for the diffusion coefficients $D_M$ and $D_E$, where in movie 2 they correspond to $1 \cdot 10^{-10}$ and $0.5 \cdot 10^{-11}$, respectively. This means 6 orders of magnitude lower diffusion rates for both M cells for E cells, relative to default.
 
 
-: Supplementary table with the original dimensional values for the parameters.\label{table-sup} []{}
+: Supplementary table with the original values and dimensions of the parameters.\label{table-sup} []{}
 
 |    **Variable**      | **Dimensional Value**                  |
 |-------:|:-------------:|
