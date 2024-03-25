@@ -131,7 +131,7 @@ When run interactively, starting from the main menu, the following possibilities
 
 - **Data analysis:** several results will be summarized in *.csv* files, such as the vasculature and tumor dynamics. 
   
-  - The files that account for total number of cells, vasculature evolution (total numbers of CTCs and clusters, cells and phenotypes), and tumor radius (the maximum of all cell distances from the centroid of mass) and diameter (maximum of all cell-to-cell distances) evolution, consist of columns that register the state of a metric in each time step along the simulation. These easily allows plotting graphs of dynamics later on.
+  - The files that account for total number of cells, Vasculature dynamics (total numbers of CTCs and clusters, cells and phenotypes), and tumor radius (the maximum of all cell distances from the centroid of mass) and diameter (maximum of all cell-to-cell distances) evolution, consist of columns that register the state of a metric in each time step along the simulation. These easily allows plotting graphs of dynamics later on.
   
   - The tumor growth files for each time point consist of 8 rows: the first 2 rows correspond to x and y coordinates of mesenchymal cells. The second 2 rows correspond to the x and y coordinates of epithelial cells, the next 2 rows correspond to x and y coordinates of regular vasculature points, and the final 2 rows correspond to the coordinates of ruptured vessels. These allow for easily plotting the positions of the agents, and thus, the state of the tumor, at each time step.
   
@@ -139,7 +139,7 @@ When run interactively, starting from the main menu, the following possibilities
 
   - When running from the commandline, the user can use `python -m metaspread postprocess data simulation-folder-name`
 
-- **Graphical analysis:** in order to run this step, it is necessary to run the data analysis option first. When selected, the used will be prompted to introduce the number of figures to describe the snapshot of the dynamics at equally spaced intervals between 0 and the final time of the simulation. Then, plots of the tumor distribution, ECM, MMP-2 for each grid. Furthermore, it will also produce other plots such as the dynamics of the cells in the vasculature, histograms of the cell number distribution over grid points, radius and diameter of the tumor over time, and total size of the tumor in each grid. When running from the commandline, the user can use `python -m metaspread postprocess graphs simulation-folder-name amount-of-figures`.
+- **Graphical analysis:** in order to run this step, it is necessary to run the data analysis option first. When selected, the used will be prompted to introduce the number of figures to describe the snapshot of the dynamics at equally spaced intervals between 0 and the final time of the simulation. Then, plots of the tumor distribution, ECM, MMP-2 for each grid. Furthermore, it will also produce other plots such as the dynamics of the cells in the vasculature, histograms of the cell number distribution over grid points, radius and diameter of the tumor over time, and total size of the tumor in each grid. When running from the commandline, the user can use `python -m metaspread postprocess graphics simulation-folder-name amount-of-figures`.
 
 - **Video generation:** The user can choose the Videos option to generate animations from the figures generated in the *graphical analysis* step. When selected, the user will be prompted to introduce the framerate at which the videos should be saved. When running from the commandline, the user can use `python -m metaspread postprocess videos simulation-folder-name frame-rate`.
 
@@ -167,8 +167,8 @@ The parameters non-dimensional values, as well as their code equivalent name are
 | $$ \Gamma _{1}  $$   | `gamma1`                          | ECM degradation rate by MT1-MMP                                               | $$  1   $$                 |
 | $$ \Gamma _{2} $$    | `gamma2`                          | ECM degradation rate by MMP-2                                                 | $$  1   $$                 |
 | $$ T_{V}  $$         | `vasculature\_time`               | Steps CTCs spend in the vasculature                                           | $$  180   $$               |
-| $$ T_{M}  $$         | `doublingTimeE`                   | Epithelial doubling time                                                      | $$  3   $$                 |
-| $$ T_{E}  $$         | `doublingTimeM`                   | Mesenchymal doubling time                                                     | $$  2   $$                 |
+| $$ T_{E}  $$         | `doublingTimeE`                   | Epithelial doubling time                                                      | $$  3000   $$                 |
+| $$ T_{M}  $$         | `doublingTimeM`                   | Mesenchymal doubling time                                                     | $$  2000   $$                 |
 | $$ \mathcal{P}_{s}  $$       | `single\_cell\_survival`          | Single CTC survival probability                                               | $$  5\times 10^{-4}   $$   |
 | $$ \mathcal{P}_{C}  $$       | `cluster\_survival`               | CTC cluster survival probability                                              | $$  2.5\times 10^{-2}   $$ |
 | $$ \mathcal{E}_{1,...,n}  $$ | `extravasation_probs`                              | Extravasation probabilities                                                   | $$  [0.75, 0.25]  $$       |
