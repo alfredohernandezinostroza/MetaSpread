@@ -167,24 +167,24 @@ The parameters non-dimensional values, as well as their code equivalent name are
 | $$ \Lambda  $$       | `Lambda`                          | MMP-2 decay rate                                                              | $$  0.1   $$               |
 | $$ \Gamma _{1}  $$   | `gamma1`                          | ECM degradation rate by MT1-MMP                                               | $$  1   $$                 |
 | $$ \Gamma _{2} $$    | `gamma2`                          | ECM degradation rate by MMP-2                                                 | $$  1   $$                 |
-| $$ T_{V}  $$         | `vasculature\_time`               | Steps CTCs spend in the vasculature                                           | $$  180   $$               |
+| $$ T_{V}  $$         | `vasculature_time`               | Steps CTCs spend in the vasculature                                           | $$  180   $$               |
 | $$ T_{E}  $$         | `doublingTimeE`                   | Epithelial doubling time                                                      | $$  3000   $$                 |
 | $$ T_{M}  $$         | `doublingTimeM`                   | Mesenchymal doubling time                                                     | $$  2000   $$                 |
-| $$ \mathcal{P}_{s}  $$       | `single\_cell\_survival`          | Single CTC survival probability                                               | $$  5\times 10^{-4}   $$   |
-| $$ \mathcal{P}_{C}  $$       | `cluster\_survival`               | CTC cluster survival probability                                              | $$  2.5\times 10^{-2}   $$ |
+| $$ \mathcal{P}_{s}  $$       | `single_cell_survival`          | Single CTC survival probability                                               | $$  5\times 10^{-4}   $$   |
+| $$ \mathcal{P}_{C}  $$       | `cluster_survival`               | CTC cluster survival probability                                              | $$  2.5\times 10^{-2}   $$ |
 | $$ \mathcal{E}_{1,...,n}  $$ | `extravasation_probs`                              | Extravasation probabilities                                                   | $$  [0.75, 0.25]  $$       |
-| $$ \mathcal{P}_{d}  $$       | `disaggregation\_prob`            | Individual cancer cell dissagregation probability                             | $$  0.5   $$               |
-| $$ Q  $$             | `carrying\_capacity`              | Maximum amount of cells per grid point                                        | $$  4   $$                 |
-| $$ U_P  $$           | `normal\_vessels\_primary`        | Nr. of normal vessels present on the primary grid                             | $$  2   $$                 |
-| $$ V_P  $$           | `ruptured\_vessels\_primary`      | Nr. of ruptured vessels present on the primary grid                           | $$  8   $$                 |
-| $$ U_{2,...,n}  $$   | `secondary\_sites\_vessels`       | Nr. of vessels present on the secondary sites                                 | $$  [10, 10]   $$          |
-| $$ -  $$             | `n\_center\_points\_for\_tumor`   | Nr. of center-most grid points where the primary cells are going to be seeded | $$  97   $$                |
-| $$ -  $$             | `n\_center\_points\_for\_vessels` | Nr. of center-most grid points where the vessels will not be able to spawn    | $$  200   $$               |
+| $$ \mathcal{P}_{d}  $$       | `disaggregation_prob`            | Individual cancer cell dissagregation probability                             | $$  0.5   $$               |
+| $$ Q  $$             | `carrying_capacity`              | Maximum amount of cells per grid point                                        | $$  4   $$                 |
+| $$ U_P  $$           | `normal_vessels_primary`        | Nr. of normal vessels present on the primary grid                             | $$  2   $$                 |
+| $$ V_P  $$           | `ruptured_vessels_primary`      | Nr. of ruptured vessels present on the primary grid                           | $$  8   $$                 |
+| $$ U_{2,...,n}  $$   | `secondary_sites_vessels`       | Nr. of vessels present on the secondary sites                                 | $$  [10, 10]   $$          |
+| $$ -  $$             | `n_center_points_for_tumor`   | Nr. of center-most grid points where the primary cells are going to be seeded | $$  97   $$                |
+| $$ -  $$             | `n_center_points_for_vessels` | Nr. of center-most grid points where the vessels will not be able to spawn    | $$  200   $$               |
 | $$ -  $$             | `gridsize`                        | Length in gridpoints of the grid's side                                       | $$201 $$                   |
-| $$ -  $$             | `grids\_number`                   | Nr. of grids, including the primary site                                      | $$  3   $$                 |
-| $$ -  $$             | `mesenchymal\_proportion`         | Initial proportion of M cells in grid 1                                       | $$  0.6   $$               |
-| $$ -  $$             | `epithelial\_proportion`          | Initial proportion of E cells in grid 1                                       | $$  0.4   $$               |
-| $$ -  $$             | `number\_of\_initial\_cells`      | Initial nr. of total cells                                                    | $$  388   $$               |
+| $$ -  $$             | `grids_number`                   | Nr. of grids, including the primary site                                      | $$  3   $$                 |
+| $$ -  $$             | `mesenchymal_proportion`         | Initial proportion of M cells in grid 1                                       | $$  0.6   $$               |
+| $$ -  $$             | `epithelial_proportion`          | Initial proportion of E cells in grid 1                                       | $$  0.4   $$               |
+| $$ -  $$             | `number_of_initial_cells`      | Initial nr. of total cells                                                    | $$  388   $$               |
 
 # Simulation output, visualization and analysis
 
