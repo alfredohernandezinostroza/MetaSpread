@@ -105,6 +105,7 @@ The vasculature is the structure connecting the primary and secondary sites, and
 Extravasation rules follow the setup in the original paper [@franssen2019], ensuring arriving cells do not violate the carrying capacity. Metastatic growth after extravasation follows the same rules as in the original grid. 
 
 # Structure of the simulation platform
+\label{structure-sim}
 
 The program can be run both interactively through the command line, or with explicit user command line arguments.
 
@@ -240,6 +241,16 @@ or:
 ```
 python -m pip install metaspread
 ```
+
+Manual installation can be done by downloading the repo.
+
+Finally, the program can be run interactiively with:
+
+```
+python -m metaspread
+```
+
+Or it can be run purely through command line arguments, as detailed in section \ref{structure-sim}.
 
 # Acknowledgements
 
