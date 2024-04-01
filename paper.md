@@ -212,7 +212,7 @@ Finally, the program can be run interactiively with:
 python -m metaspread
 ```
 
-Or it can be run purely through command line arguments, as detailed in section \ref{structure-sim}.
+Or it can be run purely through command line arguments, as detailed in the Structure of the simulation platform section.
 
 # Outlook
 
