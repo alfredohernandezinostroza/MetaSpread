@@ -227,6 +227,20 @@ Movie S1: Example 1 of spatiotemporal evolution of tumor growth in the primary s
 | $$ T_{M}  $$         | $$1.2\times 10^{5}$$ s     |
 | $$ T_{E}  $$         | $$8\times 10^{4}$$ s       |
 
+# Installation
+
+MetaSpread is available as a official PyPI package. To install, you will need to have PIP installed. Afterwards, run:
+
+```
+pip install metaspread
+```
+
+or:
+
+```
+python -m pip install metaspread
+```
+
 # Acknowledgements
 
 We acknowledge the contributions of Murillo Texeira and Vinicius Schaedler Damin to this project. E. G. acknowledges support by the Portuguese Foundation for Science and Technology (FCT) via CEECIND/03051/2018.
