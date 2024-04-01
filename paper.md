@@ -192,7 +192,27 @@ To illustrate the performance and capability of MetaSpread, we provide some figu
 
 # Installation
 
-The package is availaible as an official PyPI package. To install, run `pip install metaspread`.
+MetaSpread is available as a official PyPI package. To install, you will need to have PIP installed. Afterwards, run:
+
+```
+pip install metaspread
+```
+
+or:
+
+```
+python -m pip install metaspread
+```
+
+Manual installation can be done by downloading the repo.
+
+Finally, the program can be run interactiively with:
+
+```
+python -m metaspread
+```
+
+Or it can be run purely through command line arguments, as detailed in section \ref{structure-sim}.
 
 # Outlook
 
@@ -227,30 +247,6 @@ Movie S1: Example 1 of spatiotemporal evolution of tumor growth in the primary s
 | $$ T_{V}  $$         | $$7.2\times 10^{3}$$ s     |
 | $$ T_{M}  $$         | $$1.2\times 10^{5}$$ s     |
 | $$ T_{E}  $$         | $$8\times 10^{4}$$ s       |
-
-# Installation
-
-MetaSpread is available as a official PyPI package. To install, you will need to have PIP installed. Afterwards, run:
-
-```
-pip install metaspread
-```
-
-or:
-
-```
-python -m pip install metaspread
-```
-
-Manual installation can be done by downloading the repo.
-
-Finally, the program can be run interactiively with:
-
-```
-python -m metaspread
-```
-
-Or it can be run purely through command line arguments, as detailed in section \ref{structure-sim}.
 
 # Acknowledgements
 
