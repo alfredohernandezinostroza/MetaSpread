@@ -16,7 +16,6 @@ authors:
   - name: Erida Gjini
     orcid: 0000-0002-0493-3102
     affiliation: 2
-    equal-contrib: false
     corresponding: true # (This is how to denote the corresponding author)
 affiliations:
  - name: Department of Biomedical Engineering, Instituto Superior Tecnico, University of Lisbon, Lisbon, Portugal
