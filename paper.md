@@ -218,6 +218,7 @@ While the model underlying our program [@franssen2019] is simpler than later mod
 
 # Supporting information
 
+Supporting videos are available on the paper branch of the Github repository.
 Movie S1: Example 1 of spatiotemporal evolution of tumor growth in the primary site (default parameters, diffusion-dominated movement). Movie S2: Example 2 of spatiotemporal evolution of tumor growth in the primary site (parameters with haptotaxis-dominated movement of cells). All the parameters are as default, except for the diffusion coefficients $D_M$ and $D_E$, where in movie 2 they correspond to $1 \cdot 10^{-10}$ and $0.5 \cdot 10^{-11}$, respectively.
 
 ![**Later snapshot of our simulations for cancer cell spread and ECM and MMP2 evolution in the primary and secondary metastatic site, grid 1 (left) and grid 2 (right) after approximately 12.78 days.** Parameters as in Table \ref{table} with initial distribution centered around (1 mm,1 mm) and total initial size = 388 cells. In the top row, the blue color denotes mesenchymal cells, the orange color denotes epithelial cells. The intensity of the color represents the number of cells (from 0 to Q) in that particular grid point. The red grid points represent entry-points to the vasculature, with circles intact vessels and crosses representing ruptured vessels. In the middle row, we plot the corresponding evolution of the density of the extracellular matrix at the same time points. In the last row we plot the spatial distribution of MMP2.](6 images.png)
