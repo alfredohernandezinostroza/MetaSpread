@@ -10,13 +10,11 @@ tags:
 authors:
   - name: Alfredo Hernández-Inostroza
     orcid: 0000-0002-4708-3275
-    equal-contrib: false
     corresponding: true
     affiliation: 1
   - name: Erida Gjini
     orcid: 0000-0002-0493-3102
-    equal-contrib: false
-    corresponding: false # (This is how to denote the corresponding author)
+    corresponding: true # (This is how to denote the corresponding author)
     affiliation: 2
 affiliations:
  - name: Department of Biomedical Engineering, Instituto Superior Tecnico, University of Lisbon, Lisbon, Portugal
