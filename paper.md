@@ -10,7 +10,7 @@ tags:
 authors:
   - name: Alfredo Hernández-Inostroza
     orcid: 0000-0002-4708-3275
-    equal-contrib: true
+    equal-contrib: false
     corresponding: true
     affiliation: 1
   - name: Erida Gjini
