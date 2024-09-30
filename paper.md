@@ -38,8 +38,9 @@ Models of tumor growth and metastatic spread are critical for understanding the 
 
 # Cancer growth and spread model
 
-A 2-dimensional multigrid hybrid spatial model of cancer dynamics is developed in Python (see Figure 1 for a snapshot illustration). Here we combine the stochastic individual based dynamics of single cells with deterministic dynamics of the abiotic factors. The algorithm for dynamic progression at each time step is depicted in Figure 2. In the tumor site we consider two different cancer cell phenotypes: epithelial (epithelial-like) and mesenchymal (mesenchymal-like) cells. The epithelial-like (E) cancer cells reproduce at a higher rate, but diffuse more slowly than mesenchymal (M) cells, which reproduce at a lower rate but diffuse more rapidly. Furthermore, epithelial cells cannot break through the vasculature wall alone, as they require the presence of mesenchymal cells to be able to intravasate into normal vessel entry-points. The exception to this are ruptured vessels, that allow for the intravasation of any type of cancer cell. The cellular growth and movement in space is modeled considering 2 partial differential equations, where random (diffusion) and non-random (haptotaxis) movement are implemented. The model includes two additional equations: one for the spatio-temporal dynamics of matrix metalloproteinase 2 (MMP-2), a chemical that favors the spread of cancer cells, and another for the degradation of the extracellular matrix (ECM), which also favors the haptotactic movement of the cancer cells. 
-The dimensionless model, as described by [@franssen2019] in Appendix A of their paper, corresponds to 4 PDEs, where the key variables reflect local densities of epithelial cells ($c_E$) and mesenchymal cells ($c_M$), and concentrations of MMP2 ($m$) and extracellular matrix ($w$):
+A 2-dimensional multigrid hybrid spatial model of cancer dynamics is developed in Python (see Figure 1 for a snapshot illustration). Here we combine the stochastic individual based dynamics of single cells with deterministic dynamics of the abiotic factors. In the tumor site we consider two different cancer cell phenotypes: epithelial (epithelial-like) and mesenchymal (mesenchymal-like) cells. The epithelial-like (E) cancer cells reproduce at a higher rate, but diffuse more slowly than mesenchymal (M) cells, which reproduce at a lower rate but diffuse more rapidly. Furthermore, epithelial cells cannot break through the vasculature wall alone, as they require the presence of mesenchymal cells to be able to intravasate into normal vessel entry-points. The exception to this are ruptured vessels, that allow for the intravasation of any type of cancer cell. The cellular growth and movement in space is modeled considering 2 partial differential equations, where random (diffusion) and non-random (haptotaxis) movement are implemented. The model includes two additional equations: one for the spatio-temporal dynamics of matrix metalloproteinase 2 (MMP-2), a chemical that favors the spread of cancer cells, and another for the degradation of the extracellular matrix (ECM), which also favors the haptotactic movement of the cancer cells. 
+We follow the equations as described by [@franssen2019]:
+<!-- The dimensionless model, as described by [@franssen2019] in Appendix A of their paper, corresponds to 4 PDEs, where the key variables reflect local densities of epithelial cells ($c_E$) and mesenchymal cells ($c_M$), and concentrations of MMP2 ($m$) and extracellular matrix ($w$): -->
 
 \begin{equation}
 \begin{aligned}
@@ -50,7 +51,8 @@ The dimensionless model, as described by [@franssen2019] in Appendix A of their 
 \end{aligned}
 \end{equation}
 
-For the simulation of the spatio-temporal growth dynamics, and metastatic spread, the system of PDE's is discretized, and several 2-dimensional grids are established, representing the primary site and the metastatic sites. Discretizing equations for $c_E$ and $c_M$ in space and time, we obtain:
+For the simulation of the spatio-temporal growth dynamics, and metastatic spread, the system of PDE's is discretized
+<!-- , and several 2-dimensional grids are established, representing the primary site and the metastatic sites. Discretizing equations for $c_E$ and $c_M$ in space and time, we obtain:
 
 \begin{equation}
 \begin{aligned}
@@ -70,9 +72,11 @@ Where $n$ refers to time point, $(i,j)$ refers to the spatial grid point $(i,j)$
 \mathcal{P}_{4} : & \mathcal{P}_{i,j}^{n} :=1-(\mathcal{P}_{0} +\mathcal{P}_{1} +\mathcal{P}_{2} +\mathcal{P}_{3})
 \end{aligned}
 \label{probs}
-\end{equation}
+\end{equation} 
 
-represent the probabilities for a cell to move up, down, left, right, or stay in place, and where $k=E,M$ can refer to an epithelial-like or mesenchymal-like cell. Each cell on every grid point at location $(x_i,y_j)$ is modeled as an individual agent, which obeys probability rules for growth and movement. There is a maximal carrying capacity for each grid point given by $Q,$ (assumed equal to 4 in [@franssen2019]), to represent competition for space. There exist a doubling time $T_E$ and $T_M$ for epithelial and mesenchymal cells at which all the cells present in all grids will reproduce, duplicating in place, but never exceeding $Q$.
+represent the probabilities for a cell to move up, down, left, right, or stay in place, and where $k=E,M$ can refer to an epithelial-like or mesenchymal-like cell. -->
+Each cell on every grid point at location $(x_i,y_j)$ is modeled as an individual agent, which obeys probability rules for growth and movement. For more details on the mathematical model, refer to the original publication by @franssen2019 and the [documentation](https://metaspread.readthedocs.io/en/latest).
+<!-- There is a maximal carrying capacity for each grid point given by $Q,$ (assumed equal to 4 in [@franssen2019]), to represent competition for space. There exist a doubling time $T_E$ and $T_M$ for epithelial and mesenchymal cells at which all the cells present in all grids will reproduce, duplicating in place, but never exceeding $Q$. -->
 
 Only the primary site is seeded with an initial number and distribution of cells. In order for the cells to migrate to another site, they must travel through the vasculature, which they do if they intravasate by one of the several randomly selected points in the grid that represent entrances to the vasculature system. The extravasation to one of the metastatic sites only occurs if they survive, a process that is modeled with net probabilistic rules considering time spent in the vasculature, cluster disaggregation, cell type, and potential biases to different destinations.
 
@@ -91,8 +95,6 @@ where $i,j$ reflect the grid point ($i,j$) and $n$ the time-point. In this discr
 ![**Early snapshot of our simulations for cancer cell spread in the primary tumour (grid 1) after approximately 5 days.** Parameters as in Table \ref{table} with initial distribution centered around (1 mm, 1 mm) with radius of about ~0.1 mm, and total initial size = 388 cells. The blue color denotes mesenchymal cells, the orange color denotes epithelial cells. The intensity of the color represents the number of cells (from 0 to Q = 4) in that particular grid point. The red grid points represent entry-points to the vasculature, with circles intact vessels and crosses representing ruptured vessels.](Figure_1.png){width=63%}
 
 # Simulation parameters
-
-![**Diagram summarizing the key algorithmic steps of our simulation program in Python, MetaSpread**](program_flow.png)
 
 The biological parameters of the model and the simulation values are summarized in Table \ref{table}, tailored to breast cancer progression and early-stage dynamics prior to any treatment and in a pre-angiogenic phase (less than 0.2 cm in diameter). We provide the default values used by [@franssen2019], as informed by biological and empirical considerations (see also Table \ref{table} and references therein in [@franssen2019]). The dynamics represent a two-dimensional cross-section of a small avascular tumor and run on a 2-dimensional discrete grid (spatial domain $[0,1] \times [0,1]$ corresponding to physical domain of size $[0,0.2]\text{ cm} \times [0,0.2]\text{ cm}$), where each grid element corresponds to a spatial unit of dimension $(\Delta x,\Delta y)$, and where position $x_i,y_j$ corresponds to $i \Delta x$ and $j \Delta y$. Cancer cells are modeled as discrete agents whose growth and migration dynamics follow probabilistic rules, whereas the abiotic factors MMP2 and extracellular matrix dynamics follow the deterministic PDE evolution, discretized by an explicit five-point central difference discretization scheme together with zero-flux boundary conditions. The challenge of the simulation lies in coupling deterministic and agent-based stochastic dynamics, and in formulating the interface between the primary tumor Grid 1 and the metastatic sites (Grids 2,..$k$). Each grid shares the same parameters, but there can be biases in connectivity parameters between grids ($\mathcal{E}_{k}$ parameters).
 
@@ -186,46 +188,26 @@ The parameters non-dimensional values, as well as their code equivalent name are
 
 # Simulation output, visualization and analysis
 
-To illustrate the performance and capability of MetaSpread, we provide some figures and visualization of the simulations output. In Figure 3 we show a later snapshot of our simulations for cancer cell spread and ECM and MMP2 evolution. In Figure 4 we show temporal dynamics of summary variables, e.g. total cell counts over time up to 12.78 days, possible to be computed after simulation data post-processing. In movies S1-S2 we show how the simulation platform can be used for studying the biological effect of different perturbations in parameters. These movies illustrate animations of the spatiotemporal evolution of a tumor on the primary site in two cases: (S1) diffusion-dominated and (S2) haptotaxis-dominated cellular movement. The first leads to a regular spatiotemporal pattern of growth, more isotropic and round, the second leads to a more irregular growth over space with cellular protrusions extending in some directions.)
-
-# Installation
-
-MetaSpread is available as a official PyPI package. To install, you will need to have PIP installed. Afterwards, run:
-
-```
-pip install metaspread
-```
-
-or:
-
-```
-python -m pip install metaspread
-```
-
-Manual installation can be done by downloading the repo.
-
-Finally, the program can be run interactiively with:
-
-```
-python -m metaspread
-```
-
-Or it can be run purely through command line arguments, as detailed in the Structure of the simulation platform section.
+To illustrate the performance and capability of MetaSpread, we provide some figures and visualization of the simulations output. In Figure 3 we show a later snapshot of our simulations for cancer cell spread and ECM and MMP2 evolution. In Figure 4 we show temporal dynamics of summary variables, e.g. total cell counts over time up to 12.78 days, possible to be computed after simulation data post-processing. In movies S1-S2 we show how the simulation platform can be used for studying the biological effect of different perturbations in parameters. These movies illustrate animations of the spatiotemporal evolution of a tumor on the primary site in two cases: (S1) diffusion-dominated and (S2) haptotaxis-dominated cellular movement. The first leads to a regular spatiotemporal pattern of growth, more isotropic and round, the second leads to a more irregular growth over space with cellular protrusions extending in some directions.
 
 # Outlook
 
-While the model underlying our program [@franssen2019] is simpler than later models developed for cancer invasion [@franssen2021novel;@macnamara2020computational;@chaplain2020multiscale], this simple package enables already deep study of the basic population dynamic processes involved in early tumor dynamics and metastatic growth, and engagement with interesting and important biology (reviewed in @franssen2019). A sufficient but not too hard level of complexity makes it a perfect tool for interaction by non-specialists in the mathematical field, medical doctors, and for researchers willing to explore hypotheses with it, perform simulations or extract from it pedagogical value for students and the wider public. There are several directions for extensions of the algorithm and simulation package. These include improving the computational efficiency and speed of the simulation, which now requires about 24 hours for 28.000 time steps, corresponding to about 12 days. Another venue for extension could be including interaction with the immune system, developing explicitly the interaction of the cancer cells with healthy cells, implementing the effect of treatment, for example adaptive therapies [@west2023survey], mutations and EMT transition. Regarding the metastatic spread, a novelty would be to consider different parameters in different grids, allowing for differential suitability for growth and colonization by arriving cancer cells, which in the current formulation is captured only by the biases in arrival probabilities [@newton2015spatiotemporal]. On the computational side the main challenge relies on making the code flexible for parallel computing so that both the spatial and temporal resolution can be increased, and the scope of the phenomena investigated can be expanded, including cell-level heterogeneity [@waclaw_spatial_2015;@opasic2020cancersim], and the study of features and variation of many stochastic realizations of the same process. Finally, an interesting improvement would be the addition of an upgraded interface that allows the user to interact with the results in a more user-friendly way, at arbitrary time steps, allowing to probe the tumor dynamics at different degrees of spatial resolution, and selec for enhanced visualization or analysis options.
+# Outlook
 
-# Supporting information
+<!-- While the model underlying our program [@franssen2019] is simpler than later models developed for cancer invasion [@franssen2021novel;@macnamara2020computational;@chaplain2020multiscale], this simple package enables already deep study of the basic population dynamic processes involved in early tumor dynamics and metastatic growth, and engagement with interesting and important biology (reviewed in @franssen2019). A sufficient but not too hard level of complexity makes it a perfect tool for interaction by non-specialists in the mathematical field, medical doctors, and for researchers willing to explore hypotheses with it, perform simulations or extract from it pedagogical value for students and the wider public.  -->
+There are several directions for extensions of the algorithm and simulation package. These include improving the computational efficiency and speed of the simulation, which now requires about 24 hours for 28.000 time steps, corresponding to about 12 days. Another venue for extension could be including interaction with the immune system, developing explicitly the interaction of the cancer cells with healthy cells, implementing the effect of treatment, for example adaptive therapies [@west2023survey], mutations and EMT transition. Regarding the metastatic spread, a novelty would be to consider different parameters in different grids, allowing for differential suitability for growth and colonization by arriving cancer cells, which in the current formulation is captured only by the biases in arrival probabilities [@newton2015spatiotemporal]. On the computational side the main challenge relies on making the code flexible for parallel computing so that both the spatial and temporal resolution can be increased, and the scope of the phenomena investigated can be expanded, including cell-level heterogeneity [@waclaw_spatial_2015;@opasic2020cancersim], and the study of features and variation of many stochastic realizations of the same process.
+<!-- Finally, an interesting improvement would be the addition of an upgraded interface that allows the user to interact with the results in a more user-friendly way, at arbitrary time steps, allowing to probe the tumor dynamics at different degrees of spatial resolution, and selec for enhanced visualization or analysis options. -->
+
+<!-- # Supporting information
 
 Supporting videos are available on the paper branch of the Github repository.
-Movie S1: Example 1 of spatiotemporal evolution of tumor growth in the primary site (default parameters, diffusion-dominated movement). Movie S2: Example 2 of spatiotemporal evolution of tumor growth in the primary site (parameters with haptotaxis-dominated movement of cells). All the parameters are as default, except for the diffusion coefficients $D_M$ and $D_E$, where in movie 2 they correspond to $1 \cdot 10^{-10}$ and $0.5 \cdot 10^{-11}$, respectively.
+Movie S1: Example 1 of spatiotemporal evolution of tumor growth in the primary site (default parameters, diffusion-dominated movement). Movie S2: Example 2 of spatiotemporal evolution of tumor growth in the primary site (parameters with haptotaxis-dominated movement of cells). All the parameters are as default, except for the diffusion coefficients $D_M$ and $D_E$, where in movie 2 they correspond to $1 \cdot 10^{-10}$ and $0.5 \cdot 10^{-11}$, respectively. -->
 
 ![**Later snapshot of our simulations for cancer cell spread and ECM and MMP2 evolution in the primary and secondary metastatic site, grid 1 (left) and grid 2 (right) after approximately 12.78 days.** Parameters as in Table \ref{table} with initial distribution centered around (1 mm,1 mm) and total initial size = 388 cells. In the top row, the blue color denotes mesenchymal cells, the orange color denotes epithelial cells. The intensity of the color represents the number of cells (from 0 to Q) in that particular grid point. The red grid points represent entry-points to the vasculature, with circles intact vessels and crosses representing ruptured vessels. In the middle row, we plot the corresponding evolution of the density of the extracellular matrix at the same time points. In the last row we plot the spatial distribution of MMP2.](6 images.png)
 
 ![**Dynamics of total cell counts over time up to 12.78 days.** Top panels: In the primary (left) and secondary (right) tumor grid. Here we illustrate the functionality of the package to yield summaries of the spatiotemporal evolution of the cancer dynamics in the primary and in the metastatic site(s), namely total count of epithelial (E) and mesenchymal (M) cells. Middle panels: Dynamics in the vasculature, showing the amount of E and M cells (left), and the amount clusters (right). Cells can persist as single cells (CTC) or as multicellular clusters. As it can be seen, the majority of cells in the vasculature circulate in the form of clusters (green line) with only a minority being single CTCs (the difference between the red and the green line). Bottom panels: (left) radius and diameter of the spatio-temporal spread Radius is defined as the maximum of all cell distances from the centroid of mass, and diameter as the maximum of all cell-to-cell distances. (Right) distribution histogram of the cells over spatial grid points in the primary grid. The figure is obtained from the simulations corresponding to Figure 3.](dynamics.png)
 
-
+<!-- 
 : Additional table with the original values and dimensions of the parameters provided by @franssen2019.\label{table-sup} []{}
 
 |    **Variable**      | **Dimensional Value**                  |
@@ -245,7 +227,7 @@ Movie S1: Example 1 of spatiotemporal evolution of tumor growth in the primary s
 | $$ \Gamma _{2} $$    | $$1\times 10^{-4}$$ M$^{-1}$s$^{-1}$ |
 | $$ T_{V}  $$         | $$7.2\times 10^{3}$$ s     |
 | $$ T_{M}  $$         | $$1.2\times 10^{5}$$ s     |
-| $$ T_{E}  $$         | $$8\times 10^{4}$$ s       |
+| $$ T_{E}  $$         | $$8\times 10^{4}$$ s       | -->
 
 # Acknowledgements
 
