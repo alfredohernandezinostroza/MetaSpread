@@ -51,7 +51,7 @@ We follow the equations as described by [@franssen2019]:
 \end{aligned}
 \end{equation}
 
-For the simulation of the spatio-temporal growth dynamics, and metastatic spread, the system of PDE's is discretized
+For the simulation of the spatio-temporal growth dynamics, and metastatic spread, the system of PDE's is discretized.
 <!-- , and several 2-dimensional grids are established, representing the primary site and the metastatic sites. Discretizing equations for $c_E$ and $c_M$ in space and time, we obtain:
 
 \begin{equation}
@@ -75,12 +75,12 @@ Where $n$ refers to time point, $(i,j)$ refers to the spatial grid point $(i,j)$
 \end{equation} 
 
 represent the probabilities for a cell to move up, down, left, right, or stay in place, and where $k=E,M$ can refer to an epithelial-like or mesenchymal-like cell. -->
-Each cell on every grid point at location $(x_i,y_j)$ is modeled as an individual agent, which obeys probability rules for growth and movement. For more details on the mathematical model, refer to the original publication by @franssen2019 and the [documentation](https://metaspread.readthedocs.io/en/latest).
+Each cell on every grid point at location $(x_i,y_j)$ is modeled as an individual agent, which obeys probability rules for growth and movement. For more details on the mathematical model, refer to the original publication by @franssen2019 and MetaSpread's [documentation](https://metaspread.readthedocs.io/en/latest).
 <!-- There is a maximal carrying capacity for each grid point given by $Q,$ (assumed equal to 4 in [@franssen2019]), to represent competition for space. There exist a doubling time $T_E$ and $T_M$ for epithelial and mesenchymal cells at which all the cells present in all grids will reproduce, duplicating in place, but never exceeding $Q$. -->
 
-Only the primary site is seeded with an initial number and distribution of cells. In order for the cells to migrate to another site, they must travel through the vasculature, which they do if they intravasate by one of the several randomly selected points in the grid that represent entrances to the vasculature system. The extravasation to one of the metastatic sites only occurs if they survive, a process that is modeled with net probabilistic rules considering time spent in the vasculature, cluster disaggregation, cell type, and potential biases to different destinations.
+<!-- Only the primary site is seeded with an initial number and distribution of cells. In order for the cells to migrate to another site, they must travel through the vasculature, which they do if they intravasate by one of the several randomly selected points in the grid that represent entrances to the vasculature system. The extravasation to one of the metastatic sites only occurs if they survive, a process that is modeled with net probabilistic rules considering time spent in the vasculature, cluster disaggregation, cell type, and potential biases to different destinations. -->
 
-For the abiotic factors $m$ and $w$, the discretization takes the form (see Appendices in [@franssen2019]):
+<!-- For the abiotic factors $m$ and $w$, the discretization takes the form (see Appendices in [@franssen2019]):
 
 \begin{equation}
 \begin{aligned}
@@ -90,7 +90,7 @@ w_{i,j}^{n+1} = & w_{i,j}^{n}\left[ 1-\Delta t_{a}\left( \Gamma _{1} c{_{M}^{n}}
 \end{aligned}
 \end{equation}
 
-where $i,j$ reflect the grid point ($i,j$) and $n$ the time-point. In this discretization two different time and spatial steps are used for the cell population (E and M cells) and the abiotic factors (ECM and MMP-2), namely $\Delta t$ and $\Delta x = \Delta y$, $\Delta t_a$ and $\Delta x_a = \Delta y_a$ respectively.
+where $i,j$ reflect the grid point ($i,j$) and $n$ the time-point. In this discretization two different time and spatial steps are used for the cell population (E and M cells) and the abiotic factors (ECM and MMP-2), namely $\Delta t$ and $\Delta x = \Delta y$, $\Delta t_a$ and $\Delta x_a = \Delta y_a$ respectively. -->
 
 ![**Early snapshot of our simulations for cancer cell spread in the primary tumour (grid 1) after approximately 5 days.** Parameters as in Table \ref{table} with initial distribution centered around (1 mm, 1 mm) with radius of about ~0.1 mm, and total initial size = 388 cells. The blue color denotes mesenchymal cells, the orange color denotes epithelial cells. The intensity of the color represents the number of cells (from 0 to Q = 4) in that particular grid point. The red grid points represent entry-points to the vasculature, with circles intact vessels and crosses representing ruptured vessels.](Figure_1.png){width=63%}
 
@@ -104,7 +104,7 @@ The vasculature is the structure connecting the primary and secondary sites, and
 
 Extravasation rules follow the setup in the original paper [@franssen2019], ensuring arriving cells do not violate the carrying capacity. Metastatic growth after extravasation follows the same rules as in the original grid. 
 
-# Structure of the simulation platform
+<!-- # Structure of the simulation platform
 \label{structure-sim}
 
 The program can be run both interactively through the command line, or with explicit user command line arguments.
@@ -184,13 +184,11 @@ The parameters non-dimensional values, as well as their code equivalent name are
 | $$ -  $$             | `grids_number`                   | Nr. of grids, including the primary site                                      | $$  3   $$                 |
 | $$ -  $$             | `mesenchymal_proportion`         | Initial proportion of M cells in grid 1                                       | $$  0.6   $$               |
 | $$ -  $$             | `epithelial_proportion`          | Initial proportion of E cells in grid 1                                       | $$  0.4   $$               |
-| $$ -  $$             | `number_of_initial_cells`      | Initial nr. of total cells                                                    | $$  388   $$               |
+| $$ -  $$             | `number_of_initial_cells`      | Initial nr. of total cells                                                    | $$  388   $$               | -->
 
 # Simulation output, visualization and analysis
 
 To illustrate the performance and capability of MetaSpread, we provide some figures and visualization of the simulations output. In Figure 3 we show a later snapshot of our simulations for cancer cell spread and ECM and MMP2 evolution. In Figure 4 we show temporal dynamics of summary variables, e.g. total cell counts over time up to 12.78 days, possible to be computed after simulation data post-processing. In movies S1-S2 we show how the simulation platform can be used for studying the biological effect of different perturbations in parameters. These movies illustrate animations of the spatiotemporal evolution of a tumor on the primary site in two cases: (S1) diffusion-dominated and (S2) haptotaxis-dominated cellular movement. The first leads to a regular spatiotemporal pattern of growth, more isotropic and round, the second leads to a more irregular growth over space with cellular protrusions extending in some directions.
-
-# Outlook
 
 # Outlook
 
