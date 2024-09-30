@@ -51,7 +51,6 @@ We follow the equations as described by @franssen2019:
 \end{aligned}
 \end{equation}
 
-For the simulation of the spatio-temporal growth dynamics, and metastatic spread, the system of PDE's is discretized.
 <!-- , and several 2-dimensional grids are established, representing the primary site and the metastatic sites. Discretizing equations for $c_E$ and $c_M$ in space and time, we obtain:
 
 \begin{equation}
@@ -78,8 +77,9 @@ represent the probabilities for a cell to move up, down, left, right, or stay in
 
 ![**Early snapshot of our simulations for cancer cell spread in the primary tumour (grid 1) after approximately 5 days.** Parameters set as default with initial distribution centered around (1 mm, 1 mm) with radius of about ~0.1 mm, and total initial size = 388 cells. The blue color denotes mesenchymal cells, the orange color denotes epithelial cells. The intensity of the color represents the number of cells (from 0 to Q = 4) in that particular grid point. The red grid points represent entry-points to the vasculature, with circles intact vessels and crosses representing ruptured vessels.](Figure_1.png){width=63%}
 
+# Implementation
 
-Each cell on every grid point at location $(x_i,y_j)$ is modeled as an individual agent, which obeys probability rules for growth and movement. For more details on the mathematical model, refer to the original publication by @franssen2019 and MetaSpread's [documentation](https://metaspread.readthedocs.io/en/latest).
+For the simulation of the spatio-temporal growth dynamics, and metastatic spread, the system of PDE's is discretized. Each cell on every grid point at location $(x_i,y_j)$ is modeled as an individual agent, which obeys probability rules for growth and movement. For more details on the implementation, API, interactive CLI, mathematical model, and data analysis tools refer to the original publication by @franssen2019 and MetaSpread's [documentation](https://metaspread.readthedocs.io/en/latest).
 <!-- There is a maximal carrying capacity for each grid point given by $Q,$ (assumed equal to 4 in [@franssen2019]), to represent competition for space. There exist a doubling time $T_E$ and $T_M$ for epithelial and mesenchymal cells at which all the cells present in all grids will reproduce, duplicating in place, but never exceeding $Q$. -->
 
 <!-- Only the primary site is seeded with an initial number and distribution of cells. In order for the cells to migrate to another site, they must travel through the vasculature, which they do if they intravasate by one of the several randomly selected points in the grid that represent entrances to the vasculature system. The extravasation to one of the metastatic sites only occurs if they survive, a process that is modeled with net probabilistic rules considering time spent in the vasculature, cluster disaggregation, cell type, and potential biases to different destinations. -->
@@ -191,6 +191,7 @@ The parameters non-dimensional values, as well as their code equivalent name are
 <!-- # Simulation output, visualization and analysis
 
 To illustrate the performance and capability of MetaSpread, we provide some figures and visualization of the simulations output. In Figure 3 we show a later snapshot of our simulations for cancer cell spread and ECM and MMP2 evolution. In Figure 4 we show temporal dynamics of summary variables, e.g. total cell counts over time up to 12.78 days, possible to be computed after simulation data post-processing. In movies S1-S2 we show how the simulation platform can be used for studying the biological effect of different perturbations in parameters. These movies illustrate animations of the spatiotemporal evolution of a tumor on the primary site in two cases: (S1) diffusion-dominated and (S2) haptotaxis-dominated cellular movement. The first leads to a regular spatiotemporal pattern of growth, more isotropic and round, the second leads to a more irregular growth over space with cellular protrusions extending in some directions. -->
+
 
 # Outlook
 
