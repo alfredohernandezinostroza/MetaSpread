@@ -8,7 +8,7 @@ tags:
   - cancer
   - metastasis
 authors:
-  - name: Alfredo Hernández-Inostroza
+  - name: Alfredo Hernandez-Inostroza
     orcid: 0000-0002-4708-3275
     corresponding: true
     affiliation: 1
@@ -39,7 +39,7 @@ Models of tumor growth and metastatic spread are critical for understanding the 
 # Cancer growth and spread model
 
 A 2-dimensional multigrid hybrid spatial model of cancer dynamics is developed in Python (see Figure 1 for a snapshot illustration). Here we combine the stochastic individual based dynamics of single cells with deterministic dynamics of the abiotic factors. In the tumor site we consider two different cancer cell phenotypes: epithelial (epithelial-like) and mesenchymal (mesenchymal-like) cells. The epithelial-like (E) cancer cells reproduce at a higher rate, but diffuse more slowly than mesenchymal (M) cells, which reproduce at a lower rate but diffuse more rapidly. Furthermore, epithelial cells cannot break through the vasculature wall alone, as they require the presence of mesenchymal cells to be able to intravasate into normal vessel entry-points. The exception to this are ruptured vessels, that allow for the intravasation of any type of cancer cell. The cellular growth and movement in space is modeled considering 2 partial differential equations, where random (diffusion) and non-random (haptotaxis) movement are implemented. The model includes two additional equations: one for the spatio-temporal dynamics of matrix metalloproteinase 2 (MMP-2), a chemical that favors the spread of cancer cells, and another for the degradation of the extracellular matrix (ECM), which also favors the haptotactic movement of the cancer cells. 
-We follow the equations as described by [@franssen2019]:
+We follow the equations as described by @franssen2019:
 <!-- The dimensionless model, as described by [@franssen2019] in Appendix A of their paper, corresponds to 4 PDEs, where the key variables reflect local densities of epithelial cells ($c_E$) and mesenchymal cells ($c_M$), and concentrations of MMP2 ($m$) and extracellular matrix ($w$): -->
 
 \begin{equation}
@@ -188,9 +188,9 @@ The parameters non-dimensional values, as well as their code equivalent name are
 | $$ -  $$             | `epithelial_proportion`          | Initial proportion of E cells in grid 1                                       | $$  0.4   $$               |
 | $$ -  $$             | `number_of_initial_cells`      | Initial nr. of total cells                                                    | $$  388   $$               | -->
 
-# Simulation output, visualization and analysis
+<!-- # Simulation output, visualization and analysis
 
-To illustrate the performance and capability of MetaSpread, we provide some figures and visualization of the simulations output. In Figure 3 we show a later snapshot of our simulations for cancer cell spread and ECM and MMP2 evolution. In Figure 4 we show temporal dynamics of summary variables, e.g. total cell counts over time up to 12.78 days, possible to be computed after simulation data post-processing. In movies S1-S2 we show how the simulation platform can be used for studying the biological effect of different perturbations in parameters. These movies illustrate animations of the spatiotemporal evolution of a tumor on the primary site in two cases: (S1) diffusion-dominated and (S2) haptotaxis-dominated cellular movement. The first leads to a regular spatiotemporal pattern of growth, more isotropic and round, the second leads to a more irregular growth over space with cellular protrusions extending in some directions.
+To illustrate the performance and capability of MetaSpread, we provide some figures and visualization of the simulations output. In Figure 3 we show a later snapshot of our simulations for cancer cell spread and ECM and MMP2 evolution. In Figure 4 we show temporal dynamics of summary variables, e.g. total cell counts over time up to 12.78 days, possible to be computed after simulation data post-processing. In movies S1-S2 we show how the simulation platform can be used for studying the biological effect of different perturbations in parameters. These movies illustrate animations of the spatiotemporal evolution of a tumor on the primary site in two cases: (S1) diffusion-dominated and (S2) haptotaxis-dominated cellular movement. The first leads to a regular spatiotemporal pattern of growth, more isotropic and round, the second leads to a more irregular growth over space with cellular protrusions extending in some directions. -->
 
 # Outlook
 
@@ -202,10 +202,10 @@ There are several directions for extensions of the algorithm and simulation pack
 
 Supporting videos are available on the paper branch of the Github repository.
 Movie S1: Example 1 of spatiotemporal evolution of tumor growth in the primary site (default parameters, diffusion-dominated movement). Movie S2: Example 2 of spatiotemporal evolution of tumor growth in the primary site (parameters with haptotaxis-dominated movement of cells). All the parameters are as default, except for the diffusion coefficients $D_M$ and $D_E$, where in movie 2 they correspond to $1 \cdot 10^{-10}$ and $0.5 \cdot 10^{-11}$, respectively. -->
-
+<!-- 
 ![**Later snapshot of our simulations for cancer cell spread and ECM and MMP2 evolution in the primary and secondary metastatic site, grid 1 (left) and grid 2 (right) after approximately 12.78 days.** Parameters set as default with initial distribution centered around (1 mm,1 mm) and total initial size = 388 cells. In the top row, the blue color denotes mesenchymal cells, the orange color denotes epithelial cells. The intensity of the color represents the number of cells (from 0 to Q) in that particular grid point. The red grid points represent entry-points to the vasculature, with circles intact vessels and crosses representing ruptured vessels. In the middle row, we plot the corresponding evolution of the density of the extracellular matrix at the same time points. In the last row we plot the spatial distribution of MMP2.](6 images.png)
 
-![**Dynamics of total cell counts over time up to 12.78 days.** Top panels: In the primary (left) and secondary (right) tumor grid. Here we illustrate the functionality of the package to yield summaries of the spatiotemporal evolution of the cancer dynamics in the primary and in the metastatic site(s), namely total count of epithelial (E) and mesenchymal (M) cells. Middle panels: Dynamics in the vasculature, showing the amount of E and M cells (left), and the amount clusters (right). Cells can persist as single cells (CTC) or as multicellular clusters. As it can be seen, the majority of cells in the vasculature circulate in the form of clusters (green line) with only a minority being single CTCs (the difference between the red and the green line). Bottom panels: (left) radius and diameter of the spatio-temporal spread Radius is defined as the maximum of all cell distances from the centroid of mass, and diameter as the maximum of all cell-to-cell distances. (Right) distribution histogram of the cells over spatial grid points in the primary grid. The figure is obtained from the simulations corresponding to Figure 3.](dynamics.png)
+![**Dynamics of total cell counts over time up to 12.78 days.** Top panels: In the primary (left) and secondary (right) tumor grid. Here we illustrate the functionality of the package to yield summaries of the spatiotemporal evolution of the cancer dynamics in the primary and in the metastatic site(s), namely total count of epithelial (E) and mesenchymal (M) cells. Middle panels: Dynamics in the vasculature, showing the amount of E and M cells (left), and the amount clusters (right). Cells can persist as single cells (CTC) or as multicellular clusters. As it can be seen, the majority of cells in the vasculature circulate in the form of clusters (green line) with only a minority being single CTCs (the difference between the red and the green line). Bottom panels: (left) radius and diameter of the spatio-temporal spread Radius is defined as the maximum of all cell distances from the centroid of mass, and diameter as the maximum of all cell-to-cell distances. (Right) distribution histogram of the cells over spatial grid points in the primary grid. The figure is obtained from the simulations corresponding to Figure 3.](dynamics.png) -->
 
 <!-- 
 : Additional table with the original values and dimensions of the parameters provided by @franssen2019.\label{table-sup} []{}
