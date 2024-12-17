@@ -1,11 +1,14 @@
 from metaspread.cancermodel import CancerModel
 from metaspread.cancercell import CancerCell
 import numpy as np
+import pandas as pd
 import pytest
+import ast
+
 #todo: model is not callable (duh! I think I cannot call a private variable (is it though?))
 #todo: use tmp_path_facorty to create the model once, and use it for the rest of the tests
 
-def test_phenotype(tmp_path) -> None:
+def test_cencercell(tmp_path) -> None:
     temp_simulation_folder = tmp_path / "test_simulation"
     temp_simulation_folder.mkdir()
     model = CancerModel(
@@ -57,7 +60,3 @@ def test_phenotype(tmp_path) -> None:
             assert (agent.phenotype  ==  "mesenchymal" or  agent.phenotype  ==  "epithelial" )
             assert  np.array_equal(agent.ecm , ccell.ecm)
             assert  np.array_equal(agent.mmp2, ccell.mmp2)
-
-
-    
-    

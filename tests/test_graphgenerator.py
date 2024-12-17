@@ -12,6 +12,6 @@ def test_imports():
     assert graphgenerator.metaspread.configs is not None
 
 def test_generate_graph(mocker):
-    mocker.patch('metaspread.graphgenerator.generate_graph')
-    graphgenerator.generate_graph()
-    assert graphgenerator.generate_graph.called
+    mocker.patch('metaspread.graphgenerator.generate_graphs')
+    graphgenerator.generate_graphs()
+    assert graphgenerator.generate_graphs.called
