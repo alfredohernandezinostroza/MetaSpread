@@ -205,7 +205,7 @@ class CancerModel(mesa.Model):
                             self.schedule.add(ccell)
                         ccells_amount -= 1
                     
-        #Perform ECM and MMP@ calculations
+        #Perform ECM and MMP2 calculations
         self.calculate_environment(self.mmp2, self.ecm)
         
         # Proliferation
