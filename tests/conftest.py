@@ -8,5 +8,3 @@ import pytest
 @pytest.fixture
 def random():
     rand.seed(1)
-    random.getstate()[1][0]
-     
