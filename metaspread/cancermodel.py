@@ -63,7 +63,7 @@ def count_vasculature_cells(model):
     Returns:
         amount_of_cells (int): the total amount of cells in the vasculature
     """
-    amount_of_cells = sum([len(value) for value in model.vasculature.values()])
+    amount_of_cells = sum([sum(x+y for x,y in value) for value in model.vasculature.values()])
     return amount_of_cells
 
 class CancerModel(mesa.Model):
