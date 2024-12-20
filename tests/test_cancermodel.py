@@ -1,5 +1,6 @@
 import pytest
 from metaspread import cancermodel
+from metaspread import configs
 
 def test_imports():
     assert cancermodel.mesa is not None
@@ -29,7 +30,7 @@ import ast
 #todo: model is not callable (duh! I think I cannot call a private variable (is it though?))
 #todo: use tmp_path_facorty to create the model once, and use it for the rest of the tests
 
-def test_cencermodel(tmp_path) -> None:
+def test_cancermodel(tmp_path) -> None:
     temp_simulation_folder = tmp_path / "test_simulation"
     temp_simulation_folder.mkdir()
     model = CancerModel(
@@ -54,3 +55,23 @@ def test_cencermodel(tmp_path) -> None:
     model.proliferate("mesenchymal")
     model.proliferate("epithelial")
     assert 2*current_cell_count == list(map(type, model.schedule.agents)).count(CancerCell)
+
+    grids_number = model.grids_number
+    for i in range(grids_number):
+        assert (model.ecm[i]  == 1.0).all() == True
+        assert (model.mmp2[i] == 0.0).all() == True
+
+    #call calculate_environment
+    model.calculate_environment(model.mmp2, model.ecm)
+    assert (model.ecm[0]  == 1.0).all() == False
+    assert (model.mmp2[0] == 0.0).all() == False
+    for i in range(1,grids_number):
+        assert (model.ecm[i]  == 1.0).all() == True 
+        assert (model.mmp2[i] == 0.0).all() == True
+
+    for i in range(100):
+        for j in range(100):
+            print(i,j)
+            model.vasculature = {1: [(i,j)]}
+            model.disaggregate_clusters(1)
+            assert sum(x+y for x,y in model.vasculature[1]) == i + j
