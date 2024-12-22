@@ -79,7 +79,7 @@ class CancerModel(mesa.Model):
     height: int
         the height of each grid
     grids_number: int
-        the amount of sites, consideiring the intial tumour site + the secondary sites
+        the amount of sites, consideiring the initial tumour site + the secondary sites
     seed: int
         the seed used for the random number generation for all the simulation.
         If None, the random one will be selected by default.
@@ -98,7 +98,7 @@ class CancerModel(mesa.Model):
 
     def __init__(self, number_of_initial_cells, width, height, grids_number, max_steps, data_collection_period, new_simulation_folder, loaded_simulation_path="", seed=None):
         super().__init__()  
-        self.simulations_dir = "Simulations"
+        # self.simulations_dir = "Simulations"
         self.vasculature = {}
         self.number_of_initial_cells = number_of_initial_cells
         self.width = width
@@ -237,30 +237,30 @@ class CancerModel(mesa.Model):
             self.datacollector.collect(self)
             current_agents_state = self.datacollector.get_agent_vars_dataframe()
             current_agents_state = current_agents_state.reset_index(level=["Step", "AgentID"])
-            path_to_save = os.path.join(self.simulations_dir, self.new_simulation_folder, f'CellsData.csv')
+            path_to_save = os.path.join(self.new_simulation_folder, f'CellsData.csv')
             if not self.previous_cell_data.empty:
                 current_agents_state["Step"] += self.loaded_max_step
                 current_agents_state = pd.concat([self.previous_cell_data, current_agents_state])
             current_agents_state.to_csv(path_to_save)
             #pickling a model could be an option in the future
-            # backup_file_path = os.path.join(self.simulations_dir, self.new_simulation_folder, "Backup", "backup.p")
+            # backup_file_path = os.path.join(self.new_simulation_folder, "Backup", "backup.p")
             # with open(backup_file_path, "wb") as f:
             #     pickle.dump(self, f)
             df_time_grids_got_populated = pd.DataFrame()
             for grid_id in self.grid_ids:
                 new_mmp2_df = pd.DataFrame(self.mmp2[grid_id-1][0,:,:])
                 mmp2CsvName = f"Mmp2-{grid_id}grid-{self.schedule.time + self.loaded_max_step}step.csv"
-                path_to_save = os.path.join(self.simulations_dir, self.new_simulation_folder, "Mmp2", mmp2CsvName)
+                path_to_save = os.path.join(self.new_simulation_folder, "Mmp2", mmp2CsvName)
                 new_mmp2_df.to_csv(path_to_save)
 
                 new_ecm_df = pd.DataFrame(self.ecm[grid_id-1][0,:,:])
                 EcmCsvName = f"Ecm-{grid_id}grid-{self.schedule.time + self.loaded_max_step}step.csv"
-                path_to_save = os.path.join(self.simulations_dir, self.new_simulation_folder, "Ecm", EcmCsvName)
+                path_to_save = os.path.join(self.new_simulation_folder, "Ecm", EcmCsvName)
                 new_ecm_df.to_csv(path_to_save)
 
                 df_time_grids_got_populated[f"Time when grid {grid_id} was first populated"] = [self.time_grid_got_populated[grid_id-1]]
                 df_time_grids_got_populated_csv_name = f"Cells-are-present-grid-{grid_id}-{self.schedule.time + self.loaded_max_step}step.csv"
-            path_to_save = os.path.join(self.simulations_dir, self.new_simulation_folder, "Time when grids were populated", df_time_grids_got_populated_csv_name)
+            path_to_save = os.path.join(self.new_simulation_folder, "Time when grids were populated", df_time_grids_got_populated_csv_name)
             df_time_grids_got_populated.to_csv(path_to_save)
 
             # Saves vasculature data
@@ -268,7 +268,7 @@ class CancerModel(mesa.Model):
             vasculature_json = json.dumps(self.vasculature)
             
             vasculature_json_name = f"Vasculature-{self.schedule.time + self.loaded_max_step}step.json"
-            path_to_save = os.path.join(self.simulations_dir, self.new_simulation_folder, "Vasculature", vasculature_json_name)
+            path_to_save = os.path.join(self.new_simulation_folder, "Vasculature", vasculature_json_name)
             
             with open(path_to_save, 'w') as f:
                 f.write(vasculature_json)
@@ -282,7 +282,7 @@ class CancerModel(mesa.Model):
             #     df_step_model_data = pd.DataFrame(step_model_data)
             #     df_step_model_data["Step"] = step + self.loaded_max_step
             #     df_current_model_data = pd.concat([df_current_model_data, df_step_model_data])
-            # path_to_save = os.path.join(self.simulations_dir, self.new_simulation_folder, f'CellsData.csv')
+            # path_to_save = os.path.join(self.new_simulation_folder, f'CellsData.csv')
             # df_current_model_data.to_csv(path_to_save)
 
 
@@ -325,8 +325,8 @@ class CancerModel(mesa.Model):
             ecm_files.sort(key  = lambda file_name: int(file_name.split('step')[0][10:]))
             last_state_of_mmp2_filepath = os.path.join(mmp2_files_path,mmp2_files[-1])
             last_state_of_ecm_filepath  = os.path.join(ecm_files_path,ecm_files[-1])
-            print(f"Loaded MMP2 state for grid id {grid_number + 1} in {last_state_of_mmp2_filepath}.")
-            print(f"Loaded ECM state for grid id {grid_number + 1} in {last_state_of_ecm_filepath}.")
+            print(f"Loading MMP2 state for grid id {grid_number + 1} in {last_state_of_mmp2_filepath}.")
+            print(f"Loading ECM state for grid id {grid_number + 1} in {last_state_of_ecm_filepath}.")
             self.ecm[grid_number][0,:,:]  = pd.read_csv(last_state_of_ecm_filepath, index_col=0).to_numpy(dtype=float)
             self.mmp2[grid_number][0,:,:] = pd.read_csv(last_state_of_mmp2_filepath, index_col=0).to_numpy(dtype=float)
 
