@@ -96,9 +96,14 @@ class CancerModel(mesa.Model):
         For a given time, it will dissagregate single cells from clusters
     """
 
-    def __init__(self, number_of_initial_cells, width, height, grids_number, max_steps, data_collection_period, new_simulation_folder, loaded_simulation_path="", seed=None):
+    def __init__(self, number_of_initial_cells, width, height, grids_number, max_steps, data_collection_period, new_simulation_folder, loaded_simulation_path="", fixed_p_left=None, fixed_p_right=None, fixed_p_top=None, fixed_p_bottom=None, seed=None):
         super().__init__()  
         # self.simulations_dir = "Simulations"
+        
+        self.fixed_p_left=fixed_p_left
+        self.fixed_p_right=fixed_p_right
+        self.fixed_p_top=fixed_p_top
+        self.fixed_p_bottom=fixed_p_bottom
         self.vasculature = {}
         self.number_of_initial_cells = number_of_initial_cells
         self.width = width

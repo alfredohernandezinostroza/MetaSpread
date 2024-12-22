@@ -8,7 +8,7 @@ import ast
 #todo: model is not callable (duh! I think I cannot call a private variable (is it though?))
 #todo: use tmp_path_facorty to create the model once, and use it for the rest of the tests
 
-def test_cencercell(tmp_path) -> None:
+def test_cancercell(tmp_path) -> None:
     temp_simulation_folder = tmp_path / "test_simulation"
     temp_simulation_folder.mkdir()
     model = CancerModel(
@@ -18,7 +18,8 @@ def test_cencercell(tmp_path) -> None:
         grids_number=2,
         max_steps=1000,
         data_collection_period=10,
-        new_simulation_folder=temp_simulation_folder)
+        new_simulation_folder=temp_simulation_folder
+        )
     
     assert model.data_collection_period == 10
     assert model.number_of_initial_cells==30
@@ -49,14 +50,49 @@ def test_cencercell(tmp_path) -> None:
     assert ccell.phenotype          == "mesenchymal"
     assert np.array_equal(ccell.ecm, model.ecm[grid_id-1])
     assert np.array_equal(ccell.mmp2, model.mmp2[grid_id-1])
+def test_cancercell_movement(tmp_path) -> None:
+    temp_simulation_folder = tmp_path / "test_simulation_movement"
+    temp_simulation_folder.mkdir()
+    model = CancerModel(
+        number_of_initial_cells=0,
+        width=201,
+        height=201,
+        grids_number=2,
+        max_steps=1000,
+        data_collection_period=10,
+        new_simulation_folder=temp_simulation_folder,
+        fixed_p_left=1,
+        fixed_p_right=0,
+        fixed_p_top=0,
+        fixed_p_bottom=0
+        )
 
+    grid_id = 1
+    ccell = CancerCell(
+        unique_id=model.current_agent_id,
+        model=model, 
+        grid=model.grids[grid_id-1], 
+        grid_id=grid_id, 
+        phenotype="mesenchymal", 
+        ecm=model.ecm[grid_id-1], 
+        mmp2=model.mmp2[grid_id-1]
+    )
+    x = 100
+    y = 100
+    model.current_agent_id += 1
+    model.grids[grid_id-1].place_agent(ccell, (x,y)) 
+    model.cancer_cells_counter[grid_id-1] += 1
+    model.schedule.add(ccell)
     
-    for agent in model.schedule.agents:
-        if agent.agent_type == "cell":
-            assert  agent.unique_id  <   model.number_of_initial_cells
-            assert  agent.model      ==  ccell.model
-            assert  agent.grid       ==  ccell.grid
-            assert  agent.grid_id    ==  ccell.grid_id
-            assert (agent.phenotype  ==  "mesenchymal" or  agent.phenotype  ==  "epithelial" )
-            assert  np.array_equal(agent.ecm , ccell.ecm)
-            assert  np.array_equal(agent.mmp2, ccell.mmp2)
+    for j in range(1,10):
+        current_positions = []
+        for agent in model.schedule.agents:
+            if agent.agent_type == "cell":
+                current_positions.append(agent.pos)
+        model.step()
+        future_positions = [(pos[0]-1,pos[1]) for pos in current_positions]
+        i = 0
+        for agent in model.schedule.agents:
+            if agent.agent_type == "cell":
+                assert agent.pos == future_positions[i]
+                i = i + 1

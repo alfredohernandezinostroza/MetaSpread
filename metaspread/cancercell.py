@@ -24,6 +24,13 @@ class CancerCell(mesa.Agent):
         self.move()
 
     def move(self):
+        #fixed probabilities can be given to fix the movement of the cells towards a certain direction
+        #if no fixed probabilities are given, the probabilities are calculated based on the ECM and MMP-2 concentration
+        #(the fixed probabilities are only used for testing)
+        fixed_p_left    = self.model.fixed_p_left
+        fixed_p_right   = self.model.fixed_p_right
+        fixed_p_top     = self.model.fixed_p_top
+        fixed_p_bottom  = self.model.fixed_p_bottom
         time = self.model.schedule.time
         possible_steps = self.grid.get_neighborhood(
             self.pos,
@@ -34,11 +41,27 @@ class CancerCell(mesa.Agent):
         on_right_border   = self.grid.out_of_bounds((x+1,y))
         on_top_border     = self.grid.out_of_bounds((x,y+1))
         on_bottom_border  = self.grid.out_of_bounds((x,y-1))
-        p_left = 0 if on_left_border else (th/xh**2*(self.diff_coeff-self.phi/4*(0 if on_right_border else self.ecm[0,x+1,y]-self.ecm[0,x-1,y])))
-        p_right = 0 if on_right_border else (th/xh**2*(self.diff_coeff+self.phi/4*(0 if on_left_border else self.ecm[0,x+1,y]-self.ecm[0,x-1,y])))
-        p_top = 0 if on_top_border else (th/xh**2*(self.diff_coeff+self.phi/4*(0 if on_bottom_border else self.ecm[0,x,y+1]-self.ecm[0,x,y-1])))
-        p_bottom = 0 if on_bottom_border else (th/xh**2*(self.diff_coeff-self.phi/4*(0 if on_top_border else self.ecm[0,x,y+1]-self.ecm[0,x,y-1])))
-        p_stay = 1-(p_left+p_right+p_top+p_bottom)
+        p_left   = (fixed_p_left if fixed_p_left is not None
+                        else 0 if on_left_border 
+                        else (th/xh**2*(self.diff_coeff-self.phi/4*
+                            (0  if on_right_border
+                                else self.ecm[0,x+1,y]-self.ecm[0,x-1,y]))))
+        p_right  = (fixed_p_right if fixed_p_right is not None
+                        else 0 if on_right_border 
+                        else (th/xh**2*(self.diff_coeff+self.phi/4*
+                            (0  if on_left_border
+                                else self.ecm[0,x+1,y]-self.ecm[0,x-1,y]))))
+        p_top    = (fixed_p_top if fixed_p_top is not None
+                        else 0 if on_top_border 
+                        else (th/xh**2*(self.diff_coeff+self.phi/4*
+                            (0  if on_bottom_border
+                                else self.ecm[0,x,y+1]-self.ecm[0,x,y-1]))))
+        p_bottom = (fixed_p_bottom if fixed_p_bottom is not None
+                        else 0 if on_bottom_border 
+                        else (th/xh**2*(self.diff_coeff-self.phi/4*
+                            (0  if on_top_border
+                                else self.ecm[0,x,y+1]-self.ecm[0,x,y-1]))))
+        p_stay      = 1-(p_left+p_right+p_top+p_bottom)
 
         weights=[]
         for x2,y2 in possible_steps:
@@ -52,6 +75,7 @@ class CancerCell(mesa.Agent):
                 weights.append(p_top)
             else:
                 weights.append(p_stay)
+        #there is a chance that the probability should be calculated at the end as 1-sum(weights), have to check
 
 
         # new_position = (x,y+1)
