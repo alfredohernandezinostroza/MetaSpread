@@ -443,30 +443,32 @@ class CancerModel(mesa.Model):
                 temp = num_ruptured_vessels
                 while temp > 0:
                     j = num_ruptured_vessels - temp
-                    cell_to_place = [self.random.randrange(self.width), self.random.randrange(self.height)]
-                    if cell_to_place in pos_coords:
+                    coord_to_place = [self.random.randrange(self.width), self.random.randrange(self.height)]
+                    if coord_to_place in pos_coords:
                         a = Vessel(self.current_agent_id, self, True, self.grids[0], self.grid_ids[0])
                         self.current_agent_id += 1
                         self.schedule.add(a)
-                        self.grids[0].place_agent(a, (int(cell_to_place[0]), int(cell_to_place[1])))
-                        not_possible_array[cell_to_place[0], cell_to_place[1]] = 1
-                        pos_coords.remove(cell_to_place)
+                        self.grids[0].place_agent(a, (int(coord_to_place[0]), int(coord_to_place[1])))
+                        self.grid_vessels_positions[i] += [(int(coord_to_place[0]), int(coord_to_place[1]))]
+                        not_possible_array[coord_to_place[0], coord_to_place[1]] = 1
+                        pos_coords.remove(coord_to_place)
                         temp -= 1
 
                 temp = num_normal_vessels
                 while temp > 0:
                     j = num_normal_vessels - temp
-                    cell_to_place = [self.random.randrange(self.width), self.random.randrange(self.height)]
-                    if cell_to_place in pos_coords:
+                    coord_to_place = [self.random.randrange(self.width), self.random.randrange(self.height)]
+                    if coord_to_place in pos_coords:
                         a = Vessel(self.current_agent_id, self, False, self.grids[0], self.grid_ids[0])
                         self.current_agent_id += 1
                         self.schedule.add(a)
-                        self.grids[0].place_agent(a, (int(cell_to_place[0]), int(cell_to_place[1])))
+                        self.grids[0].place_agent(a, (int(coord_to_place[0]), int(coord_to_place[1])))
+                        self.grid_vessels_positions[i] += [(int(coord_to_place[0]), int(coord_to_place[1]))]
 
-                        not_possible_array[cell_to_place[0], cell_to_place[1]] = 1
-                        pos_coords.remove(cell_to_place)
+                        not_possible_array[coord_to_place[0], coord_to_place[1]] = 1
+                        pos_coords.remove(coord_to_place)
                         temp -= 1
-            elif i > 0: # secondary and third grid
+            elif i > 0: # secondary grid and beyond
                     for m in range(secondary_sites_vessels[i-1]):
                         a = Vessel(self.current_agent_id, self, False, self.grids[i], self.grid_ids[i])
                         self.current_agent_id += 1
