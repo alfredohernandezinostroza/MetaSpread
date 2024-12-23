@@ -1,6 +1,6 @@
 [project]
 name = "metaspread"
-version = "2024.0.2"
+version = "2024.0.5"
 authors = [
   { name="Alfredo Hernández-Inostroza", email="alfredo.hernandez@ug.uchile.cl" },
 ]
@@ -9,7 +9,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: GNU Affero General Public License v3",
+    "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
@@ -27,8 +27,8 @@ dependencies = [
   "opencv_python==4.8.1.78"
 ]
 [project.urls]
-Homepage = "https://github.com/fredih/MetaSpread"
-Issues = "https://github.com/fredih/MetaSpread/issues"
+Homepage = "https://github.com/alfredohernandezinostroza/MetaSpread"
+Issues = "https://github.com/alfredohernandezinostroza/MetaSpread/issues"
 
 [build-system]
 requires = ["hatchling"]
