@@ -19,7 +19,7 @@ python -m metaspread
 ```
 # Documentation
 
-For further details on how to use the program please refer to the [Documentation.](https://metaspread.readthedocs.io/)
+For further details on how to use the program please refer to the [Documentation.](https://metaspread.readthedocs.io/en/stable/)
 
 
 # Contributing
