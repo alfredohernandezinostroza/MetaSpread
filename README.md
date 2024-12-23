@@ -17,6 +17,14 @@ If you want to install manually, you can also download the source code as a zip 
 ```
 python -m metaspread
 ```
+# Documentation
+
+For further details on how to use the program please refer to the [Documentation.](https://metaspread.readthedocs.io/)
+
+
+# Contributing
+
+Everyone is welcome to contribute! To check more details about how to help the project, please go to [Contributing](https://github.com/alfredohernandezinostroza/MetaSpread/blob/main/CONTRIBUTING.md).
 
 # References
 
