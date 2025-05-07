@@ -4,6 +4,15 @@ MetaSpread is a cancer and metastasis simulator written in Python, based on the 
 
 The underlying model is a reaction-diffusion type model with deterministic and stochastic aspects, tracking the spatiotemporal evolution of: i) numbers of epithelial and mesenchymal cancer cells (modelled as discrete agents); and ii) the densities of the extracellular matrix and the diffusible matrix metalloproteinase-2 (MMP-2), in both the primary site and all secondary sites. Other processes represented in the simulator are the circulation of cancer cell clusters and single cancer cells in the vasculature, including cell death and disaggregation of clusters, and the extravasation of clusters and single cells to distant metastatic sites.
 
+# Requirements
+
+matplotlib==3.8.0
+Mesa==2.1.2
+numpy==1.26.0
+pandas==2.1.1
+pynput==1.7.6
+opencv_python==4.8.1.78
+
 # Installing the package
 
 MetaSpread is available as an official PyPi package. To install, simply run:
