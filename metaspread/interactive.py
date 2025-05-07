@@ -166,7 +166,7 @@ def get_folder_names(directory_path):
         if os.path.isdir(os.path.join(directory_path, folder_name)):
             folder_names.append(folder_name)
     print(folder_names)
-    folder_names.sort(key=lambda x: os.path.getmtime(f"{directory_path}\{x}"), reverse=True)
+    folder_names.sort(key=lambda x: os.path.getmtime(os.path.join(directory_path, x)), reverse=True)
     return folder_names
 
 def get_int_input(text):
