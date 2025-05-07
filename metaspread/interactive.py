@@ -11,9 +11,17 @@ selected_option = ""
 options_list =  ["New simulation", "Load simulation", "Postprocessing", "Exit"]
 banner_message = "Welcome to MetaSpread: a Cancer Simulation Program!"
 
+import os
+
+def clear_screen():
+    if os.name == 'nt':
+        os.system('cls')
+    else:
+        os.system('clear')
+
 def main_menu():
     with keyboard.Listener(on_press = on_press) as listener:
-        os.system('cls')
+        clear_screen()
         print_menu()
         listener.join()
         if selected_option == "New simulation":
@@ -43,7 +51,7 @@ def load_simulation_menu():
     selected_option_index = 0
     banner_message = "Load simulation: select simulation"
     with keyboard.Listener(on_press = on_press) as listener:
-        os.system('cls')
+        clear_screen()
         print_menu()
         listener.join()
         if selected_option == "Exit":
@@ -61,7 +69,7 @@ def postprocessing_menu():
     selected_option_index = 0
     banner_message = "Postprocessing: select simulation"
     with keyboard.Listener(on_press = on_press) as listener:
-        os.system('cls')
+        clear_screen()
         print_menu()
         listener.join()
         if selected_option == "Exit":
@@ -71,7 +79,7 @@ def postprocessing_menu():
     selected_option_index = 0
     banner_message = f"Postprocessing simulation at {selected_simulation}"
     with keyboard.Listener(on_press = on_press) as listener:
-        os.system('cls')
+        clear_screen()
         print_menu()
         listener.join()
         if selected_option == "Exit":
@@ -104,7 +112,7 @@ def graphical_analysis_menu(selected_simulation):
     selected_option_index = 0
     banner_message = "Graphical analysis: select which frames are going to be plotted"
     with keyboard.Listener(on_press = on_press) as listener:
-        os.system('cls')
+        clear_screen()
         print_menu()
         listener.join()
         if selected_option == "Exit":
@@ -137,17 +145,17 @@ def on_press(key):
     if key == keyboard.Key.down:
         if selected_option_index < len(options_list) - 1:
             selected_option_index += 1
-            os.system('cls')
+            clear_screen()
             print_menu()
     elif key == keyboard.Key.up:
         if selected_option_index > 0:
             selected_option_index -= 1
-            os.system('cls')
+            clear_screen()
             print_menu()
     elif key == keyboard.Key.enter:
         global selected_option
         selected_option = options_list[selected_option_index]
-        os.system('cls')
+        clear_screen()
         return False
     elif key == keyboard.Key.esc:
         os._exit(0)
@@ -165,7 +173,7 @@ def get_int_input(text):
     result = ''
     while not isinstance(result, int) or result < 0:
         while result == '':
-            os.system('cls')
+            clear_screen()
             result = input(text)
             try:
                 result = int(result)
