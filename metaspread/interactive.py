@@ -143,15 +143,15 @@ def print_menu():
 def on_press(key):
     global selected_option_index
     if key == keyboard.Key.down:
+        clear_screen()
         if selected_option_index < len(options_list) - 1:
             selected_option_index += 1
-            clear_screen()
-            print_menu()
+        print_menu()
     elif key == keyboard.Key.up:
+        clear_screen()
         if selected_option_index > 0:
             selected_option_index -= 1
-            clear_screen()
-            print_menu()
+        print_menu()
     elif key == keyboard.Key.enter:
         global selected_option
         selected_option = options_list[selected_option_index]
