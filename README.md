@@ -6,12 +6,15 @@ The underlying model is a reaction-diffusion type model with deterministic and s
 
 # Requirements
 
-matplotlib==3.8.0
-Mesa==2.1.2
-numpy==1.26.0
-pandas==2.1.1
-pynput==1.7.6
-opencv_python==4.8.1.78
+Python 3.10. Support for future releases of python are not guaranteed.
+
+Packages:
+- matplotlib 3.8.0
+- Mesa 2.1.2
+- numpy 1.26.0
+- pandas 2.1.1
+- pynput 1.7.6
+- opencv_python 4.8.1.78
 
 # Installing the package
 
