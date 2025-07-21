@@ -118,7 +118,7 @@ Perfect! You have successfully run a simulation in MetaSpread and visualized the
 Further comments
 ----------------
 
-Although we ran and visualized a simulation successfully, if you open other videos, for example that account the Cells Numbers in grids 1 and in grid 2, you will see that nothing changes. That is because the parameters for cell reproduction are greater than our total time steps (2000 for mesenchymal and 3000 for epithelial), so the cells do not reproduce during the simulation. You can experiment by extending the total amount of time steps, or changing them for lower values in the ``simulation_configs.csv`` file to see how the simulation changes.
+Although we ran and visualized a simulation successfully, if you open other videos, for example the ones that count the cells numbers in grids 1 and 2, you will see that nothing changes. That is because the parameters for cell reproduction are greater than our total time steps (2000 for mesenchymal and 3000 for epithelial), so the cells do not reproduce during the simulation. You can experiment by extending the total amount of time steps, or changing them for lower values in the ``simulation_configs.csv`` file to see how the simulation changes.
 
 
 
