@@ -86,7 +86,7 @@ def postprocessing_menu():
             os._exit(0)
         if selected_option == "Run all":
             amount_of_pictures = get_int_input(f"Select the amount of pictures that will be produced for the graphical analysis: ")
-            frame_rate = get_int_input("Select the framerate for the video.\nA framerate of 10 is suggested \nfor every 50 pictures:")
+            frame_rate = get_int_input("Select the framerate for the video.\nA framerate of 10 is suggested \nfor every 50 pictures: ")
             datagenerator.generate_data(selected_simulation)
             time.sleep(3)
             graphgenerator.generate_graphs(selected_simulation, amount_of_pictures)
@@ -99,7 +99,7 @@ def postprocessing_menu():
         if selected_option == "Begin graphical analysis":
             graphical_analysis_menu(selected_simulation)
         if selected_option == "Generate videos":
-            frame_rate = get_int_input("Select the framerate for the video.\nA framerate of 10 is suggested \nfor every 50 pictures:")
+            frame_rate = get_int_input("Select the framerate for the video.\nA framerate of 10 is suggested \nfor every 50 pictures: ")
             videogenerator.generate_videos(selected_simulation, frame_rate)
             time.sleep(3)
 
