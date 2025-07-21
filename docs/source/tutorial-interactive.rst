@@ -107,7 +107,17 @@ Select the simulation you just ran, and then select the type of postprocessing y
 
 .. image:: postprocessing_menu.png
 
-This will generate a series of plots, videos, and files that summarize the results of the simulation. The CSV's will be saved in the Data Analysis directory, the plots in the Graphical Analysis directory, and the videos in the Videos directory.
+You will be prompted to enter the number of pictures you will generate per plot. Each picture will show the evolution of the simulation over time, and they will server as frames in the final video. For this tutorial, we will use 10 pictures per plot:
+
+.. image:: select_amount_of_pictures.png
+
+Then, you will be prompted to enter the number of frames per second for the final video. Since we chose to create 10 picture before, a good number would be 1 frame per second, so we get a 10 second video:
+
+.. image:: select_video_framerate.png
+
+Then, the postprocessing will start. The first step will be the data analysis, which will generate a series of CSV files describing the dynamics of the simulation, such as the number of cells in each grid, the concentration of MMP2 and ECM, and the number of vessels in each grid. These files will be saved in the ``Data Analysis`` directory inside the simulation folder.
+The second step will be the graphical analysis, which will generate a series of plots showing the dynamics of the simulation. These plots will be saved in the ``Graphical Analysis`` directory inside the simulation folder.
+Finally, the last step will be the video generation, which will create a video showing the evolution of the simulation over time. This video will be saved in the ``Videos`` directory inside the simulation folder.
 
 To watch the final result, go to the videos directory and open ``Tumor dynamics - Grid1.mp4``. You should see something like this:
 
