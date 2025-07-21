@@ -36,14 +36,14 @@ MetaSpread has an interactive mode and a CLI API. For getting a quick simulation
 # 1. Set up working directory
 mkdir tutorial-cli && cd tutorial-cli
 
-# 2. Run a simulation (e.g., 1000 steps, saving every 50 steps)
-python -m metaspread run --steps 300 --interval 30
+# 2. Run a simulation (e.g., 300 steps, saving every 30 steps)
+python -m metaspread run 300 30
 
-# 3. Postprocess results (generate data + plots + videos)
+# 3. Postprocess result, generate data + plots + videos (generates 10 pictures per plot over time in total, and generates a video at a framerate of 1 plot per second)
 python -m metaspread postprocess all Sim-max_steps-300-collection_period-30-cells-388-grids_number-3 10 1
 
-# 4. Visualize results
-Go to the `Videos` directory and visualize the results.
+# 4. Visualize the results
+Go to the `Videos` directory and check the results.
 
 # Documentation
 
