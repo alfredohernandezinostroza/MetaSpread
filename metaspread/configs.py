@@ -1,3 +1,4 @@
+from numpy import number
 import pandas as pd
 import os
 import ast
@@ -11,10 +12,6 @@ def init_simulation_configs(path):
         return: array of all the names of the variables
     """ 
     df_configs = pd.read_csv(path, header=0, converters={"Values": ast.literal_eval})
-    if len(df_configs) < 31:
-        raise Exception("Less than 31 configuration options! Are there some missing?")
-    if len(df_configs) > 31:
-        raise Exception("More than 31 configuration options!")
     dict_configs = dict(zip(df_configs["Names"], df_configs["Values"]))
     globals().update(dict_configs)  
     error_string = ""
@@ -26,6 +23,14 @@ def init_simulation_configs(path):
         error_string += "There must be as many secondary site vessels as the value of grids_number - 1!\n"
     if mesenchymal_proportion + epithelial_proportion != 1:
         error_string += "Mesenchymal_proportion + epithelial_proportion must be 1!\n"
+    if n_center_points_for_tumor <= 0:
+        error_string += "n_center_points_for_tumor must be greater than 0!\n"
+    if n_center_points_for_tumor > gridsize:
+        error_string += "n_center_points_for_tumor must be less than or equal to gridsize!\n"
+    if number_of_initial_cells <= 0:
+        error_string += "number_of_initial_cells must be greater than 0!\n"
+    if number_of_initial_cells > n_center_points_for_tumor*carrying_capacity:
+        error_string += f"number_of_initial_cells ({number_of_initial_cells}) must be less than or equal to n_center_points_for_tumor * carrying_capacity ({n_center_points_for_tumor*carrying_capacity})!\n"
     if error_string != "":
         raise ValueError(error_string)
     return(list(df_configs["Names"]))
