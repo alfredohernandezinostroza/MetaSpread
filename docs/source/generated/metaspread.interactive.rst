@@ -1,4 +1,4 @@
-metaspread.interactive
+﻿metaspread.interactive
 ======================
 
 .. automodule:: metaspread.interactive
@@ -13,6 +13,7 @@ metaspread.interactive
 
    .. autosummary::
    
+      clear_screen
       get_folder_names
       get_int_input
       graphical_analysis_menu
