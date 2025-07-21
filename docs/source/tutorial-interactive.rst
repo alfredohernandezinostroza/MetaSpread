@@ -2,7 +2,7 @@ Tutorial: running a simulation in interactive mode
 =====
 
 .. contents::
-   :depth: 1
+   :depth: 2
 
 This tutorial will guide you through the basic usage of MetaSpread through the interactive mode, from running a simulation to visualizing the results.
 

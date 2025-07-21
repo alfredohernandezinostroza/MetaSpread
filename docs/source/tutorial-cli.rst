@@ -2,7 +2,7 @@ Tutorial: running a simulation in interactive mode
 =====
 
 .. contents::
-    :depth: 1
+    :depth: 2
 
 This tutorial will simulate a similar scenario as the interactive mode tutorial, but using the command line interface instead.
 
