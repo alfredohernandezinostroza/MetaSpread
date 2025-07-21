@@ -12,9 +12,11 @@ sys.path.insert(0, os.path.abspath('../..'))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'MetaSpread'
-copyright = '2024, Alfredo Hernandez-Inostroza'
+copyright = '2025, Alfredo Hernandez-Inostroza'
 author = 'Alfredo Hernandez-Inostroza'
 release = '2024.0.1'
+
+master_doc = 'index'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
