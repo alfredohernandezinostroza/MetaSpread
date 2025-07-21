@@ -1,4 +1,4 @@
-Tutorial: running a simulation in interactive mode
+Tutorial: running a simulation through the command line interface
 =====
 
 .. contents::
@@ -54,5 +54,5 @@ Running a Simulation
 4. **Visualize the results**
    Go to the `Videos` inside the `Sim-max_steps-300-collection_period-30-cells-388-grids_number-3` directory and check the results. You should get something like the following:
 
-   ... image:: video_tumor_dynamics_cli.gif
+   .. image:: video_tumor_dynamics_cli.gif
       :align: center
