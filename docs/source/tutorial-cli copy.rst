@@ -1,7 +1,7 @@
 Tutorial: running a simulation in interactive mode
 =====
 
-.. contents::
+.. :contents::
     :depth: 1
 
 This tutorial will simulate a similar scenario as the interactive mode tutorial, but using the command line interface instead.
@@ -45,14 +45,12 @@ Running a Simulation
       python -m metaspread run 300 30
 
    Wait for the simulation to finish.
-3. **Postprocessing the simulation**: once the simulation is finished, you can apply all the postprocessing tools by using the following command:
+3. ****Postprocessing the simulation**: once the simulation is finished, you can apply all the postprocessing tools by using the following command:
 
    .. code-block:: console
 
       python -m metaspread postprocess all Sim-max_steps-300-collection_period-30-cells-388-grids_number-3 10 1
 
 4. **Visualize the results**
-   Go to the `Videos` inside the `Sim-max_steps-300-collection_period-30-cells-388-grids_number-3` directory and check the results. You should get something like the following:
+Go to the `Videos` inside the `Sim-max_steps-300-collection_period-30-cells-388-grids_number-3` directory and check the results. You should get something like the following:
 
-   ... image:: video_tumor_dynamics_cli.gif
-      :align: center

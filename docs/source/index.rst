@@ -18,7 +18,7 @@ You can also use the bar on the left to go to the introduction or the tutorial, 
    :caption: Guides
 
    Interactive mode tutorial </tutorial-interactive>
-..   Command line tutorial </tutorial-cli>
+   Command line tutorial </tutorial-cli>
 
 
 How to cite
