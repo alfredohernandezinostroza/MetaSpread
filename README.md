@@ -29,6 +29,22 @@ If you want to install manually, you can also download the source code as a zip 
 ```
 python -m metaspread
 ```
+
+# Quickstart
+MetaSpread has an interactive mode and a CLI API. For getting a quick simulation, you can run the following commands:
+
+# 1. Set up working directory
+mkdir tutorial-cli && cd tutorial-cli
+
+# 2. Run a simulation (e.g., 1000 steps, saving every 50 steps)
+python -m metaspread run --steps 300 --interval 30
+
+# 3. Postprocess results (generate data + plots + videos)
+python -m metaspread postprocess all Sim-max_steps-300-collection_period-30-cells-388-grids_number-3 10 1
+
+# 4. Visualize results
+Go to the `Videos` directory and visualize the results.
+
 # Documentation
 
 For further details on how to use the program please refer to the [Documentation.](https://metaspread.readthedocs.io/en/stable/)
