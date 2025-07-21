@@ -33,19 +33,19 @@ python -m metaspread
 
 MetaSpread has an interactive mode and a CLI API. For a quick showcase of the package's capabilities, run the following commands:
 
-## ✅ 1. Set up working directory
-```bash
+## 1. Set up working directory
+```console
 mkdir tutorial-cli && cd tutorial-cli
 ```
 
 ## 2. Run a simulation (e.g., 300 steps, saving every 30 steps)
-```bash
+```console
 python -m metaspread run 300 30
 ```
 
 ## 3. Postprocess result (generate data, plots, and videos)  
 *Generates 10 images per plot over time and a video at 1 frame per second:*
-```bash
+```console
 python -m metaspread postprocess all Sim-max_steps-300-collection_period-30-cells-388-grids_number-3 10 1
 ```
 
