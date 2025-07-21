@@ -29,21 +29,30 @@ If you want to install manually, you can also download the source code as a zip 
 ```
 python -m metaspread
 ```
-
 # Quickstart
-MetaSpread has an interactive mode and a CLI API. For getting a quick simulation, you can run the following commands:
 
-# 1. Set up working directory
+MetaSpread has an interactive mode and a CLI API. For a quick showcase of the package's capabilities, run the following commands:
+
+## ✅ 1. Set up working directory
+```bash
 mkdir tutorial-cli && cd tutorial-cli
+```
 
-# 2. Run a simulation (e.g., 300 steps, saving every 30 steps)
+## 2. Run a simulation (e.g., 300 steps, saving every 30 steps)
+```bash
 python -m metaspread run 300 30
+```
 
-# 3. Postprocess result, generate data + plots + videos (generates 10 pictures per plot over time in total, and generates a video at a framerate of 1 plot per second)
+## 3. Postprocess result (generate data, plots, and videos)  
+*Generates 10 images per plot over time and a video at 1 frame per second:*
+```bash
 python -m metaspread postprocess all Sim-max_steps-300-collection_period-30-cells-388-grids_number-3 10 1
+```
 
-# 4. Visualize the results
-Go to the `Videos` directory and check the results.
+## 4. Visualize the results
+Go to the `Videos` inside the `Sim-max_steps-300-collection_period-30-cells-388-grids_number-3` directory and check the results. You should get the following:
+
+![](quickstart_example.gif)
 
 # Documentation
 
