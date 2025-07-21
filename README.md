@@ -20,13 +20,13 @@ Packages:
 
 MetaSpread is available as an official PyPi package. To install, simply run:
 
-```
+```console
 pip install metaspread
 ```
 
 If you want to install manually, you can also download the source code as a zip file, unzip in an appropiate directory, and run
 
-```
+```console
 python -m metaspread
 ```
 # Quickstart
