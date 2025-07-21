@@ -59,7 +59,7 @@ Running a Simulation
 
    .. image:: notepad_parameters.png
 
-   In principle, in order to change the amount of initial cells, and the number of grids, it is only necessary to change the values in the ``cells`` and ``grids_number`` rows, respectively. 
+   In order to change the amount the number of grids, we are going to change the value at the ``grids_number`` row:
 
    .. image:: changing_parameters_old.png
 
