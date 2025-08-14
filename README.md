@@ -63,6 +63,19 @@ For further details on how to use the program please refer to the [Documentation
 
 Everyone is welcome to contribute! To check more details about how to help the project, please go to [Contributing](https://github.com/alfredohernandezinostroza/MetaSpread/blob/main/CONTRIBUTING.md).
 
+# Testing
+
+In order to run the unit tests, you will have to install both `pytest` and `pytest-mock`:
+```console
+pip install pytest pytest-mock
+```
+
+Then, clone the repository and run:
+
+```console
+pytest
+```
+
 # References
 
 ><a id="1">[1]</a>  Franssen, L. C., Lorenzi, T., Burgess, A. E., & Chaplain, M. A. (2019). A mathematical framework for modelling the metastatic spread of cancer. Bulletin of Mathematical Biology, 81, 1965–2010.
