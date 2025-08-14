@@ -6,7 +6,7 @@ The underlying model is a reaction-diffusion type model with deterministic and s
 
 # Requirements
 
-Python 3.10. Support for future releases of python is not guaranteed.
+Python 3.10 to 3.12. Support for future releases of python is not guaranteed.
 
 Packages:
 - matplotlib 3.8.0
