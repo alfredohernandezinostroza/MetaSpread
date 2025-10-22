@@ -49,6 +49,7 @@ We follow the equations and discretization of PDEs as described by @franssen2019
 \frac{\partial m}{\partial t} & =D_{m} \nabla ^{2} m+\Theta c_{\mathrm{M}} -\Lambda m\\
 \frac{\partial w}{\partial t} & =-( \Gamma _{1} c_{\mathrm{M}} +\Gamma _{2} m) w
 \end{aligned}
+\caption{My caption}
 \end{equation}
 
 <!-- , and several 2-dimensional grids are established, representing the primary site and the metastatic sites. Discretizing equations for $c_E$ and $c_M$ in space and time, we obtain:
