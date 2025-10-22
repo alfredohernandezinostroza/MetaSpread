@@ -49,8 +49,9 @@ We follow the equations and discretization of PDEs as described by @franssen2019
 \frac{\partial m}{\partial t} & =D_{m} \nabla ^{2} m+\Theta c_{\mathrm{M}} -\Lambda m\\
 \frac{\partial w}{\partial t} & =-( \Gamma _{1} c_{\mathrm{M}} +\Gamma _{2} m) w
 \end{aligned}
-\caption{My caption}
 \end{equation}
+
+With $c_E$ the concentration of epithelial cells, $c_M$ of mesenchymal cells, $m$ of the MMP-2, $w$ of the ECM. For the parameters, $D_k$ being the diffusion coefficient for cell type $k$, $\Phi_k$ the haptotactic sensitivity for cell type $k$, $\Theta$ the rate of MMP-2 expression by mesenchymal cells, $\Lambda$ the rate of MMP-2 decay, $\Gamma_1$ the rate of ECM degradation by MT1-MMP, and $\Gamma_2$ the rate of ECM degradation by MMP-2.
 
 <!-- , and several 2-dimensional grids are established, representing the primary site and the metastatic sites. Discretizing equations for $c_E$ and $c_M$ in space and time, we obtain:
 
