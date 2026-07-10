@@ -118,5 +118,5 @@ class CancerCell(mesa.Agent):
                     ccell.grid.remove_agent(ccell)
                     ccell.model.schedule.remove(ccell)
         else:
-            if self.model.config.carrying_capacity > len([cell for cell in self.grid.get_cell_list_contents([new_position]) if agent.agent_type == 'cell']):
+            if self.model.config.carrying_capacity > len([cell for cell in self.grid.get_cell_list_contents([new_position]) if cell.agent_type == 'cell']):
                 self.grid.move_agent(self, new_position)
