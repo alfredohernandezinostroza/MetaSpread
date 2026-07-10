@@ -8,37 +8,25 @@ from pathlib import Path
 
 # To run this code you must be in the parent folder of the program
 
-def save_configs(simulations_dir, new_simulation_folder, config_var_names, max_steps, data_collection_period):
-    # Saves the simulation configuration
-    print(f"\t Saving all the simulations parameters at: {os.path.join(simulations_dir, new_simulation_folder, 'configs.csv')}")
-    values = [getattr(metaspread.configs, i) for i in config_var_names]
-    names = config_var_names
 
-    #add configurations that are not in the global variables
-    names += ['max_steps', 'data_collection_period']
-    values += [max_steps, data_collection_period]
-    df_vars = pd.DataFrame({"Names": names, "Values": values})
-    df_vars = df_vars.set_index("Names")
-    path = os.path.join(simulations_dir, new_simulation_folder, 'configs.csv')
-    df_vars.to_csv(path)
-
-
-def run_simulation(max_steps, data_collection_period, save_path=Path("."), loaded_simulation_path=""):
+def run_simulation(max_steps, data_collection_period, save_path=Path("."), loaded_simulation_path="", config=None, seed=None):
 
     # load configs file from a previous simulation or loads the general configs file
     print(loaded_simulation_path)
-    loaded_simulation_path= loaded_simulation_path.strip('\"')
-    if loaded_simulation_path != "":
-        configs_path = os.path.join(loaded_simulation_path, "configs.csv")
-        config_var_names = metaspread.configs.load_simulation_configs_for_reloaded_simulation(configs_path)
-    else:
-        configs_path = "simulations_configs.csv"
-        config_var_names = metaspread.configs.init_simulation_configs(configs_path)
-    
+    loaded_simulation_path = str(loaded_simulation_path).strip('\"') if loaded_simulation_path else ""
+    if config is None:
+        if loaded_simulation_path != "":
+            configs_path = os.path.join(loaded_simulation_path, "configs.csv")
+            config = metaspread.configs.Config.from_saved_simulation(configs_path)
+        else:
+            config = metaspread.configs.Config.from_csv("simulations_configs.csv")
+    # mirror onto the configs module for backward-compat consumers
+    config.publish_to_module()
+
     # Parameters for this simulation
-    number_of_initial_cells = metaspread.configs.number_of_initial_cells # Number of cancer cells
-    gridsize     = metaspread.configs.gridsize
-    grids_number = metaspread.configs.grids_number
+    number_of_initial_cells = config.number_of_initial_cells  # Number of cancer cells
+    gridsize     = config.gridsize
+    grids_number = config.grids_number
     width        = gridsize
     height       = gridsize
 
@@ -82,7 +70,9 @@ def run_simulation(max_steps, data_collection_period, save_path=Path("."), loade
             return print("This simulation already exists!")
 
     # Run the simulation and saves the data
-    save_configs(simulations_dir, new_simulation_folder, config_var_names, max_steps, data_collection_period)
+    configs_save_path = os.path.join(new_simulation_path, 'configs.csv')
+    print(f"\t Saving all the simulations parameters at: {configs_save_path}")
+    config.to_csv(configs_save_path, extra={"max_steps": max_steps, "data_collection_period": data_collection_period})
     model = metaspread.CancerModel(
         number_of_initial_cells,
         width,
@@ -91,7 +81,9 @@ def run_simulation(max_steps, data_collection_period, save_path=Path("."), loade
         max_steps,
         data_collection_period,
         new_simulation_path,
-        loaded_simulation_path)
+        loaded_simulation_path,
+        seed=seed,
+        config=config)
     for i in range(max_steps):
         model.step()
     print(f'Finished the simulation at time step {model.schedule.time}!')

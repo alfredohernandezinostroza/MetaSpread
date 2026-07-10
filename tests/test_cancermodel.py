@@ -96,7 +96,7 @@ def test_cancermodel(tmp_path) -> None:
     assert model.new_simulation_folder==temp_simulation_folder
 
     #test proliferation
-    cancermodel.carrying_capacity = 200
+    model.config.carrying_capacity = 200
     # current_cell_count = list(map(type, model.schedule.agents)).count(CancerCell)
     current_cell_count = cancermodel.count_total_cells(model)
     model.proliferate("mesenchymal")
@@ -130,8 +130,8 @@ def test_cancermodel(tmp_path) -> None:
 
     #test cell travel
     model.vasculature = {1: [(100,100)]}
-    cancermodel.single_cell_survival = 1
-    cancermodel.cluster_survival = 1
+    model.config.single_cell_survival = 1
+    model.config.cluster_survival = 1
     model.step()
     model.step()
     assert list(map(type, model.schedule.agents)).count(CancerCell) == current_cell_count + 200

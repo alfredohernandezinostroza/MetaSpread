@@ -1,6 +1,5 @@
 import mesa
 from metaspread.vessel import Vessel
-from metaspread.configs import *
 
 class CancerCell(mesa.Agent):
 
@@ -10,11 +9,11 @@ class CancerCell(mesa.Agent):
         self.grid_id = grid_id
         self.phenotype = phenotype
         if self.phenotype == "mesenchymal":
-            self.diff_coeff = dM
-            self.phi = phiM
+            self.diff_coeff = model.config.dM
+            self.phi = model.config.phiM
         else:
-            self.diff_coeff = dE
-            self.phi = phiE
+            self.diff_coeff = model.config.dE
+            self.phi = model.config.phiE
         self.ecm = ecm
         self.mmp2 = mmp2
         self.agent_type = "cell"
@@ -31,6 +30,8 @@ class CancerCell(mesa.Agent):
         fixed_p_right   = self.model.fixed_p_right
         fixed_p_top     = self.model.fixed_p_top
         fixed_p_bottom  = self.model.fixed_p_bottom
+        th = self.model.config.th
+        xh = self.model.config.xh
         time = self.model.schedule.time
         possible_steps = self.grid.get_neighborhood(
             self.pos,
@@ -107,6 +108,7 @@ class CancerCell(mesa.Agent):
                 #if there are not clusters at that time in the vasculature dict, create a new key for that time
                 #and add the tuple
 
+                vasculature_time = self.model.config.vasculature_time
                 if self.model.vasculature.get(time + vasculature_time,False):
                     self.model.vasculature[time + vasculature_time] += [(len(mesenchymal_ccells_to_travel), len(epithelial_ccells_to_travel))]
                 # if there are clusters, add the tuple to that key
@@ -116,5 +118,5 @@ class CancerCell(mesa.Agent):
                     ccell.grid.remove_agent(ccell)
                     ccell.model.schedule.remove(ccell)
         else:
-            if carrying_capacity > len([cell for cell in self.grid.get_cell_list_contents([new_position]) if agent.agent_type == 'cell']):
+            if self.model.config.carrying_capacity > len([cell for cell in self.grid.get_cell_list_contents([new_position]) if agent.agent_type == 'cell']):
                 self.grid.move_agent(self, new_position)
