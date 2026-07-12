@@ -19,26 +19,38 @@ import metaspread.configs
 
 
 def _reflective_neighbor_sum(field):
-    """Sum of the 4 von-Neumann neighbours with reflective (Neumann) boundaries.
+    """Sum of the 2*ndim von-Neumann neighbours with reflective boundaries.
 
-    Indexed [x, y]. At a border the out-of-bounds neighbour is replaced by the
-    opposite in-bounds neighbour, exactly matching the per-cell branching the
-    finite-difference solvers used before vectorization. The addition order
-    (x+1, x-1, y+1, y-1) is preserved so results stay bit-for-bit identical.
+    Works for any number of spatial dimensions (2D or 3D). At a border the
+    out-of-bounds neighbour is replaced by the opposite in-bounds neighbour,
+    matching the per-cell branching the finite-difference solvers used before
+    vectorization. Axes are processed in order and the +shift is added before the
+    -shift on each axis, so for a 2D field the accumulation is exactly
+    ((x+1) + (x-1)) + (y+1) + (y-1) — bit-for-bit identical to the previous 2D
+    implementation.
     """
-    right = np.empty_like(field)
-    right[:-1, :] = field[1:, :]
-    right[-1, :] = field[-2, :]
-    left = np.empty_like(field)
-    left[1:, :] = field[:-1, :]
-    left[0, :] = field[1, :]
-    y_plus = np.empty_like(field)
-    y_plus[:, :-1] = field[:, 1:]
-    y_plus[:, -1] = field[:, -2]
-    y_minus = np.empty_like(field)
-    y_minus[:, 1:] = field[:, :-1]
-    y_minus[:, 0] = field[:, 1]
-    return right + left + y_plus + y_minus
+    total = None
+    ndim = field.ndim
+    for axis in range(ndim):
+        plus = np.empty_like(field)                # neighbour at +1 along axis
+        dst = [slice(None)] * ndim; dst[axis] = slice(0, -1)
+        src = [slice(None)] * ndim; src[axis] = slice(1, None)
+        plus[tuple(dst)] = field[tuple(src)]
+        edge_dst = [slice(None)] * ndim; edge_dst[axis] = -1
+        edge_src = [slice(None)] * ndim; edge_src[axis] = -2
+        plus[tuple(edge_dst)] = field[tuple(edge_src)]
+        minus = np.empty_like(field)               # neighbour at -1 along axis
+        dst = [slice(None)] * ndim; dst[axis] = slice(1, None)
+        src = [slice(None)] * ndim; src[axis] = slice(0, -1)
+        minus[tuple(dst)] = field[tuple(src)]
+        edge_dst = [slice(None)] * ndim; edge_dst[axis] = 0
+        edge_src = [slice(None)] * ndim; edge_src[axis] = 1
+        minus[tuple(edge_dst)] = field[tuple(edge_src)]
+        if total is None:
+            total = plus + minus
+        else:
+            total = total + plus + minus
+    return total
 
 
 def get_cluster_survival_probability(cluster, config):
@@ -571,11 +583,11 @@ class CancerModel(mesa.Model):
         for agent in self.schedule.agents:
             if agent.agent_type == "cell":
                 grid_index = agent.grid_id - 1
-                x, y = agent.pos
+                pos = tuple(agent.pos)
                 if agent.phenotype == "mesenchymal":
-                    self.mesenchymal_count[grid_index][x, y] += 1
+                    self.mesenchymal_count[grid_index][pos] += 1
                 elif agent.phenotype == "epithelial":
-                    self.epithelial_count[grid_index][x, y] += 1
+                    self.epithelial_count[grid_index][pos] += 1
                 else:
                     raise Exception("Unknown phenotype")
 
@@ -592,9 +604,10 @@ class CancerModel(mesa.Model):
         # neighbour-addition order are kept identical to the previous per-cell loop
         # so the output is bit-for-bit unchanged.
         coeff = dmmp*tha/xha**2
-        decay = 1-4*dmmp*tha/xha**2-th*Lambda
         self._recount_cells()
         for i in range(len(mmp2)):
+            ndim = mmp2[i][0].ndim
+            decay = 1-(2*ndim)*dmmp*tha/xha**2-th*Lambda
             neighbor_sum = _reflective_neighbor_sum(mmp2[i][0])
             mmp2[i][1] = coeff*neighbor_sum + mmp2[i][0]*decay + tha*theta*self.mesenchymal_count[i]
             ecm[i][1] = ecm[i][0]*(1-tha*(gamma1*self.mesenchymal_count[i]+gamma2*mmp2[i][1]))
@@ -624,8 +637,9 @@ class CancerModel(mesa.Model):
         oxygen_max = self.config.oxygen_max
         oxygen = self.oxygen
         coeff = d_oxygen*tha/xha**2
-        decay = 1-4*d_oxygen*tha/xha**2
         for i in range(len(oxygen)):
+            ndim = oxygen[i][0].ndim
+            decay = 1-(2*ndim)*d_oxygen*tha/xha**2
             neighbor_sum = _reflective_neighbor_sum(oxygen[i][0])
             diffusion = coeff*neighbor_sum + oxygen[i][0]*decay
             cell_count = self.mesenchymal_count[i] + self.epithelial_count[i]
