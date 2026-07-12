@@ -30,3 +30,17 @@ grids_number,3
 mesenchymal_proportion,0.6
 epithelial_proportion,0.4
 number_of_initial_cells,388
+emt_prob,0.0
+met_prob,0.0
+enable_hypoxia_emt,False
+hypoxia_threshold,0.1
+enable_oxygen,False
+d_oxygen,0.001
+oxygen_supply,0.1
+oxygen_consumption,0.01
+oxygen_initial,1.0
+oxygen_max,1.0
+enable_immune,False
+n_immune_cells,0
+immune_kill_prob,0.1
+immune_diff_coeff,1e-4

@@ -9,6 +9,7 @@ import json
 import ast
 from metaspread.cancercell import CancerCell
 from metaspread.vessel import Vessel
+from metaspread.immunecell import ImmuneCell
 from metaspread.quasicircle import find_quasi_circle
 from matplotlib import pyplot as plt
 from matplotlib import cm
@@ -150,6 +151,16 @@ class CancerModel(mesa.Model):
             self._initialize_grids()
             self.doubling_time_counter_M = self.config.doubling_time_M
             self.doubling_time_counter_E = self.config.doubling_time_E
+
+        # Optional oxygen/nutrient field (Phase 1). Allocated only when enabled;
+        # None otherwise so default runs are untouched. Loaded simulations start
+        # the field from oxygen_initial (oxygen state is not persisted yet).
+        if self.config.enable_oxygen:
+            self.oxygen = [np.full((2, width, height), self.config.oxygen_initial, dtype=float)
+                           for _ in range(grids_number)]
+            self.grid_vessel_position_sets = [set(positions) for positions in self.grid_vessels_positions]
+        else:
+            self.oxygen = None
         self.datacollector = mesa.DataCollector(
             model_reporters={"Total cells": count_total_cells}, agent_reporters={"Position": "pos", "Agent Type": "agent_type", "Phenotype": "phenotype", "Ruptured": "ruptured", "Grid": "grid_id"})
 
@@ -215,6 +226,8 @@ class CancerModel(mesa.Model):
                     
         #Perform ECM and MMP2 calculations
         self.calculate_environment(self.mmp2, self.ecm)
+        if self.config.enable_oxygen:
+            self.calculate_oxygen()
         
         # Proliferation
         # Counters are used so when loading a simulation the behaviour does not change, compared to use self.schedule.time % doubling_time_M == 0
@@ -269,6 +282,13 @@ class CancerModel(mesa.Model):
                     EcmCsvName = f"Ecm-{grid_id}grid-{self.schedule.time + self.loaded_max_step}step.csv"
                     path_to_save = os.path.join(self.new_simulation_folder, "Ecm", EcmCsvName)
                     new_ecm_df.to_csv(path_to_save)
+
+                    if self.config.enable_oxygen:
+                        oxygen_dir = os.path.join(self.new_simulation_folder, "Oxygen")
+                        os.makedirs(oxygen_dir, exist_ok=True)
+                        new_oxygen_df = pd.DataFrame(self.oxygen[grid_id-1][0,:,:])
+                        OxygenCsvName = f"Oxygen-{grid_id}grid-{self.schedule.time + self.loaded_max_step}step.csv"
+                        new_oxygen_df.to_csv(os.path.join(oxygen_dir, OxygenCsvName))
 
                     df_time_grids_got_populated[f"Time when grid {grid_id} was first populated"] = [self.time_grid_got_populated[grid_id-1]]
                     df_time_grids_got_populated_csv_name = f"Cells-are-present-grid-{grid_id}-{self.schedule.time + self.loaded_max_step}step.csv"
@@ -366,6 +386,15 @@ class CancerModel(mesa.Model):
             self.schedule.add(vessel)
             self.grids[current_grid_number].place_agent(vessel, row["Position"])
             self.grid_vessels_positions[current_grid_number] += [row["Position"]]
+
+        # reload immune cells, if the previous simulation had any (Phase 1)
+        last_step_immune = previous_sim_df[previous_sim_df["Agent Type"] == "immune"]
+        for index, row in last_step_immune.iterrows():
+            current_grid_number = int(row["Grid"]) - 1
+            immune = ImmuneCell(self.current_agent_id, self, self.grids[current_grid_number], self.grid_ids[current_grid_number])
+            self.current_agent_id += 1
+            self.schedule.add(immune)
+            self.grids[current_grid_number].place_agent(immune, row["Position"])
 
         #load vasculature
         vasculature_path = os.path.join(path_to_simulation, "Vasculature")
@@ -489,7 +518,18 @@ class CancerModel(mesa.Model):
                         y = self.random.randrange(self.height)
                         self.grids[i].place_agent(a, (x,y))
                         self.grid_vessels_positions[i] += [(x,y)]
-                
+
+        # Optional immune cells (Phase 1): place n_immune_cells per grid.
+        if self.config.enable_immune:
+            for i in range(len(self.grids)):
+                for _ in range(self.config.n_immune_cells):
+                    immune = ImmuneCell(self.current_agent_id, self, self.grids[i], self.grid_ids[i])
+                    self.current_agent_id += 1
+                    self.schedule.add(immune)
+                    x = self.random.randrange(self.width)
+                    y = self.random.randrange(self.height)
+                    self.grids[i].place_agent(immune, (x, y))
+
     def calculate_environment(self, mmp2, ecm):
         th = self.config.th
         tha = self.config.tha
@@ -530,6 +570,47 @@ class CancerModel(mesa.Model):
                     print("ECM is greater than 1! Your MMP2 diffusion rate is probably too high")
             mmp2[i][0,:,:] = mmp2[i][1,:,:]
             ecm[i][0,:,:] = ecm[i][1,:,:]
+
+    def calculate_oxygen(self):
+        """Advance the oxygen field one step (Phase 1, only when enabled).
+
+        Uses the same explicit finite-difference diffusion stencil and reflective
+        boundaries as calculate_environment. Oxygen is supplied at vessel cells
+        (rate oxygen_supply), consumed by cancer cells (rate oxygen_consumption
+        per cell), and clamped to [0, oxygen_max]. Relies on
+        self.mesenchymal_count / self.epithelial_count, which calculate_environment
+        refreshes earlier in the same step.
+        """
+        tha = self.config.tha
+        xha = self.config.xha
+        d_oxygen = self.config.d_oxygen
+        supply = self.config.oxygen_supply
+        consumption = self.config.oxygen_consumption
+        oxygen_max = self.config.oxygen_max
+        oxygen = self.oxygen
+        for i in range(len(oxygen)):
+            vessel_set = self.grid_vessel_position_sets[i]
+            for cell in self.grids[i].coord_iter():
+                cell_contents, (x, y) = cell
+                on_left_border = self.grids[i].out_of_bounds((x-1,y))
+                on_right_border = self.grids[i].out_of_bounds((x+1,y))
+                on_top_border = self.grids[i].out_of_bounds((x,y-1))
+                on_bottom_border = self.grids[i].out_of_bounds((x,y+1))
+                diffusion = d_oxygen*tha/xha**2*((oxygen[i][0,x+1,y] if not on_right_border else oxygen[i][0,x-1,y])\
+                        +(oxygen[i][0,x-1,y] if not on_left_border else oxygen[i][0,x+1,y])\
+                        +(oxygen[i][0,x,y+1] if not on_bottom_border else oxygen[i][0,x,y-1])\
+                        +(oxygen[i][0,x,y-1] if not on_top_border else oxygen[i][0,x,y+1])\
+                        )\
+                        +oxygen[i][0,x,y]*(1-4*d_oxygen*tha/xha**2)
+                cell_count = self.mesenchymal_count[i][x,y] + self.epithelial_count[i][x,y]
+                source = tha*supply if (x,y) in vessel_set else 0.0
+                new_value = diffusion + source - tha*consumption*cell_count
+                if new_value < 0:
+                    new_value = 0.0
+                elif new_value > oxygen_max:
+                    new_value = oxygen_max
+                oxygen[i][1,x,y] = new_value
+            oxygen[i][0,:,:] = oxygen[i][1,:,:]
 
     def disaggregate_clusters(self, time):
         """

@@ -7,20 +7,54 @@ class CancerCell(mesa.Agent):
         super().__init__(unique_id, model)
         self.grid = grid
         self.grid_id = grid_id
-        self.phenotype = phenotype
-        if self.phenotype == "mesenchymal":
-            self.diff_coeff = model.config.dM
-            self.phi = model.config.phiM
-        else:
-            self.diff_coeff = model.config.dE
-            self.phi = model.config.phiE
+        self._apply_phenotype(phenotype)
         self.ecm = ecm
         self.mmp2 = mmp2
         self.agent_type = "cell"
         self.ruptured = False #need to be able do use data collector on agents
-        
+
+    def _apply_phenotype(self, phenotype):
+        """Set the phenotype and its associated motility parameters.
+
+        Shared by __init__ and by EMT/MET switching so the diffusion coefficient
+        and haptotaxis sensitivity always match the current phenotype.
+        """
+        self.phenotype = phenotype
+        if phenotype == "mesenchymal":
+            self.diff_coeff = self.model.config.dM
+            self.phi = self.model.config.phiM
+        else:
+            self.diff_coeff = self.model.config.dE
+            self.phi = self.model.config.phiE
+
     def step(self): #what will the agent do every time a step is made
+        self.update_phenotype()
         self.move()
+
+    def update_phenotype(self):
+        """Optionally switch phenotype (EMT/MET plasticity).
+
+        Off by default: with emt_prob=met_prob=0 and enable_hypoxia_emt=False the
+        method returns without consuming the RNG, so default runs are unchanged.
+        - stochastic: epithelial->mesenchymal (EMT) with prob emt_prob,
+          mesenchymal->epithelial (MET) with prob met_prob, every step.
+        - hypoxia (enable_hypoxia_emt, requires enable_oxygen): the EMT drive only
+          applies where local oxygen is below hypoxia_threshold.
+        """
+        cfg = self.model.config
+        emt_p = cfg.emt_prob
+        met_p = cfg.met_prob
+        if cfg.enable_hypoxia_emt:
+            x, y = self.pos
+            oxygen_here = self.model.oxygen[self.grid_id - 1][0, x, y]
+            if oxygen_here >= cfg.hypoxia_threshold:
+                emt_p = 0.0  # sufficient oxygen: no hypoxia-driven EMT here
+        if self.phenotype == "epithelial":
+            if emt_p > 0 and self.random.random() < emt_p:
+                self._apply_phenotype("mesenchymal")
+        else:  # mesenchymal
+            if met_p > 0 and self.random.random() < met_p:
+                self._apply_phenotype("epithelial")
 
     def move(self):
         #fixed probabilities can be given to fix the movement of the cells towards a certain direction
