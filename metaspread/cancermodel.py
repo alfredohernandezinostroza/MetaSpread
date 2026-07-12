@@ -18,6 +18,29 @@ import metaspread.configs
 # import pickle
 
 
+def _reflective_neighbor_sum(field):
+    """Sum of the 4 von-Neumann neighbours with reflective (Neumann) boundaries.
+
+    Indexed [x, y]. At a border the out-of-bounds neighbour is replaced by the
+    opposite in-bounds neighbour, exactly matching the per-cell branching the
+    finite-difference solvers used before vectorization. The addition order
+    (x+1, x-1, y+1, y-1) is preserved so results stay bit-for-bit identical.
+    """
+    right = np.empty_like(field)
+    right[:-1, :] = field[1:, :]
+    right[-1, :] = field[-2, :]
+    left = np.empty_like(field)
+    left[1:, :] = field[:-1, :]
+    left[0, :] = field[1, :]
+    y_plus = np.empty_like(field)
+    y_plus[:, :-1] = field[:, 1:]
+    y_plus[:, -1] = field[:, -2]
+    y_minus = np.empty_like(field)
+    y_minus[:, 1:] = field[:, :-1]
+    y_minus[:, 0] = field[:, 1]
+    return right + left + y_plus + y_minus
+
+
 def get_cluster_survival_probability(cluster, config):
     """
     Takes in a tuple representing a cluster, returns the survival probabiltiy.
@@ -158,7 +181,13 @@ class CancerModel(mesa.Model):
         if self.config.enable_oxygen:
             self.oxygen = [np.full((2, width, height), self.config.oxygen_initial, dtype=float)
                            for _ in range(grids_number)]
-            self.grid_vessel_position_sets = [set(positions) for positions in self.grid_vessels_positions]
+            # boolean mask of vessel cells per grid, used as the oxygen source term
+            self.oxygen_vessel_mask = []
+            for positions in self.grid_vessels_positions:
+                mask = np.zeros((width, height), dtype=bool)
+                for (vx, vy) in positions:
+                    mask[vx, vy] = True
+                self.oxygen_vessel_mask.append(mask)
         else:
             self.oxygen = None
         self.datacollector = mesa.DataCollector(
@@ -530,6 +559,26 @@ class CancerModel(mesa.Model):
                     y = self.random.randrange(self.height)
                     self.grids[i].place_agent(immune, (x, y))
 
+    def _recount_cells(self):
+        """Refresh the per-grid mesenchymal/epithelial cell-count arrays.
+
+        Iterates the agents once (O(agents)) instead of scanning every grid cell,
+        producing the same counts the finite-difference solvers consume.
+        """
+        for i in range(self.grids_number):
+            self.mesenchymal_count[i][:, :] = 0
+            self.epithelial_count[i][:, :] = 0
+        for agent in self.schedule.agents:
+            if agent.agent_type == "cell":
+                grid_index = agent.grid_id - 1
+                x, y = agent.pos
+                if agent.phenotype == "mesenchymal":
+                    self.mesenchymal_count[grid_index][x, y] += 1
+                elif agent.phenotype == "epithelial":
+                    self.epithelial_count[grid_index][x, y] += 1
+                else:
+                    raise Exception("Unknown phenotype")
+
     def calculate_environment(self, mmp2, ecm):
         th = self.config.th
         tha = self.config.tha
@@ -539,35 +588,21 @@ class CancerModel(mesa.Model):
         theta = self.config.theta
         gamma1 = self.config.gamma1
         gamma2 = self.config.gamma2
+        # Vectorized reaction-diffusion update. The scalar coefficients and the
+        # neighbour-addition order are kept identical to the previous per-cell loop
+        # so the output is bit-for-bit unchanged.
+        coeff = dmmp*tha/xha**2
+        decay = 1-4*dmmp*tha/xha**2-th*Lambda
+        self._recount_cells()
         for i in range(len(mmp2)):
-            for cell in self.grids[i].coord_iter():
-                cell_contents, (x, y) = cell
-                self.mesenchymal_count[i][x,y] = 0
-                self.epithelial_count[i][x,y] = 0
-                for cancer_cell in cell_contents:
-                    if isinstance(cancer_cell, CancerCell):
-                        if cancer_cell.phenotype == "mesenchymal":
-                            self.mesenchymal_count[i][x,y] += 1
-                        elif cancer_cell.phenotype == "epithelial":
-                            self.epithelial_count[i][x,y] += 1
-                        else:
-                            raise Exception("Unknown phenotype")
-                on_left_border = self.grids[i].out_of_bounds((x-1,y))
-                on_right_border = self.grids[i].out_of_bounds((x+1,y))
-                on_top_border = self.grids[i].out_of_bounds((x,y-1))
-                on_bottom_border = self.grids[i].out_of_bounds((x,y+1))
-                mmp2[i][1,x,y]=dmmp*tha/xha**2*((mmp2[i][0,x+1,y] if not on_right_border else mmp2[i][0,x-1,y])\
-                        +(mmp2[i][0,x-1,y] if not on_left_border else mmp2[i][0,x+1,y])\
-                        +(mmp2[i][0,x,y+1] if not on_bottom_border else mmp2[i][0,x,y-1])\
-                        +(mmp2[i][0,x,y-1] if not on_top_border else mmp2[i][0,x,y+1])\
-                        )\
-                        +mmp2[i][0,x,y]*(1-4*dmmp*tha/xha**2-th*Lambda)+tha*theta*self.mesenchymal_count[i][x,y]
-                ecm[i][1,x,y] = ecm[i][0,x,y]*(1-tha*(gamma1*self.mesenchymal_count[i][x,y]+gamma2*mmp2[i][1,x,y]))
-                if ecm[i][1,x,y] < 0:
-                    warnings.warn(f"<0 ecm in [i][1,{x},{y}] is {ecm[i][1,x,y]}")
-                if ecm[i][1,x,y] > 1:
-                    warnings.warn(f">1 ecm in [i][1,{x},{y}] is {ecm[i][1,x,y]}")
-                    print("ECM is greater than 1! Your MMP2 diffusion rate is probably too high")
+            neighbor_sum = _reflective_neighbor_sum(mmp2[i][0])
+            mmp2[i][1] = coeff*neighbor_sum + mmp2[i][0]*decay + tha*theta*self.mesenchymal_count[i]
+            ecm[i][1] = ecm[i][0]*(1-tha*(gamma1*self.mesenchymal_count[i]+gamma2*mmp2[i][1]))
+            if np.any(ecm[i][1] < 0):
+                warnings.warn("<0 ecm encountered")
+            if np.any(ecm[i][1] > 1):
+                warnings.warn(">1 ecm encountered")
+                print("ECM is greater than 1! Your MMP2 diffusion rate is probably too high")
             mmp2[i][0,:,:] = mmp2[i][1,:,:]
             ecm[i][0,:,:] = ecm[i][1,:,:]
 
@@ -588,28 +623,16 @@ class CancerModel(mesa.Model):
         consumption = self.config.oxygen_consumption
         oxygen_max = self.config.oxygen_max
         oxygen = self.oxygen
+        coeff = d_oxygen*tha/xha**2
+        decay = 1-4*d_oxygen*tha/xha**2
         for i in range(len(oxygen)):
-            vessel_set = self.grid_vessel_position_sets[i]
-            for cell in self.grids[i].coord_iter():
-                cell_contents, (x, y) = cell
-                on_left_border = self.grids[i].out_of_bounds((x-1,y))
-                on_right_border = self.grids[i].out_of_bounds((x+1,y))
-                on_top_border = self.grids[i].out_of_bounds((x,y-1))
-                on_bottom_border = self.grids[i].out_of_bounds((x,y+1))
-                diffusion = d_oxygen*tha/xha**2*((oxygen[i][0,x+1,y] if not on_right_border else oxygen[i][0,x-1,y])\
-                        +(oxygen[i][0,x-1,y] if not on_left_border else oxygen[i][0,x+1,y])\
-                        +(oxygen[i][0,x,y+1] if not on_bottom_border else oxygen[i][0,x,y-1])\
-                        +(oxygen[i][0,x,y-1] if not on_top_border else oxygen[i][0,x,y+1])\
-                        )\
-                        +oxygen[i][0,x,y]*(1-4*d_oxygen*tha/xha**2)
-                cell_count = self.mesenchymal_count[i][x,y] + self.epithelial_count[i][x,y]
-                source = tha*supply if (x,y) in vessel_set else 0.0
-                new_value = diffusion + source - tha*consumption*cell_count
-                if new_value < 0:
-                    new_value = 0.0
-                elif new_value > oxygen_max:
-                    new_value = oxygen_max
-                oxygen[i][1,x,y] = new_value
+            neighbor_sum = _reflective_neighbor_sum(oxygen[i][0])
+            diffusion = coeff*neighbor_sum + oxygen[i][0]*decay
+            cell_count = self.mesenchymal_count[i] + self.epithelial_count[i]
+            source = np.where(self.oxygen_vessel_mask[i], tha*supply, 0.0)
+            new_field = diffusion + source - tha*consumption*cell_count
+            np.clip(new_field, 0.0, oxygen_max, out=new_field)
+            oxygen[i][1] = new_field
             oxygen[i][0,:,:] = oxygen[i][1,:,:]
 
     def disaggregate_clusters(self, time):
