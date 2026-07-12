@@ -82,3 +82,59 @@ def test_old_config_without_phase1_params_backfills(tmp_path):
     assert cfg.enable_oxygen is False
     assert cfg.emt_prob == 0.0
     assert cfg.immune_diff_coeff == DEFAULTS["immune_diff_coeff"]
+
+
+def test_hypoxia_emt_depends_on_oxygen():
+    # Same seed/layout: hypoxic tissue (oxygen below threshold) drives EMT and so
+    # leaves fewer epithelial cells than normoxic tissue where the drive is off.
+    hypoxic = run(small_config(enable_oxygen=True, oxygen_initial=0.0,
+                               enable_hypoxia_emt=True, hypoxia_threshold=0.1,
+                               emt_prob=1.0), 1, 1, seed=1, save_path=None)
+    normoxic = run(small_config(enable_oxygen=True, oxygen_initial=1.0,
+                                enable_hypoxia_emt=True, hypoxia_threshold=0.0,
+                                emt_prob=1.0), 1, 1, seed=1, save_path=None)
+    e_hyp = (_last_step_cells(hypoxic)["Phenotype"] == "epithelial").sum()
+    e_norm = (_last_step_cells(normoxic)["Phenotype"] == "epithelial").sum()
+    assert e_hyp < e_norm
+
+
+def test_validate_configs_phase1_gating():
+    from metaspread.configs import validate_configs
+    base = small_config().as_dict()
+    for bad_override in (
+        {"enable_hypoxia_emt": True, "enable_oxygen": False},  # hypoxia needs oxygen
+        {"emt_prob": 1.5},                                      # prob out of [0,1]
+        {"met_prob": -0.1},
+        {"immune_kill_prob": 2.0},
+        {"n_immune_cells": -1},
+    ):
+        values = dict(base)
+        values.update(bad_override)
+        with pytest.raises(ValueError):
+            validate_configs(values)
+
+
+def test_oxygen_disk_save_writes_folder(tmp_path):
+    cfg = small_config(enable_oxygen=True)
+    run(cfg, 2, 2, seed=1, save_path=tmp_path)
+    name = (f"Sim-max_steps-2-collection_period-2-"
+            f"cells-{cfg.number_of_initial_cells}-grids_number-{cfg.grids_number}")
+    oxygen_dir = tmp_path / "Simulations" / name / "Oxygen"
+    assert oxygen_dir.is_dir()
+    assert len(list(oxygen_dir.glob("Oxygen-*grid-*step.csv"))) >= cfg.grids_number
+
+
+def test_immune_cells_reload_from_saved_simulation(tmp_path):
+    from metaspread.cancermodel import CancerModel
+    # kill_prob 0 so immune cells persist and appear in the saved CellsData
+    cfg = small_config(enable_immune=True, n_immune_cells=15, immune_kill_prob=0.0)
+    run(cfg, 2, 2, seed=1, save_path=tmp_path)
+    name = (f"Sim-max_steps-2-collection_period-2-"
+            f"cells-{cfg.number_of_initial_cells}-grids_number-{cfg.grids_number}")
+    sim_dir = tmp_path / "Simulations" / name
+    loaded = CancerModel(
+        number_of_initial_cells=0, width=cfg.gridsize, height=cfg.gridsize,
+        grids_number=cfg.grids_number, max_steps=10, data_collection_period=10,
+        new_simulation_folder=sim_dir, loaded_simulation_path=sim_dir)
+    n_immune = sum(1 for a in loaded.schedule.agents if a.agent_type == "immune")
+    assert n_immune == 15 * cfg.grids_number
