@@ -31,10 +31,14 @@ _PHASE1_PARAM_NAMES = [
     "enable_immune", "n_immune_cells", "immune_kill_prob", "immune_diff_coeff",
 ]
 
+# Phase 3D — optional 3D spatial domain. space_dimensions defaults to 2 (the
+# existing 2D path, byte-identical); gridsize_z is only used when it is 3.
+_PHASE3D_PARAM_NAMES = ["space_dimensions", "gridsize_z"]
+
 # Canonical ordered list of every simulation parameter stored in
 # simulations_configs.csv. Keeping this in one place lets the Config object, the
 # default-config generator and the validation logic stay in sync.
-PARAM_NAMES = _CORE_PARAM_NAMES + _PHASE1_PARAM_NAMES
+PARAM_NAMES = _CORE_PARAM_NAMES + _PHASE1_PARAM_NAMES + _PHASE3D_PARAM_NAMES
 
 # Extra keys that a saved simulation's configs.csv carries in addition to the
 # core parameters above.
@@ -63,6 +67,8 @@ DEFAULTS = {
     "oxygen_consumption": 0.01, "oxygen_initial": 1.0, "oxygen_max": 1.0,
     "enable_immune": False, "n_immune_cells": 0,
     "immune_kill_prob": 0.1, "immune_diff_coeff": 1e-4,
+    # --- Phase 3D (2D by default) ---
+    "space_dimensions": 2, "gridsize_z": 41,
 }
 
 
@@ -120,6 +126,10 @@ def validate_configs(d):
         error_string += "enable_hypoxia_emt requires enable_oxygen to be True!\n"
     if d.get("n_immune_cells", 0) < 0:
         error_string += "n_immune_cells must be >= 0!\n"
+    if d.get("space_dimensions", 2) not in (2, 3):
+        error_string += "space_dimensions must be 2 or 3!\n"
+    if d.get("space_dimensions", 2) == 3 and d.get("gridsize_z", 1) <= 0:
+        error_string += "gridsize_z must be greater than 0 when space_dimensions == 3!\n"
 
     if error_string != "":
         raise ValueError(error_string)

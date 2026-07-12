@@ -44,3 +44,5 @@ enable_immune,False
 n_immune_cells,0
 immune_kill_prob,0.1
 immune_diff_coeff,1e-4
+space_dimensions,2
+gridsize_z,41

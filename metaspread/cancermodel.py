@@ -10,7 +10,8 @@ import ast
 from metaspread.cancercell import CancerCell
 from metaspread.vessel import Vessel
 from metaspread.immunecell import ImmuneCell
-from metaspread.quasicircle import find_quasi_circle
+from metaspread.ndgrid import NDGrid
+from metaspread.quasicircle import find_quasi_circle, find_quasi_sphere
 from matplotlib import pyplot as plt
 from matplotlib import cm
 # from Classes.configs import *
@@ -147,42 +148,56 @@ class CancerModel(mesa.Model):
         self.width = width
         self.height = height
         self.phenotypes = ["mesenchymal", "epithelial"]
+        self.grids_number = grids_number
         self.grid_vessels_positions = [[] for _ in range(grids_number)]
         self.current_agent_id = 0
         self.max_steps = max_steps
         self.data_collection_period = data_collection_period
         self.new_simulation_folder  = new_simulation_folder
-        self.mesenchymal_count = [np.zeros((width, height), dtype=float) for _ in range(grids_number)]
-        self.epithelial_count = [np.zeros((width, height), dtype=float) for _ in range(grids_number)]
-        self.grids_number = grids_number
-        self.grids = [mesa.space.MultiGrid(width, height, False) for _ in range(self.grids_number)]
         self.grid_ids = [i+1 for i in range(self.grids_number)]
         self.cancer_cells_counter = [0] * grids_number
         self.time_grid_got_populated = [-1 for _ in range(self.grids_number)]
         self.schedule = mesa.time.RandomActivation(self)
-        #list of numpy arrays, representing mmp2 and ecm concentration in each grid
-        self.mmp2 = [np.zeros((2, width, height), dtype=float) for _ in range(grids_number)]
-        self.ecm = [np.ones((2, width, height), dtype=float) for _ in range(grids_number)]
         self.loaded_max_step = 0
         self.previous_cell_data = pd.DataFrame()
 
+        # Resolve the configuration first so the spatial dimensionality is known
+        # before the grids and fields are allocated.
         if loaded_simulation_path != "":
-            print(f"Loading simulation at {loaded_simulation_path}!")
             configs_path = os.path.join(loaded_simulation_path, "configs.csv")
             if config is None:
                 config = metaspread.configs.Config.from_saved_simulation(configs_path)
-            self.config = config
-            # mirror onto the configs module for backward-compat consumers
-            self.config.publish_to_module()
+        else:
+            if config is None:
+                config = metaspread.configs.Config.from_csv("simulations_configs.csv")
+        self.config = config
+        # mirror onto the configs module for backward-compat consumers
+        self.config.publish_to_module()
+
+        # Spatial domain: 2D (width x height) by default; 3D adds a depth axis.
+        # The 2D branch is unchanged (mesa MultiGrid) so its output is identical.
+        self.space_dimensions = self.config.space_dimensions
+        if self.space_dimensions == 3:
+            self.depth = self.config.gridsize_z
+            self.spatial_shape = (width, height, self.depth)
+            self.grids = [NDGrid(self.spatial_shape) for _ in range(self.grids_number)]
+        else:
+            self.depth = None
+            self.spatial_shape = (width, height)
+            self.grids = [mesa.space.MultiGrid(width, height, False) for _ in range(self.grids_number)]
+        self.mesenchymal_count = [np.zeros(self.spatial_shape, dtype=float) for _ in range(grids_number)]
+        self.epithelial_count = [np.zeros(self.spatial_shape, dtype=float) for _ in range(grids_number)]
+        #list of numpy arrays, representing mmp2 and ecm concentration in each grid
+        self.mmp2 = [np.zeros((2, *self.spatial_shape), dtype=float) for _ in range(grids_number)]
+        self.ecm = [np.ones((2, *self.spatial_shape), dtype=float) for _ in range(grids_number)]
+
+        # Populate the grids from a previous simulation or from scratch.
+        if loaded_simulation_path != "":
+            print(f"Loading simulation at {loaded_simulation_path}!")
             self.load_previous_simulation(loaded_simulation_path)
             self.previous_cell_data = pd.read_csv(os.path.join(loaded_simulation_path, "CellsData.csv"), index_col=0)
         else:
             print("Starting simulation from zero!")
-            if config is None:
-                config = metaspread.configs.Config.from_csv("simulations_configs.csv")
-            self.config = config
-            # mirror onto the configs module for backward-compat consumers
-            self.config.publish_to_module()
             self._initialize_grids()
             self.doubling_time_counter_M = self.config.doubling_time_M
             self.doubling_time_counter_E = self.config.doubling_time_E
@@ -191,14 +206,14 @@ class CancerModel(mesa.Model):
         # None otherwise so default runs are untouched. Loaded simulations start
         # the field from oxygen_initial (oxygen state is not persisted yet).
         if self.config.enable_oxygen:
-            self.oxygen = [np.full((2, width, height), self.config.oxygen_initial, dtype=float)
+            self.oxygen = [np.full((2, *self.spatial_shape), self.config.oxygen_initial, dtype=float)
                            for _ in range(grids_number)]
             # boolean mask of vessel cells per grid, used as the oxygen source term
             self.oxygen_vessel_mask = []
             for positions in self.grid_vessels_positions:
-                mask = np.zeros((width, height), dtype=bool)
-                for (vx, vy) in positions:
-                    mask[vx, vy] = True
+                mask = np.zeros(self.spatial_shape, dtype=bool)
+                for pos in positions:
+                    mask[tuple(pos)] = True
                 self.oxygen_vessel_mask.append(mask)
         else:
             self.oxygen = None
@@ -468,6 +483,8 @@ class CancerModel(mesa.Model):
         Input: none
         Returns: none
         """
+        if self.space_dimensions == 3:
+            return self._initialize_grids_3d()
         mesenchymal_number = round(self.number_of_initial_cells * self.config.mesenchymal_proportion)
         possible_places = find_quasi_circle(self.config.n_center_points_for_tumor, self.width, self.height)[1]
         # Place all the agents in the quasi-circle area in the center of the grid
@@ -570,6 +587,81 @@ class CancerModel(mesa.Model):
                     x = self.random.randrange(self.width)
                     y = self.random.randrange(self.height)
                     self.grids[i].place_agent(immune, (x, y))
+
+    def _random_position(self):
+        """A uniformly random (x, y[, z]) position for the current dimensionality."""
+        coords = [self.random.randrange(self.width), self.random.randrange(self.height)]
+        if self.space_dimensions == 3:
+            coords.append(self.random.randrange(self.depth))
+        return tuple(coords)
+
+    def _initialize_grids_3d(self):
+        """3D counterpart of _initialize_grids: seeds the tumour in a sphere and
+        places vessels/immune cells in the 3D volume. Only reached when
+        space_dimensions == 3, so the 2D path is untouched."""
+        mesenchymal_number = round(self.number_of_initial_cells * self.config.mesenchymal_proportion)
+        possible_places = find_quasi_sphere(self.config.n_center_points_for_tumor,
+                                            self.width, self.height, self.depth)[1]
+        for i in range(self.number_of_initial_cells):
+            if mesenchymal_number > 0:
+                cell_type = "mesenchymal"
+                mesenchymal_number -= 1
+            else:
+                cell_type = "epithelial"
+            a = CancerCell(self.current_agent_id, self, self.grids[0], self.grid_ids[0], cell_type, self.ecm[0], self.mmp2[0])
+            self.current_agent_id += 1
+            j = self.random.randrange(len(possible_places))
+            pos = (int(possible_places[j][0]), int(possible_places[j][1]), int(possible_places[j][2]))
+            self.schedule.add(a)
+            self.grids[0].place_agent(a, pos)
+            self.cancer_cells_counter[0] += 1
+            possible_places[j][3] += 1  # occupancy counter
+            if possible_places[j][3] == self.config.carrying_capacity:
+                possible_places.pop(j)
+
+        # Vessels: primary site excludes the tumour sphere and the outer shell.
+        not_possible_array = find_quasi_sphere(self.config.n_center_points_for_Vessels,
+                                               self.width, self.height, self.depth)[0]
+        not_possible_array[:2, :, :] = 1;  not_possible_array[-2:, :, :] = 1
+        not_possible_array[:, :2, :] = 1;  not_possible_array[:, -2:, :] = 1
+        not_possible_array[:, :, :2] = 1;  not_possible_array[:, :, -2:] = 1
+        free = np.where(not_possible_array == 0)
+        pos_coords = [list(t) for t in zip(free[0], free[1], free[2])]
+
+        for i in range(len(self.grids)):
+            if i == 0:
+                for ruptured, count in ((True, self.config.ruptured_vessels_primary),
+                                        (False, self.config.normal_vessels_primary)):
+                    placed = 0
+                    while placed < count:
+                        coord = [self.random.randrange(self.width),
+                                 self.random.randrange(self.height),
+                                 self.random.randrange(self.depth)]
+                        if coord in pos_coords:
+                            v = Vessel(self.current_agent_id, self, ruptured, self.grids[0], self.grid_ids[0])
+                            self.current_agent_id += 1
+                            self.schedule.add(v)
+                            self.grids[0].place_agent(v, tuple(coord))
+                            self.grid_vessels_positions[i] += [tuple(coord)]
+                            not_possible_array[coord[0], coord[1], coord[2]] = 1
+                            pos_coords.remove(coord)
+                            placed += 1
+            else:
+                for _ in range(self.config.secondary_sites_vessels[i-1]):
+                    v = Vessel(self.current_agent_id, self, False, self.grids[i], self.grid_ids[i])
+                    self.current_agent_id += 1
+                    self.schedule.add(v)
+                    pos = self._random_position()
+                    self.grids[i].place_agent(v, pos)
+                    self.grid_vessels_positions[i] += [pos]
+
+        if self.config.enable_immune:
+            for i in range(len(self.grids)):
+                for _ in range(self.config.n_immune_cells):
+                    immune = ImmuneCell(self.current_agent_id, self, self.grids[i], self.grid_ids[i])
+                    self.current_agent_id += 1
+                    self.schedule.add(immune)
+                    self.grids[i].place_agent(immune, self._random_position())
 
     def _recount_cells(self):
         """Refresh the per-grid mesenchymal/epithelial cell-count arrays.

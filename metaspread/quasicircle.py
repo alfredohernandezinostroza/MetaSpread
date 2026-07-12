@@ -52,3 +52,44 @@ def find_quasi_circle(N, grid_width, grid_height):
             possible_places = np.where(last_grid == 1)
             coords = [list(tup) for tup in zip(possible_places[0], possible_places[1], (0 for i in possible_places[0]))]
             return last_grid, coords
+
+
+def find_quasi_sphere(N, grid_width, grid_height, grid_depth):
+    '''
+    3D analogue of find_quasi_circle. Returns a boolean-ish mask with 1 in the
+    region containing the N centre-most grid points, and the list of those
+    points as [x, y, z, 0] (the trailing 0 is an occupancy counter used by the
+    seeding loop, mirroring the 2D helper).
+    '''
+    a = grid_width / 2 - 0.5
+    b = grid_height / 2 - 0.5
+    c = grid_depth / 2 - 0.5
+    xs, ys, zs = np.indices((grid_width, grid_height, grid_depth))
+    dist2 = (xs - a) ** 2 + (ys - b) ** 2 + (zs - c) ** 2
+
+    ideal_radius = (N * 3 / (4 * np.pi)) ** (1 / 3) / 1.2
+    grid = np.zeros((grid_width, grid_height, grid_depth))
+    n_current = 0
+    for radius in np.arange(ideal_radius, min(grid_width, grid_height, grid_depth) / 2, 0.1):
+        last_grid = grid.copy()
+        n_last = n_current
+        grid = (dist2 < radius ** 2).astype(float)
+        n_current = int(grid.sum())
+        if n_current >= N:
+            if n_current == N:
+                last_grid = grid.copy()
+            elif n_current > N:
+                n_to_add = N - n_last
+                border = np.argwhere((grid == 1) & (last_grid == 0))
+                sign = 1
+                for i in range(n_to_add):
+                    coord = border[(i * sign) % len(border)]
+                    last_grid[tuple(coord)] = 1
+                    sign *= -1
+            places = np.argwhere(last_grid == 1)
+            coords = [[int(p[0]), int(p[1]), int(p[2]), 0] for p in places]
+            return last_grid, coords
+
+    places = np.argwhere(grid == 1)
+    coords = [[int(p[0]), int(p[1]), int(p[2]), 0] for p in places]
+    return grid, coords
