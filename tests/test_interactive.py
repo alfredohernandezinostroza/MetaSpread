@@ -1,7 +1,9 @@
 import pytest
 from metaspread import interactive
 
-def test_main_menu(mocker):
-    mocker.patch('metaspread.interactive.main_menu')
+def test_main_menu(monkeypatch):
+    from unittest.mock import Mock
+    m = Mock()
+    monkeypatch.setattr(interactive, 'main_menu', m)
     interactive.main_menu()
-    assert interactive.main_menu.called
+    assert m.called

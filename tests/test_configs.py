@@ -9,10 +9,12 @@ def test_imports():
     assert configs.os is not None
     assert configs.ast is not None
 
-def test_init_simulation_configs(mocker):
-    mocker.patch('metaspread.configs.init_simulation_configs')
+def test_init_simulation_configs(monkeypatch):
+    from unittest.mock import Mock
+    m = Mock()
+    monkeypatch.setattr(configs, 'init_simulation_configs', m)
     configs.init_simulation_configs('mock_configs.csv')
-    assert configs.init_simulation_configs.called
+    assert m.called
 
 
 def test_configs(tmp_path) -> None:

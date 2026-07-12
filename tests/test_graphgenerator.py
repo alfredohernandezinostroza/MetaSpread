@@ -11,7 +11,9 @@ def test_imports():
     assert graphgenerator.sys is not None
     assert graphgenerator.metaspread.configs is not None
 
-def test_generate_graph(mocker):
-    mocker.patch('metaspread.graphgenerator.generate_graphs')
+def test_generate_graph(monkeypatch):
+    from unittest.mock import Mock
+    m = Mock()
+    monkeypatch.setattr(graphgenerator, 'generate_graphs', m)
     graphgenerator.generate_graphs()
-    assert graphgenerator.generate_graphs.called
+    assert m.called

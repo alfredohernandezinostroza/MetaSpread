@@ -1,9 +1,57 @@
 from metaspread.cancermodel import CancerModel
 from metaspread.cancercell import CancerCell
+from metaspread.vessel import Vessel
 import numpy as np
 import pandas as pd
 import pytest
 import ast
+
+
+def test_carrying_capacity_guard_with_vessel(tmp_path) -> None:
+    """Regression test for the CancerCell.move carrying-capacity guard (6d43512).
+
+    The guard must count only cancer cells at the destination. The old bug used a
+    leftover loop variable (`agent`) instead of the comprehension variable, which
+    miscounts when a vessel shares the destination cell. We fill a destination
+    that already holds a vessel, one mover at a time, on a secondary grid (so the
+    intravasation branch does not trigger), and assert the cell occupancy settles
+    at exactly carrying_capacity.
+    """
+    folder = tmp_path / "cap_guard"
+    folder.mkdir()
+    model = CancerModel(
+        number_of_initial_cells=0, width=201, height=201, grids_number=2,
+        max_steps=10, data_collection_period=10, new_simulation_folder=folder,
+        fixed_p_left=0, fixed_p_right=1, fixed_p_top=0, fixed_p_bottom=0,
+    )
+    grid_id = 2               # secondary grid -> no intravasation branch
+    grid = model.grids[grid_id - 1]
+    cap = model.config.carrying_capacity
+    src = (100, 100)
+    dest = (101, 100)
+
+    # a vessel occupies the destination cell (does not count toward capacity)
+    vessel = Vessel(model.current_agent_id, model, False, grid, grid_id)
+    model.current_agent_id += 1
+    grid.place_agent(vessel, dest)
+
+    # more movers than capacity, all forced to step right into `dest`
+    movers = []
+    for _ in range(cap + 2):
+        m = CancerCell(model.current_agent_id, model, grid, grid_id,
+                       "mesenchymal", model.ecm[grid_id - 1], model.mmp2[grid_id - 1])
+        model.current_agent_id += 1
+        grid.place_agent(m, src)
+        model.schedule.add(m)
+        movers.append(m)
+
+    for m in movers:
+        if m.pos == src:      # only those still at the source can move
+            m.move()
+
+    cells_at_dest = len([a for a in grid.get_cell_list_contents([dest])
+                         if a.agent_type == "cell"])
+    assert cells_at_dest == cap
 
 #todo: model is not callable (duh! I think I cannot call a private variable (is it though?))
 #todo: use tmp_path_facorty to create the model once, and use it for the rest of the tests
