@@ -238,6 +238,9 @@ class CancerModel(mesa.Model):
             for cluster in surviving_clusters:
                 selected_site = self.random.choices(range(1,self.grids_number), weights=self.config.extravasation_probs[0:self.grids_number-1])[0]
                 arriving_point = self.random.choice(self.grid_vessels_positions[selected_site])
+                if self.space_dimensions == 3:
+                    self._place_extravasated_cluster_nd(cluster, selected_site, arriving_point)
+                    continue
                 x,y = arriving_point
                 on_left_border    = self.grids[selected_site].out_of_bounds((x-1,y))
                 on_right_border   = self.grids[selected_site].out_of_bounds((x+1,y))
@@ -384,14 +387,14 @@ class CancerModel(mesa.Model):
         """
         for agent in self.schedule.agents:
             if agent.agent_type == "cell":
-                x, y = agent.pos
-                amount_of_cells = len([cell for cell in agent.grid.get_cell_list_contents([(x, y)]) if cell.agent_type == "cell"])
+                pos = agent.pos
+                amount_of_cells = len([cell for cell in agent.grid.get_cell_list_contents([pos]) if cell.agent_type == "cell"])
                 if self.config.carrying_capacity > amount_of_cells and agent.phenotype == cell_type:
                     # print("Created new cell!!")
                     new_cell = CancerCell(self.current_agent_id, self, agent.grid, agent.grid_id, agent.phenotype, agent.ecm, agent.mmp2)
                     self.current_agent_id += 1
                     self.schedule.add(new_cell)
-                    agent.grid.place_agent(new_cell, (x,y))
+                    agent.grid.place_agent(new_cell, pos)
                     self.cancer_cells_counter[agent.grid_id - 1] += 1
         
 
@@ -594,6 +597,31 @@ class CancerModel(mesa.Model):
         if self.space_dimensions == 3:
             coords.append(self.random.randrange(self.depth))
         return tuple(coords)
+
+    def _place_extravasated_cluster_nd(self, cluster, selected_site, arriving_point):
+        """Dimension-general extravasation placement (used for 3D).
+
+        Mirrors the 2D placement: each cell in the cluster is placed in the first
+        neighbour of the arriving point that is below carrying capacity; a cell
+        with no available neighbour is lost (as in 2D)."""
+        grid = self.grids[selected_site]
+        neighbors = grid.get_neighborhood(arriving_point, moore=False, include_center=False)
+        counts = {npos: len([a for a in grid.get_cell_list_contents([npos]) if a.agent_type == "cell"])
+                  for npos in neighbors}
+        for tuple_index, ccells_amount in enumerate(cluster):
+            cell_type = "mesenchymal" if tuple_index == 0 else "epithelial"
+            while ccells_amount > 0:
+                for npos in neighbors:
+                    if self.config.carrying_capacity > counts[npos]:
+                        ccell = CancerCell(self.current_agent_id, self, grid, self.grid_ids[selected_site],
+                                           cell_type, self.ecm[selected_site], self.mmp2[selected_site])
+                        self.current_agent_id += 1
+                        grid.place_agent(ccell, npos)
+                        counts[npos] += 1
+                        self.cancer_cells_counter[selected_site] += 1
+                        self.schedule.add(ccell)
+                        break
+                ccells_amount -= 1
 
     def _initialize_grids_3d(self):
         """3D counterpart of _initialize_grids: seeds the tumour in a sphere and

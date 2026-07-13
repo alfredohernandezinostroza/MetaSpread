@@ -57,6 +57,8 @@ class CancerCell(mesa.Agent):
                 self._apply_phenotype("epithelial")
 
     def move(self):
+        if self.model.space_dimensions == 3:
+            return self._move_nd()
         #fixed probabilities can be given to fix the movement of the cells towards a certain direction
         #if no fixed probabilities are given, the probabilities are calculated based on the ECM and MMP-2 concentration
         #(the fixed probabilities are only used for testing)
@@ -154,3 +156,70 @@ class CancerCell(mesa.Agent):
         else:
             if self.model.config.carrying_capacity > len([cell for cell in self.grid.get_cell_list_contents([new_position]) if cell.agent_type == 'cell']):
                 self.grid.move_agent(self, new_position)
+
+    def _move_nd(self):
+        """Dimension-general movement (used for 3D).
+
+        Diffusion + ECM haptotaxis per axis, mirroring the 2D formulation: along
+        each axis the bias is +/- phi/4 * (ecm[+1] - ecm[-1]) (zero at borders).
+        Then the same vessel-intravasation / carrying-capacity logic as 2D, with
+        the intravasating cluster gathered from the von-Neumann neighbourhood."""
+        cfg = self.model.config
+        grid = self.grid
+        pos = self.pos
+        time = self.model.schedule.time
+        coeff = cfg.th / cfg.xh ** 2
+        possible_steps = grid.get_neighborhood(pos, moore=False, include_center=True)
+
+        grads = []
+        for axis in range(len(pos)):
+            plus = list(pos); plus[axis] += 1; plus = tuple(plus)
+            minus = list(pos); minus[axis] -= 1; minus = tuple(minus)
+            if grid.out_of_bounds(plus) or grid.out_of_bounds(minus):
+                grads.append(0.0)
+            else:
+                grads.append(self.ecm[0][plus] - self.ecm[0][minus])
+
+        weights = []
+        move_total = 0.0
+        for step in possible_steps:
+            if step == pos:
+                weights.append(None)
+                continue
+            diff = [s - p for s, p in zip(step, pos)]
+            axis = next(k for k, dv in enumerate(diff) if dv != 0)
+            sign = 1.0 if diff[axis] > 0 else -1.0
+            w = coeff * (self.diff_coeff + sign * self.phi / 4 * grads[axis])
+            weights.append(w)
+            move_total += w
+        weights = [(1 - move_total) if w is None else w for w in weights]
+        if any(w < 0 for w in weights):
+            weights = [max(w, 0.0) for w in weights]
+        if sum(weights) == 0:
+            weights = [1.0] * len(possible_steps)
+
+        new_position = self.random.choices(possible_steps, weights, k=1)[0]
+
+        is_vessel = False
+        is_ruptured = False
+        for agent in grid.get_cell_list_contents([new_position]):
+            if isinstance(agent, Vessel):
+                is_ruptured = agent.ruptured
+                is_vessel = True
+                break
+        if is_vessel and self.grid_id == 1 and (is_ruptured or self.phenotype == "mesenchymal"):
+            gather = grid.get_neighborhood(new_position, moore=False, include_center=True)
+            contents = grid.get_cell_list_contents(gather)
+            mesenchymal = [a for a in contents if a.agent_type == 'cell' and a.phenotype == "mesenchymal"]
+            epithelial = [a for a in contents if a.agent_type == 'cell' and a.phenotype == "epithelial"]
+            vt = cfg.vasculature_time
+            if self.model.vasculature.get(time + vt, False):
+                self.model.vasculature[time + vt] += [(len(mesenchymal), len(epithelial))]
+            else:
+                self.model.vasculature[time + vt] = [(len(mesenchymal), len(epithelial))]
+            for ccell in mesenchymal + epithelial:
+                ccell.grid.remove_agent(ccell)
+                ccell.model.schedule.remove(ccell)
+        else:
+            if cfg.carrying_capacity > len([c for c in grid.get_cell_list_contents([new_position]) if c.agent_type == 'cell']):
+                grid.move_agent(self, new_position)
