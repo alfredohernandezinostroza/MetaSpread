@@ -331,23 +331,12 @@ class CancerModel(mesa.Model):
                 # with open(backup_file_path, "wb") as f:
                 #     pickle.dump(self, f)
                 df_time_grids_got_populated = pd.DataFrame()
+                step_label = self.schedule.time + self.loaded_max_step
                 for grid_id in self.grid_ids:
-                    new_mmp2_df = pd.DataFrame(self.mmp2[grid_id-1][0,:,:])
-                    mmp2CsvName = f"Mmp2-{grid_id}grid-{self.schedule.time + self.loaded_max_step}step.csv"
-                    path_to_save = os.path.join(self.new_simulation_folder, "Mmp2", mmp2CsvName)
-                    new_mmp2_df.to_csv(path_to_save)
-
-                    new_ecm_df = pd.DataFrame(self.ecm[grid_id-1][0,:,:])
-                    EcmCsvName = f"Ecm-{grid_id}grid-{self.schedule.time + self.loaded_max_step}step.csv"
-                    path_to_save = os.path.join(self.new_simulation_folder, "Ecm", EcmCsvName)
-                    new_ecm_df.to_csv(path_to_save)
-
+                    self._save_field(self.mmp2[grid_id-1], "Mmp2", f"Mmp2-{grid_id}grid", step_label)
+                    self._save_field(self.ecm[grid_id-1], "Ecm", f"Ecm-{grid_id}grid", step_label)
                     if self.config.enable_oxygen:
-                        oxygen_dir = os.path.join(self.new_simulation_folder, "Oxygen")
-                        os.makedirs(oxygen_dir, exist_ok=True)
-                        new_oxygen_df = pd.DataFrame(self.oxygen[grid_id-1][0,:,:])
-                        OxygenCsvName = f"Oxygen-{grid_id}grid-{self.schedule.time + self.loaded_max_step}step.csv"
-                        new_oxygen_df.to_csv(os.path.join(oxygen_dir, OxygenCsvName))
+                        self._save_field(self.oxygen[grid_id-1], "Oxygen", f"Oxygen-{grid_id}grid", step_label)
 
                     df_time_grids_got_populated[f"Time when grid {grid_id} was first populated"] = [self.time_grid_got_populated[grid_id-1]]
                     df_time_grids_got_populated_csv_name = f"Cells-are-present-grid-{grid_id}-{self.schedule.time + self.loaded_max_step}step.csv"
@@ -418,8 +407,12 @@ class CancerModel(mesa.Model):
             last_state_of_ecm_filepath  = os.path.join(ecm_files_path,ecm_files[-1])
             print(f"Loading MMP2 state for grid id {grid_number + 1} in {last_state_of_mmp2_filepath}.")
             print(f"Loading ECM state for grid id {grid_number + 1} in {last_state_of_ecm_filepath}.")
-            self.ecm[grid_number][0,:,:]  = pd.read_csv(last_state_of_ecm_filepath, index_col=0).to_numpy(dtype=float)
-            self.mmp2[grid_number][0,:,:] = pd.read_csv(last_state_of_mmp2_filepath, index_col=0).to_numpy(dtype=float)
+            if self.space_dimensions == 3:
+                self.ecm[grid_number][0]  = np.load(last_state_of_ecm_filepath)
+                self.mmp2[grid_number][0] = np.load(last_state_of_mmp2_filepath)
+            else:
+                self.ecm[grid_number][0]  = pd.read_csv(last_state_of_ecm_filepath, index_col=0).to_numpy(dtype=float)
+                self.mmp2[grid_number][0] = pd.read_csv(last_state_of_mmp2_filepath, index_col=0).to_numpy(dtype=float)
 
         path = os.path.join(path_to_simulation, "CellsData.csv")
         previous_sim_df = pd.read_csv(path, converters={"Position": ast.literal_eval})
@@ -690,6 +683,19 @@ class CancerModel(mesa.Model):
                     self.current_agent_id += 1
                     self.schedule.add(immune)
                     self.grids[i].place_agent(immune, self._random_position())
+
+    def _save_field(self, field, subdir, prefix, step_label):
+        """Persist the current concentration of a diffusible field.
+
+        2D fields are written as CSV (unchanged, byte-identical); 3D fields as
+        .npy since a DataFrame cannot hold a 3D array."""
+        directory = os.path.join(self.new_simulation_folder, subdir)
+        os.makedirs(directory, exist_ok=True)
+        current = field[0]
+        if self.space_dimensions == 3:
+            np.save(os.path.join(directory, f"{prefix}-{step_label}step.npy"), current)
+        else:
+            pd.DataFrame(current).to_csv(os.path.join(directory, f"{prefix}-{step_label}step.csv"))
 
     def _recount_cells(self):
         """Refresh the per-grid mesenchymal/epithelial cell-count arrays.
