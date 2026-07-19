@@ -3,6 +3,25 @@ import pandas as pd
 import os
 import ast
 
+
+def _safe_literal(value):
+    """Parse a configs.csv cell value.
+
+    Values are stored as Python literals (numbers, bools, lists) and read back
+    with ast.literal_eval. String-valued parameters (e.g. device_mask_path) may
+    be written as a bare string or left empty; a value that is not a valid literal
+    (including an empty cell) falls back to the raw string. Every pre-existing
+    parameter is already a valid literal, so this changes none of their parsing.
+    """
+    if isinstance(value, str):
+        if value.strip() == "":
+            return ""
+        try:
+            return ast.literal_eval(value)
+        except (ValueError, SyntaxError):
+            return value
+    return value
+
 # Canonical ordered list of the simulation parameters stored in
 # simulations_configs.csv. Keeping this in one place lets the Config object,
 # the default-config generator and the validation logic stay in sync.
@@ -41,6 +60,8 @@ _PHASE2_PARAM_NAMES = [
     "enable_flow", "flow_velocity",
     # shear-dependent survival of circulating clusters
     "enable_shear", "shear_stress", "shear_death_coeff",
+    # device geometry: impassable walls (parametric channel or a mask file)
+    "enable_device_geometry", "channel_axis", "channel_margin", "device_mask_path",
 ]
 
 # Canonical ordered list of every simulation parameter stored in
@@ -85,6 +106,8 @@ DEFAULTS = {
     # space_dimensions entries are used, so one default serves 2D and 3D.
     "enable_flow": False, "flow_velocity": [0.0, 0.0, 0.0],
     "enable_shear": False, "shear_stress": 0.0, "shear_death_coeff": 0.0,
+    "enable_device_geometry": False, "channel_axis": 0, "channel_margin": 0,
+    "device_mask_path": "",
 }
 
 
@@ -164,6 +187,13 @@ def validate_configs(d):
             error_string += "shear_stress must be >= 0 when enable_shear is True!\n"
         if d.get("shear_death_coeff", 0.0) < 0:
             error_string += "shear_death_coeff must be >= 0 when enable_shear is True!\n"
+    if d.get("enable_device_geometry", False) and not d.get("device_mask_path", ""):
+        ndim = d.get("space_dimensions", 2)
+        axis = d.get("channel_axis", 0)
+        if not (isinstance(axis, int) and 0 <= axis < ndim):
+            error_string += f"channel_axis must be an integer in [0, space_dimensions) ({ndim})!\n"
+        if d.get("channel_margin", 0) < 0:
+            error_string += "channel_margin must be >= 0!\n"
 
     if error_string != "":
         raise ValueError(error_string)
@@ -193,7 +223,7 @@ class Config:
 
     @classmethod
     def _read_csv(cls, path):
-        df = pd.read_csv(path, header=0, converters={"Values": ast.literal_eval})
+        df = pd.read_csv(path, header=0, converters={"Values": _safe_literal})
         return df
 
     @classmethod
@@ -270,7 +300,7 @@ def load_simulation_configs_for_data_generation(path):
         string: path
         return: array of all the names of the variables
     """
-    df_configs = pd.read_csv(path, header=0, converters={"Values": ast.literal_eval})
+    df_configs = pd.read_csv(path, header=0, converters={"Values": _safe_literal})
     dict_configs = dict(zip(df_configs["Names"], df_configs["Values"]))
     for rt in RUNTIME_NAMES:
         if rt not in dict_configs:
@@ -287,7 +317,7 @@ def load_simulation_configs_for_reloaded_simulation(path):
         string: path
         return: array of all the names of the variables
     """
-    df_configs = pd.read_csv(path, header=0, converters={"Values": ast.literal_eval})
+    df_configs = pd.read_csv(path, header=0, converters={"Values": _safe_literal})
     # drop the runtime rows (max_steps, data_collection_period): they change for
     # each simulation according to user input
     df_configs = df_configs[df_configs["Names"].isin(PARAM_NAMES)]

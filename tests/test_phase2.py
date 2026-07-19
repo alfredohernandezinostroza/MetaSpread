@@ -171,3 +171,84 @@ def test_shear_reduces_survivors_in_circulation():
     assert survivors(on, 0) < survivors(off, 0)
     # and still let some through (factor exp(-1.5) ~ 0.22, base 0.8 -> ~0.18)
     assert survivors(on, 0) > 0
+
+
+# ---------------------------------------------------------------------------
+# Feature 3: device geometry (impassable walls)
+# ---------------------------------------------------------------------------
+from metaspread.configs import validate_configs
+from metaspread.geometry import build_wall_mask
+
+
+def test_wall_mask_parametric_channel_2d():
+    base = Config.from_csv("simulations_configs.csv")
+    cfg = base.copy(channel_axis=0, channel_margin=3, device_mask_path="")
+    mask = build_wall_mask(cfg, (11, 11))
+    # channel open along axis 0 (x): the first/last 3 columns (y) are walls,
+    # the middle is fully open
+    assert mask[:, :3].all() and mask[:, -3:].all()
+    assert not mask[:, 3:-3].any()
+    # margin 0 -> no walls at all (inert)
+    assert not build_wall_mask(base.copy(channel_margin=0), (11, 11)).any()
+
+
+def test_wall_mask_3d_and_mask_file(tmp_path):
+    base = Config.from_csv("simulations_configs.csv")
+    m = build_wall_mask(base.copy(channel_axis=2, channel_margin=1), (5, 5, 5))
+    # channel open along z (axis 2): x and y edges are walls, a central z-column open
+    assert m[:1].all() and m[-1:].all() and m[:, :1].all() and m[:, -1:].all()
+    assert not m[2, 2, :].any()
+
+    # a mask file overrides the parametric channel and is shape-checked
+    arr = np.zeros((4, 4), dtype=int)
+    arr[0, 0] = 1
+    p = tmp_path / "mask.npy"
+    np.save(p, arr)
+    fm = build_wall_mask(base.copy(channel_margin=9, device_mask_path=str(p)), (4, 4))
+    assert fm[0, 0] and fm.sum() == 1  # the file was used, not the channel
+    with pytest.raises(ValueError):
+        build_wall_mask(base.copy(device_mask_path=str(p)), (5, 5))  # shape mismatch
+
+
+def test_geometry_off_by_default_and_validation():
+    cfg = Config.from_csv("simulations_configs.csv")
+    assert cfg.enable_device_geometry is False
+    assert cfg.device_mask_path == ""  # empty cell round-trips to ""
+
+    good = cfg.as_dict()
+    good.update(enable_device_geometry=True, channel_axis=1, channel_margin=2)
+    validate_configs(good)  # a valid channel config must not raise
+
+    bad = cfg.as_dict()
+    bad.update(enable_device_geometry=True, channel_axis=5)  # out of range for 2D
+    with pytest.raises(ValueError):
+        validate_configs(bad)
+
+
+def _channel_cfg(**overrides):
+    base = Config.from_csv("simulations_configs.csv")
+    cfg = base.copy(
+        gridsize=21, grids_number=2, extravasation_probs=[1.0],
+        secondary_sites_vessels=[5], number_of_initial_cells=20,
+        n_center_points_for_tumor=20, n_center_points_for_Vessels=40,
+        enable_device_geometry=True, channel_axis=0, channel_margin=4,
+    )
+    return cfg.copy(**overrides) if overrides else cfg
+
+
+def test_no_cancer_or_immune_agent_ever_enters_a_wall():
+    # immune cells on too, so both movement paths are exercised against walls
+    cfg = _channel_cfg(enable_immune=True, n_immune_cells=10, immune_kill_prob=0.0)
+    res = run(cfg, 8, 1, seed=2, save_path=None)
+    model = res.model
+
+    # nothing alive sits on a wall (covers placement + movement end state)
+    for a in model.schedule.agents:
+        if a.agent_type in ("cell", "immune"):
+            assert not model._is_wall(a.pos), f"{a.agent_type} on wall at {a.pos}"
+
+    # and no cell/immune was ever recorded on a wall over the whole run
+    hist = res.agent_data
+    hist = hist[hist["Agent Type"].isin(["cell", "immune"])]
+    assert len(hist) > 0
+    assert not any(bool(model.wall_mask[tuple(pos)]) for pos in hist["Position"])

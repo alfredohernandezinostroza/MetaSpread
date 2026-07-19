@@ -39,8 +39,9 @@ def test_configs(tmp_path) -> None:
         data_collection_period=data_collection_period,
         new_simulation_folder=temp_simulation_folder)
     
-    #test against the csv file
-    sim_configs = pd.read_csv('simulations_configs.csv', header=0, converters={"Values": ast.literal_eval})
+    #test against the csv file (use the project's canonical value parser, which
+    #also handles string-valued params such as device_mask_path)
+    sim_configs = pd.read_csv('simulations_configs.csv', header=0, converters={"Values": configs._safe_literal})
     assert model.number_of_initial_cells== sim_configs.query("Names=='number_of_initial_cells'")["Values"].values[0]
     assert model.width == sim_configs.query("Names=='gridsize'")["Values"].values[0]
     assert model.height == sim_configs.query("Names=='gridsize'")["Values"].values[0]

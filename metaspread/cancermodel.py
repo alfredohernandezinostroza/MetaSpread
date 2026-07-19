@@ -12,6 +12,7 @@ from metaspread.vessel import Vessel
 from metaspread.immunecell import ImmuneCell
 from metaspread.ndgrid import NDGrid
 from metaspread.quasicircle import find_quasi_circle, find_quasi_sphere
+from metaspread.geometry import build_wall_mask
 from matplotlib import pyplot as plt
 from matplotlib import cm
 # from Classes.configs import *
@@ -237,6 +238,14 @@ class CancerModel(mesa.Model):
         self.mmp2 = [np.zeros((2, *self.spatial_shape), dtype=float) for _ in range(grids_number)]
         self.ecm = [np.ones((2, *self.spatial_shape), dtype=float) for _ in range(grids_number)]
 
+        # Optional device geometry (Phase 2): a boolean wall mask of cells agents
+        # cannot enter. None by default, so movement and placement run their
+        # original paths untouched (and _is_wall is always False).
+        if self.config.enable_device_geometry:
+            self.wall_mask = build_wall_mask(self.config, self.spatial_shape)
+        else:
+            self.wall_mask = None
+
         # Populate the grids from a previous simulation or from scratch.
         if loaded_simulation_path != "":
             print(f"Loading simulation at {loaded_simulation_path}!")
@@ -299,28 +308,28 @@ class CancerModel(mesa.Model):
                 for tuple_index, ccells_amount in enumerate(cluster):
                     cell_type = "mesenchymal" if tuple_index == 0 else "epithelial"
                     while ccells_amount > 0:
-                        if not on_left_border and self.config.carrying_capacity > number_of_ccells_in_arriving_point[x-1,y]:
+                        if not on_left_border and not self._is_wall((x-1,y)) and self.config.carrying_capacity > number_of_ccells_in_arriving_point[x-1,y]:
                             ccell = CancerCell(self.current_agent_id, self, self.grids[selected_site], self.grid_ids[selected_site], cell_type, self.ecm[selected_site], self.mmp2[selected_site])
                             self.current_agent_id += 1
                             self.grids[selected_site].place_agent(ccell, (x-1,y)) 
                             number_of_ccells_in_arriving_point[x-1,y] += 1
                             self.cancer_cells_counter[selected_site] += 1
                             self.schedule.add(ccell)
-                        elif not on_right_border and self.config.carrying_capacity > number_of_ccells_in_arriving_point[x+1,y]:
+                        elif not on_right_border and not self._is_wall((x+1,y)) and self.config.carrying_capacity > number_of_ccells_in_arriving_point[x+1,y]:
                             ccell = CancerCell(self.current_agent_id, self, self.grids[selected_site], self.grid_ids[selected_site], cell_type, self.ecm[selected_site], self.mmp2[selected_site])
                             self.current_agent_id += 1
                             self.grids[selected_site].place_agent(ccell, (x+1,y))
                             number_of_ccells_in_arriving_point[x+1,y] += 1
                             self.cancer_cells_counter[selected_site] += 1
                             self.schedule.add(ccell)
-                        elif not on_bottom_border and self.config.carrying_capacity > number_of_ccells_in_arriving_point[x,y-1]:
+                        elif not on_bottom_border and not self._is_wall((x,y-1)) and self.config.carrying_capacity > number_of_ccells_in_arriving_point[x,y-1]:
                             ccell = CancerCell(self.current_agent_id, self, self.grids[selected_site], self.grid_ids[selected_site], cell_type, self.ecm[selected_site], self.mmp2[selected_site])
                             self.current_agent_id += 1
                             self.grids[selected_site].place_agent(ccell, (x,y-1))
                             number_of_ccells_in_arriving_point[x,y-1] += 1
                             self.cancer_cells_counter[selected_site] += 1
                             self.schedule.add(ccell)
-                        elif not on_top_border and self.config.carrying_capacity > number_of_ccells_in_arriving_point[x,y+1]:
+                        elif not on_top_border and not self._is_wall((x,y+1)) and self.config.carrying_capacity > number_of_ccells_in_arriving_point[x,y+1]:
                             ccell = CancerCell(self.current_agent_id, self, self.grids[selected_site], self.grid_ids[selected_site], cell_type, self.ecm[selected_site], self.mmp2[selected_site])
                             self.current_agent_id += 1
                             self.grids[selected_site].place_agent(ccell, (x,y+1))
@@ -518,6 +527,15 @@ class CancerModel(mesa.Model):
         self.time_grid_got_populated = df_time_grid_got_populated.loc[0, :].values.flatten().tolist()
 
 
+    def _is_wall(self, pos):
+        """True if `pos` is an impassable wall cell.
+
+        Always False when device geometry is off (wall_mask is None), so every
+        wall check downstream is inert and the default RNG/placement path is
+        unchanged.
+        """
+        return self.wall_mask is not None and bool(self.wall_mask[tuple(pos)])
+
     def _initialize_grids(self):
         """
         Places the initial cancer cell and vessel in the initial grid in a circle
@@ -529,6 +547,12 @@ class CancerModel(mesa.Model):
             return self._initialize_grids_3d()
         mesenchymal_number = round(self.number_of_initial_cells * self.config.mesenchymal_proportion)
         possible_places = find_quasi_circle(self.config.n_center_points_for_tumor, self.width, self.height)[1]
+        # Device geometry: never seed the tumour on a wall. Filtering the list up
+        # front keeps the RNG draws below identical when geometry is off (the list
+        # is unchanged), so the default run stays byte-identical.
+        if self.wall_mask is not None:
+            possible_places = [p for p in possible_places
+                               if not self._is_wall((int(p[0]), int(p[1])))]
         # Place all the agents in the quasi-circle area in the center of the grid
         for i in range(self.number_of_initial_cells):
             if mesenchymal_number > 0:
@@ -576,6 +600,10 @@ class CancerModel(mesa.Model):
         not_possible_array[-2:,:] = 1
         not_possible_array[:,:2] = 1
         not_possible_array[:,-2:] = 1
+        # Device geometry: exclude wall cells from primary-vessel placement.
+        # No-op when geometry is off, so the default run is byte-identical.
+        if self.wall_mask is not None:
+            not_possible_array[self.wall_mask] = 1
         possible_places = np.where(not_possible_array == 0)
         pos_coords = [list(tup) for tup in zip(possible_places[0], possible_places[1])]
 
@@ -614,10 +642,9 @@ class CancerModel(mesa.Model):
                         a = Vessel(self.current_agent_id, self, False, self.grids[i], self.grid_ids[i])
                         self.current_agent_id += 1
                         self.schedule.add(a)
-                        x = self.random.randrange(self.width)
-                        y = self.random.randrange(self.height)
-                        self.grids[i].place_agent(a, (x,y))
-                        self.grid_vessels_positions[i] += [(x,y)]
+                        pos = self._random_position()
+                        self.grids[i].place_agent(a, pos)
+                        self.grid_vessels_positions[i] += [pos]
 
         # Optional immune cells (Phase 1): place n_immune_cells per grid.
         if self.config.enable_immune:
@@ -626,16 +653,22 @@ class CancerModel(mesa.Model):
                     immune = ImmuneCell(self.current_agent_id, self, self.grids[i], self.grid_ids[i])
                     self.current_agent_id += 1
                     self.schedule.add(immune)
-                    x = self.random.randrange(self.width)
-                    y = self.random.randrange(self.height)
-                    self.grids[i].place_agent(immune, (x, y))
+                    self.grids[i].place_agent(immune, self._random_position())
 
     def _random_position(self):
-        """A uniformly random (x, y[, z]) position for the current dimensionality."""
-        coords = [self.random.randrange(self.width), self.random.randrange(self.height)]
-        if self.space_dimensions == 3:
-            coords.append(self.random.randrange(self.depth))
-        return tuple(coords)
+        """A uniformly random (x, y[, z]) position for the current dimensionality.
+
+        When device geometry is enabled, wall cells are avoided by re-drawing.
+        With geometry off (wall_mask is None) it returns on the first draw, so the
+        RNG stream is identical to the previous implementation.
+        """
+        while True:
+            coords = [self.random.randrange(self.width), self.random.randrange(self.height)]
+            if self.space_dimensions == 3:
+                coords.append(self.random.randrange(self.depth))
+            pos = tuple(coords)
+            if self.wall_mask is None or not self._is_wall(pos):
+                return pos
 
     def _place_extravasated_cluster_nd(self, cluster, selected_site, arriving_point):
         """Dimension-general extravasation placement (used for 3D).
@@ -645,6 +678,8 @@ class CancerModel(mesa.Model):
         with no available neighbour is lost (as in 2D)."""
         grid = self.grids[selected_site]
         neighbors = grid.get_neighborhood(arriving_point, moore=False, include_center=False)
+        if self.wall_mask is not None:
+            neighbors = [n for n in neighbors if not self._is_wall(n)]
         counts = {npos: len([a for a in grid.get_cell_list_contents([npos]) if a.agent_type == "cell"])
                   for npos in neighbors}
         for tuple_index, ccells_amount in enumerate(cluster):
@@ -669,6 +704,9 @@ class CancerModel(mesa.Model):
         mesenchymal_number = round(self.number_of_initial_cells * self.config.mesenchymal_proportion)
         possible_places = find_quasi_sphere(self.config.n_center_points_for_tumor,
                                             self.width, self.height, self.depth)[1]
+        if self.wall_mask is not None:
+            possible_places = [p for p in possible_places
+                               if not self._is_wall((int(p[0]), int(p[1]), int(p[2])))]
         for i in range(self.number_of_initial_cells):
             if mesenchymal_number > 0:
                 cell_type = "mesenchymal"
@@ -692,6 +730,8 @@ class CancerModel(mesa.Model):
         not_possible_array[:2, :, :] = 1;  not_possible_array[-2:, :, :] = 1
         not_possible_array[:, :2, :] = 1;  not_possible_array[:, -2:, :] = 1
         not_possible_array[:, :, :2] = 1;  not_possible_array[:, :, -2:] = 1
+        if self.wall_mask is not None:
+            not_possible_array[self.wall_mask] = 1
         free = np.where(not_possible_array == 0)
         pos_coords = [list(t) for t in zip(free[0], free[1], free[2])]
 

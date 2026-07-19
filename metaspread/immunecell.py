@@ -37,6 +37,12 @@ class ImmuneCell(mesa.Agent):
             weights = [1.0] * len(possible_steps)
         else:
             weights = [stay if step == self.pos else p for step in possible_steps]
+        # Device geometry (Phase 2): never step into a wall cell.
+        if self.model.wall_mask is not None:
+            weights = [0.0 if self.model.wall_mask[tuple(step)] else w
+                       for step, w in zip(possible_steps, weights)]
+            if sum(weights) <= 0:  # walled in: stay put
+                weights = [1.0 if step == self.pos else 0.0 for step in possible_steps]
         new_position = self.random.choices(possible_steps, weights, k=1)[0]
         self.grid.move_agent(self, new_position)
 

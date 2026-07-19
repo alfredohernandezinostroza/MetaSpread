@@ -115,6 +115,14 @@ class CancerCell(mesa.Agent):
         #there is a chance that the probability should be calculated at the end as 1-sum(weights), have to check
 
 
+        # Device geometry (Phase 2): never step into a wall cell. No-op when
+        # geometry is off (wall_mask is None), so the RNG draw below is unchanged.
+        if self.model.wall_mask is not None:
+            weights = [0.0 if self.model.wall_mask[tuple(step)] else w
+                       for step, w in zip(possible_steps, weights)]
+            if sum(weights) <= 0:  # walled in: stay put
+                weights = [1.0 if step == self.pos else 0.0 for step in possible_steps]
+
         # new_position = (x,y+1)
         new_position = self.random.choices(possible_steps,weights,k=1)[0]
         is_vessel = False
@@ -195,6 +203,12 @@ class CancerCell(mesa.Agent):
         weights = [(1 - move_total) if w is None else w for w in weights]
         if any(w < 0 for w in weights):
             weights = [max(w, 0.0) for w in weights]
+        # Device geometry (Phase 2): zero the weight of any walled neighbour.
+        if self.model.wall_mask is not None:
+            weights = [0.0 if self.model.wall_mask[tuple(step)] else w
+                       for step, w in zip(possible_steps, weights)]
+            if sum(weights) == 0:  # fully walled in: stay put
+                weights = [1.0 if step == pos else 0.0 for step in possible_steps]
         if sum(weights) == 0:
             weights = [1.0] * len(possible_steps)
 
