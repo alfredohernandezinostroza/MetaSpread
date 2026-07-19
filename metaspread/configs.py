@@ -35,10 +35,19 @@ _PHASE1_PARAM_NAMES = [
 # existing 2D path, byte-identical); gridsize_z is only used when it is 3.
 _PHASE3D_PARAM_NAMES = ["space_dimensions", "gridsize_z"]
 
+# Phase 2 — organ-on-chip (all off by default, so a default run is byte-identical).
+_PHASE2_PARAM_NAMES = [
+    # flow / advection of the diffusible fields
+    "enable_flow", "flow_velocity",
+]
+
 # Canonical ordered list of every simulation parameter stored in
 # simulations_configs.csv. Keeping this in one place lets the Config object, the
 # default-config generator and the validation logic stay in sync.
-PARAM_NAMES = _CORE_PARAM_NAMES + _PHASE1_PARAM_NAMES + _PHASE3D_PARAM_NAMES
+PARAM_NAMES = (
+    _CORE_PARAM_NAMES + _PHASE1_PARAM_NAMES + _PHASE3D_PARAM_NAMES
+    + _PHASE2_PARAM_NAMES
+)
 
 # Extra keys that a saved simulation's configs.csv carries in addition to the
 # core parameters above.
@@ -69,6 +78,10 @@ DEFAULTS = {
     "immune_kill_prob": 0.1, "immune_diff_coeff": 1e-4,
     # --- Phase 3D (2D by default) ---
     "space_dimensions": 2, "gridsize_z": 41,
+    # --- Phase 2 (organ-on-chip; inert defaults) ---
+    # flow_velocity is a per-axis advection velocity; only the first
+    # space_dimensions entries are used, so one default serves 2D and 3D.
+    "enable_flow": False, "flow_velocity": [0.0, 0.0, 0.0],
 }
 
 
@@ -130,6 +143,18 @@ def validate_configs(d):
         error_string += "space_dimensions must be 2 or 3!\n"
     if d.get("space_dimensions", 2) == 3 and d.get("gridsize_z", 1) <= 0:
         error_string += "gridsize_z must be greater than 0 when space_dimensions == 3!\n"
+
+    # --- Phase 2 checks (only bite when the relevant feature is enabled) ---
+    if d.get("enable_flow", False):
+        ndim = d.get("space_dimensions", 2)
+        fv = d.get("flow_velocity", [])
+        if not isinstance(fv, (list, tuple)) or len(fv) < ndim:
+            error_string += (
+                f"flow_velocity must be a list of at least space_dimensions ({ndim}) "
+                "numbers when enable_flow is True!\n"
+            )
+        elif not all(isinstance(x, (int, float)) and not isinstance(x, bool) for x in fv):
+            error_string += "flow_velocity entries must be numbers!\n"
 
     if error_string != "":
         raise ValueError(error_string)

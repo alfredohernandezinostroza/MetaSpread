@@ -54,6 +54,44 @@ def _reflective_neighbor_sum(field):
     return total
 
 
+def _upwind_advection(field, velocity):
+    """First-order upwind advection operator  sum_axis v_axis * d(field)/dx_axis.
+
+    Returns an array the same shape as `field`, holding the directional derivative
+    in *grid* units (per cell). Along each axis the derivative is taken from the
+    upwind side of the flow — a backward difference where the velocity component
+    is positive, a forward difference where it is negative — which is what keeps
+    an explicit advection update stable. Boundaries use a one-sided (zero-gradient)
+    stencil so no spurious flux is created at the domain walls.
+
+    `velocity` is a per-axis sequence; only the first ``field.ndim`` entries are
+    used, so a single 3-vector serves both 2D and 3D fields. The caller scales the
+    result by tha/xha and subtracts it from the field update.
+    """
+    ndim = field.ndim
+    total = None
+    for axis in range(ndim):
+        v = float(velocity[axis])
+        if v == 0.0:
+            continue
+        deriv = np.zeros_like(field)
+        a = [slice(None)] * ndim
+        b = [slice(None)] * ndim
+        dst = [slice(None)] * ndim
+        if v > 0.0:
+            # backward difference field[i] - field[i-1]; edge (i=0) stays 0
+            dst[axis] = slice(1, None); a[axis] = slice(1, None); b[axis] = slice(0, -1)
+        else:
+            # forward difference field[i+1] - field[i]; edge (i=last) stays 0
+            dst[axis] = slice(0, -1); a[axis] = slice(1, None); b[axis] = slice(0, -1)
+        deriv[tuple(dst)] = field[tuple(a)] - field[tuple(b)]
+        contribution = v * deriv
+        total = contribution if total is None else total + contribution
+    if total is None:
+        total = np.zeros_like(field)
+    return total
+
+
 def get_cluster_survival_probability(cluster, config):
     """
     Takes in a tuple representing a cluster, returns the survival probabiltiy.
@@ -736,6 +774,10 @@ class CancerModel(mesa.Model):
             decay = 1-(2*ndim)*dmmp*tha/xha**2-th*Lambda
             neighbor_sum = _reflective_neighbor_sum(mmp2[i][0])
             mmp2[i][1] = coeff*neighbor_sum + mmp2[i][0]*decay + tha*theta*self.mesenchymal_count[i]
+            # Phase 2: advective transport of MMP2 by device flow (off by default,
+            # so with enable_flow=False the update above is untouched/bit-identical).
+            if self.config.enable_flow:
+                mmp2[i][1] = mmp2[i][1] - (tha/xha)*_upwind_advection(mmp2[i][0], self.config.flow_velocity)
             ecm[i][1] = ecm[i][0]*(1-tha*(gamma1*self.mesenchymal_count[i]+gamma2*mmp2[i][1]))
             if np.any(ecm[i][1] < 0):
                 warnings.warn("<0 ecm encountered")
@@ -771,6 +813,9 @@ class CancerModel(mesa.Model):
             cell_count = self.mesenchymal_count[i] + self.epithelial_count[i]
             source = np.where(self.oxygen_vessel_mask[i], tha*supply, 0.0)
             new_field = diffusion + source - tha*consumption*cell_count
+            # Phase 2: advective transport of oxygen by device flow (off by default).
+            if self.config.enable_flow:
+                new_field = new_field - (tha/xha)*_upwind_advection(oxygen[i][0], self.config.flow_velocity)
             np.clip(new_field, 0.0, oxygen_max, out=new_field)
             oxygen[i][1] = new_field
             oxygen[i][0,:,:] = oxygen[i][1,:,:]
