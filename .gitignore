@@ -3,3 +3,6 @@ Simulations/*
 dist/*
 .vscode/launch.json
 testCellsData.csv
+# pixi environments
+.pixi/*
+!.pixi/config.toml

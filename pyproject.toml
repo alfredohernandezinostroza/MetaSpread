@@ -46,3 +46,22 @@ include = [
 pythonpath = [
   "."
 ]
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+# Interpreter + dev tooling come from conda-forge. Python is pinned to 3.10 to
+# match the interpreter the byte-identical reproducibility baseline was built on
+# (3.10.12). The scientific stack (numpy/pandas/mesa/matplotlib/...) is pulled
+# from PyPI via the editable metaspread install below, so [project.dependencies]
+# stays the single source of truth for those exact version pins — which is what
+# preserves the golden CellsData.csv checksum.
+[tool.pixi.dependencies]
+python = "3.10.*"
+pytest = ">=7,<9"
+
+[tool.pixi.pypi-dependencies]
+metaspread = { path = ".", editable = true }
+
+[tool.pixi.tasks]
+test = "pytest -q"
