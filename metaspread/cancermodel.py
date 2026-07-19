@@ -110,13 +110,21 @@ def get_cluster_survival_probability(cluster, config):
     if cluster[1] < 0:
         raise Exception(f"Error! Epithelial cells are negative: {cluster[1]}")
     if sum(cluster) == 1:
-        return (config.single_cell_survival)
+        prob = config.single_cell_survival
     elif sum(cluster) > 1:
-        return (config.cluster_survival)
+        prob = config.cluster_survival
     elif sum(cluster) == 0:
         raise Exception(f"Error, no cells in cluster!")
     else:
         raise Exception(f"Error, nothing returned for cluster survival probability" )
+
+    # Phase 2: shear-dependent survival in a chip's circulation. Higher wall
+    # shear stress kills circulating clusters faster, scaling the base survival
+    # by exp(-shear_death_coeff * shear_stress) in (0, 1]. Off by default, so the
+    # probability is returned unchanged unless enable_shear is set.
+    if getattr(config, "enable_shear", False):
+        prob = prob * float(np.exp(-config.shear_death_coeff * config.shear_stress))
+    return prob
     
 
 def count_total_cells(model):

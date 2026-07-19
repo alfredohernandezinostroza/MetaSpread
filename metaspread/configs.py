@@ -39,6 +39,8 @@ _PHASE3D_PARAM_NAMES = ["space_dimensions", "gridsize_z"]
 _PHASE2_PARAM_NAMES = [
     # flow / advection of the diffusible fields
     "enable_flow", "flow_velocity",
+    # shear-dependent survival of circulating clusters
+    "enable_shear", "shear_stress", "shear_death_coeff",
 ]
 
 # Canonical ordered list of every simulation parameter stored in
@@ -82,6 +84,7 @@ DEFAULTS = {
     # flow_velocity is a per-axis advection velocity; only the first
     # space_dimensions entries are used, so one default serves 2D and 3D.
     "enable_flow": False, "flow_velocity": [0.0, 0.0, 0.0],
+    "enable_shear": False, "shear_stress": 0.0, "shear_death_coeff": 0.0,
 }
 
 
@@ -155,6 +158,12 @@ def validate_configs(d):
             )
         elif not all(isinstance(x, (int, float)) and not isinstance(x, bool) for x in fv):
             error_string += "flow_velocity entries must be numbers!\n"
+    if d.get("enable_shear", False):
+        # both non-negative keeps the survival factor exp(-coeff*stress) in (0, 1]
+        if d.get("shear_stress", 0.0) < 0:
+            error_string += "shear_stress must be >= 0 when enable_shear is True!\n"
+        if d.get("shear_death_coeff", 0.0) < 0:
+            error_string += "shear_death_coeff must be >= 0 when enable_shear is True!\n"
 
     if error_string != "":
         raise ValueError(error_string)

@@ -48,3 +48,6 @@ space_dimensions,2
 gridsize_z,41
 enable_flow,False
 flow_velocity,"[0.0, 0.0, 0.0]"
+enable_shear,False
+shear_stress,0.0
+shear_death_coeff,0.0

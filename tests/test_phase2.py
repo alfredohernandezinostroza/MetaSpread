@@ -115,3 +115,59 @@ def test_flow_off_by_default():
     # has to complete without error and leave the flag inert.
     res = run(_flow_cfg(), 3, 3, seed=1, save_path=None)
     assert res.model.config.enable_flow is False
+
+
+# ---------------------------------------------------------------------------
+# Feature 2: shear-dependent survival of circulating clusters
+# ---------------------------------------------------------------------------
+from metaspread.cancermodel import get_cluster_survival_probability
+
+
+def test_shear_scales_survival_probability():
+    base = Config.from_csv("simulations_configs.csv")
+    off = base.copy(enable_shear=False)
+    on = base.copy(enable_shear=True, shear_stress=2.0, shear_death_coeff=0.5)
+    single, cluster = (1, 0), (2, 1)
+
+    # off: unchanged base probabilities
+    assert get_cluster_survival_probability(single, off) == off.single_cell_survival
+    assert get_cluster_survival_probability(cluster, off) == off.cluster_survival
+
+    # on: scaled by exp(-coeff*stress) = exp(-1)
+    factor = np.exp(-1.0)
+    assert get_cluster_survival_probability(single, on) == pytest.approx(
+        off.single_cell_survival * factor)
+    assert get_cluster_survival_probability(cluster, on) == pytest.approx(
+        off.cluster_survival * factor)
+
+    # monotone: more shear -> less survival, and the factor stays in (0, 1]
+    more = base.copy(enable_shear=True, shear_stress=5.0, shear_death_coeff=0.5)
+    assert (get_cluster_survival_probability(single, more)
+            < get_cluster_survival_probability(single, on))
+    assert 0.0 < get_cluster_survival_probability(single, on) <= off.single_cell_survival
+
+
+def test_shear_reduces_survivors_in_circulation():
+    """Fewer circulating clusters survive under shear.
+
+    Exercises the exact predicate the model uses to filter the vasculature
+    (``random.random() < get_cluster_survival_probability(cluster, config)``) over
+    a fixed RNG stream, so it is a fast, deterministic stand-in for the full
+    metastatic cascade without the cost (and small-grid flooding) of running it.
+    """
+    import random
+
+    off = Config.from_csv("simulations_configs.csv").copy(
+        cluster_survival=0.8, enable_shear=False)
+    on = off.copy(enable_shear=True, shear_stress=3.0, shear_death_coeff=0.5)
+    clusters = [(2, 1)] * 500
+
+    def survivors(cfg, seed):
+        rng = random.Random(seed)
+        return sum(1 for c in clusters
+                   if rng.random() < get_cluster_survival_probability(c, cfg))
+
+    # same seed, same clusters: shear must leave strictly fewer survivors
+    assert survivors(on, 0) < survivors(off, 0)
+    # and still let some through (factor exp(-1.5) ~ 0.22, base 0.8 -> ~0.18)
+    assert survivors(on, 0) > 0
