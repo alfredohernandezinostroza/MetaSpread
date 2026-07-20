@@ -113,6 +113,29 @@ def test_3d_run_renders_field_montages(tmp_path, monkeypatch):
     assert plt.imread(montage).shape[1] >= 800
 
 
+def test_viewer3d_helpers_load_3d_positions_and_field_slices(tmp_path):
+    # The marimo viewer's data layer must load 3D agent coordinates (with real z)
+    # and slice a 3D field volume — this is the tested core; the UI is thin glue.
+    from metaspread import viewer3d
+    cfg = _small_config(space_dimensions=3, gridsize=11, gridsize_z=5,
+                        number_of_initial_cells=8, n_center_points_for_tumor=8,
+                        enable_oxygen=True)
+    run(cfg, 4, 2, seed=1, save_path=tmp_path)
+    sim = str(tmp_path / "Simulations" / _sim_name(cfg, 4, 2))
+
+    data = viewer3d.load_simulation(sim)
+    assert data["space_dimensions"] == 3
+    assert data["steps"] == [2, 4]
+    assert "Oxygen" in data["fields"]
+
+    groups = viewer3d.agent_groups(data["cells"], step=4, grid=1)
+    all_z = [z for xs_ys_zs in groups.values() for z in xs_ys_zs[2]]
+    assert all_z and max(all_z) > 0            # genuine 3D z coordinates, not flattened
+
+    sl = viewer3d.field_slice(sim, "Oxygen", grid=1, step=4, z=2)
+    assert sl.shape == (cfg.gridsize, cfg.gridsize)   # one z-slice of the volume
+
+
 def test_all_pictures_renders_every_field_and_grid(tmp_path, monkeypatch):
     # Regression for the range_of_pictures exhaustion bug: with amount==0 the
     # generator must render Mmp2, Ecm and Tumor for BOTH grids, not just grid 1.

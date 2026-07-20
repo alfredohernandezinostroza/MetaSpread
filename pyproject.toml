@@ -26,6 +26,11 @@ dependencies = [
   "pynput==1.7.6",
   "opencv_python==4.8.1.78"
 ]
+[project.optional-dependencies]
+# Interactive 3D viewer (metaspread/viewer3d_app.py). Kept optional so the core
+# install and the byte-identity gate are unaffected.
+viz = ["marimo", "plotly"]
+
 [project.urls]
 Homepage = "https://github.com/alfredohernandezinostroza/MetaSpread"
 Issues = "https://github.com/alfredohernandezinostroza/MetaSpread/issues"
@@ -65,3 +70,16 @@ metaspread = { path = ".", editable = true }
 
 [tool.pixi.tasks]
 test = "pytest -q"
+
+# Optional interactive-viewer environment: `pixi run -e viz viewer -- --sim <path>`.
+# Kept in its own feature/environment so the default env (and the byte-identity
+# baseline) stays minimal.
+[tool.pixi.feature.viz.pypi-dependencies]
+marimo = "*"
+plotly = "*"
+
+[tool.pixi.feature.viz.tasks]
+viewer = "marimo run metaspread/viewer3d_app.py"
+
+[tool.pixi.environments]
+viz = ["viz"]
