@@ -7,6 +7,34 @@ import os
 import sys
 import metaspread.configs
 
+def _field_files(field_path):
+    """List a field's per-step snapshots, step-sorted (CSV in 2D, .npy in 3D)."""
+    ext = ".npy" if getattr(metaspread.configs, "space_dimensions", 2) == 3 else ".csv"
+    if not os.path.isdir(field_path):
+        return []
+    return [f for f in sorted(os.listdir(field_path), key=lambda x: int(re.findall(r'\d+(?=step)', x)[0]))
+            if os.path.isfile(os.path.join(field_path, f)) and f.endswith(ext)]
+
+def _plot_field_montage_3d(file_path, step, real_time_at_step, fig_counter, grid_id, figure_path, type, max_slices=9):
+    """Render a 3D field (.npy, shape (W,H,D)) as a montage of evenly-spaced z-slices."""
+    field = np.load(file_path)
+    depth = field.shape[2]
+    vmax = {"Mmp2": 3, "Ecm": 1}.get(type, getattr(metaspread.configs, "oxygen_max", 1.0))
+    z_indices = np.unique(np.linspace(0, depth - 1, min(depth, max_slices)).round().astype(int))
+    ncols = int(np.ceil(np.sqrt(len(z_indices))))
+    nrows = int(np.ceil(len(z_indices) / ncols))
+    fig, axes = plt.subplots(nrows, ncols, num=fig_counter, figsize=(3 * ncols, 3 * nrows + 0.5), facecolor='white', squeeze=False)
+    im = None
+    for ax, z in zip(axes.flat, z_indices):
+        im = ax.imshow(field[:, :, z].T, vmin=0, vmax=vmax, cmap="viridis")
+        ax.set_title(f"z = {z}", fontsize=9)
+        ax.set_xticks([]); ax.set_yticks([])
+    for ax in axes.flat[len(z_indices):]:
+        ax.axis("off")
+    fig.colorbar(im, ax=axes, fraction=0.025, pad=0.02)
+    fig.suptitle(f'{type} at {real_time_at_step/(3600*24):.2f} days ({step} steps) - grid {grid_id}', fontsize=13)
+    fig.savefig(figure_path)
+
 def get_equally_spaced_array(passed_array, number_of_elems):
     passed_array = np.array(passed_array)
     indexes = np.round(np.linspace(0, len(passed_array)-1, number_of_elems)).astype(int)
@@ -81,9 +109,13 @@ def plot_growth_data(simulation_path, cells_images_path, grid_id, step, real_tim
     plt.savefig(path_to_save)
 
 def plot_field(i, step, real_time_at_step, files_path, fig_counter, grid_id, path_to_save, type="Mmp2"):
-    # Mmp2, Ecm and Oxygen are all saved as 2D-grid CSVs, so they share one plotter.
+    # Mmp2, Ecm and Oxygen share one plotter: a 2D-grid CSV heatmap, or a montage
+    # of z-slices when the field is a 3D .npy array.
     figure_path = os.path.join(path_to_save, f'{type}-grid{grid_id}-step{step} - {real_time_at_step/(3600*24):.2f} days.png')
     if os.path.isfile(figure_path):
+        return
+    if files_path[i].endswith(".npy"):
+        _plot_field_montage_3d(files_path[i], step, real_time_at_step, fig_counter, grid_id, figure_path, type)
         return
     try:
         df = pd.read_csv(files_path[i], index_col=0)
@@ -231,16 +263,14 @@ def generate_graphs(name_of_the_simulation, amount_of_pictures=0):
     # Get the Ecm and Mmp2 data filenames 
     ecm_path = os.path.join(simulation_path, "Ecm")
     mmp2_path = os.path.join(simulation_path, "Mmp2")
-    ecm_files_name = [f for f in sorted(os.listdir(ecm_path), key=lambda x: int(re.findall(r'\d+(?=step)', x)[0])) if os.path.isfile(os.path.join(ecm_path, f)) and f.endswith(".csv")]
-    mmp2_files_name = [f for f in sorted(os.listdir(mmp2_path), key=lambda x: int(re.findall(r'\d+(?=step)', x)[0])) if os.path.isfile(os.path.join(mmp2_path, f)) and f.endswith(".csv")]
+    ecm_files_name = _field_files(ecm_path)
+    mmp2_files_name = _field_files(mmp2_path)
 
-    # Oxygen output only exists when the simulation ran with enable_oxygen; guard
-    # on the folder so runs without it are completely unaffected.
+    # Oxygen output only exists when the simulation ran with enable_oxygen;
+    # _field_files returns [] when the folder is absent, so runs without it are
+    # completely unaffected. (CSV in 2D, .npy in 3D.)
     oxygen_path = os.path.join(simulation_path, "Oxygen")
-    if os.path.isdir(oxygen_path):
-        oxygen_files_name = [f for f in sorted(os.listdir(oxygen_path), key=lambda x: int(re.findall(r'\d+(?=step)', x)[0])) if os.path.isfile(os.path.join(oxygen_path, f)) and f.endswith(".csv")]
-    else:
-        oxygen_files_name = []
+    oxygen_files_name = _field_files(oxygen_path)
 
     # Get the vasculature data filename
     vasculature_path = os.path.join(simulation_path, "Vasculature")

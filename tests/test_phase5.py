@@ -96,6 +96,23 @@ def test_3d_data_generalizes_histogram_and_centroid(tmp_path, monkeypatch):
     assert rad["Radius"].notna().any()
 
 
+def test_3d_run_renders_field_montages(tmp_path, monkeypatch):
+    # In 3D each field is a .npy volume; generate_graphs must render it as a
+    # multi-panel z-slice montage instead of crashing on the missing CSVs.
+    import matplotlib.pyplot as plt
+    cfg = _small_config(space_dimensions=3, gridsize=11, gridsize_z=5,
+                        number_of_initial_cells=8, n_center_points_for_tumor=8,
+                        enable_oxygen=True)
+    sim_dir = _run_and_postprocess(cfg, tmp_path, monkeypatch)
+
+    ga = sim_dir / "Graphical analysis"
+    for sub in ("Ecm dynamics", "Mmp2 dynamics", "Oxygen dynamics"):
+        assert list((ga / sub).glob("*grid1-step*.png")), f"{sub} produced no 3D montage"
+    # a z-slice montage is multiple panels wide, unlike the ~600px single 2D heatmap
+    montage = sorted((ga / "Ecm dynamics").glob("*.png"))[0]
+    assert plt.imread(montage).shape[1] >= 800
+
+
 def test_all_pictures_renders_every_field_and_grid(tmp_path, monkeypatch):
     # Regression for the range_of_pictures exhaustion bug: with amount==0 the
     # generator must render Mmp2, Ecm and Tumor for BOTH grids, not just grid 1.
