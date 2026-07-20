@@ -157,6 +157,14 @@ def generate_videos(nameOfTheSimulation, frameRate):
         output_file = os.path.join(VideosFolderPath, f"Mmp2 dynamics - Grid{i+1}.mp4")
         create_video_from_images(imagesPath, output_file, frameRate)
 
+    # Create videos for the Oxygen of each grid (only if oxygen images were produced)
+    OxygenImagesPath = os.path.join(ImagesFolderPath, "Oxygen dynamics")
+    if os.path.isdir(OxygenImagesPath):
+        for i, images_list in enumerate(group_images_by_grid(OxygenImagesPath)):
+            imagesPath = tuple(image[1] for image in images_list)
+            output_file = os.path.join(VideosFolderPath, f"Oxygen dynamics - Grid{i+1}.mp4")
+            create_video_from_images(imagesPath, output_file, frameRate)
+
     # Create videos for the Tumor of each grid
     for i, images_list in enumerate(CellsImagesByGrid):
         steps = tuple(image[0] for image in images_list)

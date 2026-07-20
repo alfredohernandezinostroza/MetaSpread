@@ -33,7 +33,11 @@ def plot_cancer(fig_counter, grid_id, step, real_time_at_step, simulation_path, 
     plt.ylim(0, metaspread.configs.gridsize)
 
     xticks = np.arange(0, metaspread.configs.gridsize, step=int(metaspread.configs.gridsize/6)) # 6 ticks
-    xticklabels = [str(round(j,1)) for j in np.arange(0, 2.1, step = 2/201*(metaspread.configs.gridsize/6))]
+    # Labels in mm across the reference 2 mm / 201-cell domain. Derive them from
+    # len(xticks) so the label count always matches the tick count; the previous
+    # arange tied the count to gridsize and raised a FixedLocator length mismatch
+    # for any gridsize != 201.
+    xticklabels = [str(round(j,1)) for j in np.linspace(0, 2, len(xticks))]
     plt.xticks(xticks, xticklabels)
     plt.yticks(xticks, xticklabels)
     plt.xlabel("mm")
@@ -70,11 +74,9 @@ def plot_growth_data(simulation_path, cells_images_path, grid_id, step, real_tim
     # save the figure
     plt.savefig(path_to_save)
 
-def plot_MMP2_or_ECM(i, step, real_time_at_step, files_path, fig_counter, grid_id, path_to_save, type="Mmp2"):
-    if type=="Mmp2":
-        figure_path = os.path.join(path_to_save, f'{type}-grid{grid_id}-step{step} - {real_time_at_step/(3600*24):.2f} days.png')
-    elif type=="Ecm":
-        figure_path = os.path.join(path_to_save, f'{type}-grid{grid_id}-step{step} - {real_time_at_step/(3600*24):.2f} days.png')
+def plot_field(i, step, real_time_at_step, files_path, fig_counter, grid_id, path_to_save, type="Mmp2"):
+    # Mmp2, Ecm and Oxygen are all saved as 2D-grid CSVs, so they share one plotter.
+    figure_path = os.path.join(path_to_save, f'{type}-grid{grid_id}-step{step} - {real_time_at_step/(3600*24):.2f} days.png')
     if os.path.isfile(figure_path):
         return
     try:
@@ -87,14 +89,20 @@ def plot_MMP2_or_ECM(i, step, real_time_at_step, files_path, fig_counter, grid_i
         plt.imshow(df.T, vmin=0, vmax=3)
     elif type == "Ecm":
         plt.imshow(df.T , vmin=0, vmax=1)
-        
+    elif type == "Oxygen":
+        plt.imshow(df.T, vmin=0, vmax=metaspread.configs.oxygen_max, cmap="viridis")
+
     plt.colorbar()
 
     plt.xlim(0, metaspread.configs.gridsize)
     plt.ylim(0, metaspread.configs.gridsize)
 
     xticks = np.arange(0, metaspread.configs.gridsize, step=int(metaspread.configs.gridsize/6)) # 6 ticks
-    xticklabels = [str(round(j,1)) for j in np.arange(0, 2.1, step = 2/201*(metaspread.configs.gridsize/6))]
+    # Labels in mm across the reference 2 mm / 201-cell domain. Derive them from
+    # len(xticks) so the label count always matches the tick count; the previous
+    # arange tied the count to gridsize and raised a FixedLocator length mismatch
+    # for any gridsize != 201.
+    xticklabels = [str(round(j,1)) for j in np.linspace(0, 2, len(xticks))]
     plt.xticks(xticks, xticklabels)
     plt.yticks(xticks, xticklabels)
     plt.xlabel("mm")
@@ -220,6 +228,14 @@ def generate_graphs(name_of_the_simulation, amount_of_pictures=0):
     ecm_files_name = [f for f in sorted(os.listdir(ecm_path), key=lambda x: int(re.findall(r'\d+(?=step)', x)[0])) if os.path.isfile(os.path.join(ecm_path, f)) and f.endswith(".csv")]
     mmp2_files_name = [f for f in sorted(os.listdir(mmp2_path), key=lambda x: int(re.findall(r'\d+(?=step)', x)[0])) if os.path.isfile(os.path.join(mmp2_path, f)) and f.endswith(".csv")]
 
+    # Oxygen output only exists when the simulation ran with enable_oxygen; guard
+    # on the folder so runs without it are completely unaffected.
+    oxygen_path = os.path.join(simulation_path, "Oxygen")
+    if os.path.isdir(oxygen_path):
+        oxygen_files_name = [f for f in sorted(os.listdir(oxygen_path), key=lambda x: int(re.findall(r'\d+(?=step)', x)[0])) if os.path.isfile(os.path.join(oxygen_path, f)) and f.endswith(".csv")]
+    else:
+        oxygen_files_name = []
+
     # Get the vasculature data filename
     vasculature_path = os.path.join(simulation_path, "Vasculature")
     vasculature_files_name = [f for f in os.listdir(vasculature_path) if os.path.isfile(os.path.join(vasculature_path, f)) and f.endswith(".json")]
@@ -244,6 +260,12 @@ def generate_graphs(name_of_the_simulation, amount_of_pictures=0):
     else:
         print("No .csv Mmp2 data found in directory:", mmp2_path)
         return
+
+    # Oxygen is optional: build its paths only if the folder had data (no early
+    # return, so simulations without oxygen still process everything else).
+    if oxygen_files_name:
+        oxygen_files_path = [os.path.join(oxygen_path, p) for p in oxygen_files_name]
+        print("Using Oxygen data in the folder:", oxygen_path)
 
     if vasculature_files_name:
         print("Using vasculature data at:", vasculature_path)
@@ -282,6 +304,7 @@ def generate_graphs(name_of_the_simulation, amount_of_pictures=0):
     cells_images_path = os.path.join(images_path, "Cells growth")
     ecm_images_path = os.path.join(images_path, "Ecm dynamics")
     mmp2_images_path = os.path.join(images_path, "Mmp2 dynamics")
+    oxygen_images_path = os.path.join(images_path, "Oxygen dynamics")
     vasculature_images_path = os.path.join(images_path, "Vasculature dynamics")
     all_histogram_images_path = os.path.join(images_path, "Positions histogram")
     radius_diameter_images_path = os.path.join(images_path, "Radius and diameter")
@@ -292,6 +315,8 @@ def generate_graphs(name_of_the_simulation, amount_of_pictures=0):
     os.makedirs(tumor_images_path, exist_ok = True)
     os.makedirs(mmp2_images_path, exist_ok = True)
     os.makedirs(ecm_images_path, exist_ok = True)
+    if oxygen_files_name:
+        os.makedirs(oxygen_images_path, exist_ok = True)
     os.makedirs(cells_images_path, exist_ok = True)
     os.makedirs(vasculature_images_path, exist_ok = True)
     os.makedirs(all_histogram_images_path, exist_ok = True)
@@ -300,6 +325,8 @@ def generate_graphs(name_of_the_simulation, amount_of_pictures=0):
     print(f"\nSaving tumor images in the folder:", tumor_images_path)
     print("Saving Mmp2 images in the folder:", mmp2_images_path)
     print("Saving Ecm images in the folder:", ecm_images_path)
+    if oxygen_files_name:
+        print("Saving Oxygen images in the folder:", oxygen_images_path)
     print("Saving cells numbers images in the folder:", cells_images_path)
     print("Saving vasculature images in the folder:", vasculature_images_path)
     print("Saving histogram images in the folder:", all_histogram_images_path)
@@ -325,7 +352,7 @@ def generate_graphs(name_of_the_simulation, amount_of_pictures=0):
         for id, step in range_of_pictures:
             real_time_at_step = real_delta_time * step
             mmp2_files_path_this_grid = [path for path in mmp2_files_path if f"Mmp2-{grid_id}grid-" in path]
-            plot_MMP2_or_ECM(id, step, real_time_at_step, mmp2_files_path_this_grid, fig_counter, grid_id, mmp2_images_path, type="Mmp2")
+            plot_field(id, step, real_time_at_step, mmp2_files_path_this_grid, fig_counter, grid_id, mmp2_images_path, type="Mmp2")
             plt.close()
             fig_counter += 1
 
@@ -334,9 +361,19 @@ def generate_graphs(name_of_the_simulation, amount_of_pictures=0):
         for id, step in range_of_pictures:
             real_time_at_step = real_delta_time * step
             ecm_files_path_this_grid = [path for path in ecm_files_path if f"Ecm-{grid_id}grid-" in path]
-            plot_MMP2_or_ECM(id, step, real_time_at_step, ecm_files_path_this_grid, fig_counter, grid_id, ecm_images_path, type="Ecm")
+            plot_field(id, step, real_time_at_step, ecm_files_path_this_grid, fig_counter, grid_id, ecm_images_path, type="Ecm")
             plt.close()
             fig_counter += 1
+
+        # Plot the Oxygen graphs (only present when the simulation saved an oxygen field)
+        if oxygen_files_name:
+            print(f'\tPlotting Oxygen graphs...')
+            for id, step in range_of_pictures:
+                real_time_at_step = real_delta_time * step
+                oxygen_files_path_this_grid = [path for path in oxygen_files_path if f"Oxygen-{grid_id}grid-" in path]
+                plot_field(id, step, real_time_at_step, oxygen_files_path_this_grid, fig_counter, grid_id, oxygen_images_path, type="Oxygen")
+                plt.close()
+                fig_counter += 1
 
         # Plot the cells graphs
         print(f'\tPlotting tumor graphs...')
