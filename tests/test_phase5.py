@@ -73,6 +73,29 @@ def test_immune_run_marks_immune_cells_in_tumor_coords(tmp_path, monkeypatch):
     assert list((sim_dir / "Graphical analysis" / "Tumor dynamics").glob("*grid1-step*.png"))
 
 
+def test_3d_data_generalizes_histogram_and_centroid(tmp_path, monkeypatch):
+    # 3D fields are saved as .npy, which used to make generate_data early-return.
+    # It must now run and produce n-D-correct analytics (histogram over the full
+    # gridsize^2*gridsize_z lattice; a centroid with a z coordinate).
+    import pandas as pd
+    from metaspread import datagenerator
+    cfg = _small_config(space_dimensions=3, gridsize=11, gridsize_z=5,
+                        number_of_initial_cells=8, n_center_points_for_tumor=8)
+    run(cfg, 4, 2, seed=1, save_path=tmp_path)
+    name = _sim_name(cfg, 4, 2)
+    monkeypatch.chdir(tmp_path)
+    datagenerator.generate_data(name)
+
+    tumor = tmp_path / "Simulations" / name / "Data analysis" / "Tumor dynamics"
+    hist_files = sorted(tumor.glob("*Histogram*.csv"))
+    assert hist_files, "generate_data early-returned for the 3D run"
+    h = pd.read_csv(hist_files[-1], index_col=0)
+    assert int(h["Frequency"].sum()) == cfg.gridsize * cfg.gridsize * cfg.gridsize_z
+    rad = pd.read_csv(tumor / "Tumor radius and diameter history in grid 1.csv", index_col=0)
+    assert "Centroid z" in rad.columns
+    assert rad["Radius"].notna().any()
+
+
 def test_all_pictures_renders_every_field_and_grid(tmp_path, monkeypatch):
     # Regression for the range_of_pictures exhaustion bug: with amount==0 the
     # generator must render Mmp2, Ecm and Tumor for BOTH grids, not just grid 1.

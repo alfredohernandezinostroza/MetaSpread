@@ -10,6 +10,24 @@ import metaspread.configs
 
 # To run this code you must be in the parent folder of agent-based-cancer
 
+def _field_files(field_path):
+    """List a field's per-step snapshots, step-sorted.
+
+    Fields are saved as CSV in 2D and as .npy in 3D (a DataFrame cannot hold a
+    3D array), so pick the extension from the loaded space_dimensions."""
+    ext = ".npy" if getattr(metaspread.configs, "space_dimensions", 2) == 3 else ".csv"
+    if not os.path.isdir(field_path):
+        return []
+    return [f for f in sorted(os.listdir(field_path), key=lambda x: int(re.findall(r'\d+(?=step)', x)[0]))
+            if os.path.isfile(os.path.join(field_path, f)) and f.endswith(ext)]
+
+def _number_of_grid_points():
+    """Total lattice sites in one grid: gridsize**2 in 2D, gridsize**2 * gridsize_z in 3D."""
+    n = metaspread.configs.gridsize * metaspread.configs.gridsize
+    if getattr(metaspread.configs, "space_dimensions", 2) == 3:
+        n *= metaspread.configs.gridsize_z
+    return n
+
 def read_coords_for_plot(step, all_cells_dataframe, grid_id):
     df = all_cells_dataframe[["Step", "Position", "Phenotype", "Grid", "Agent Type", "Ruptured"]]
 
@@ -30,7 +48,11 @@ def read_coords_for_plot(step, all_cells_dataframe, grid_id):
     X_position_vr, Y_position_vr = [i[0] for i in vRupturedPoints], [i[1] for i in vRupturedPoints]
     X_position_i, Y_position_i = [i[0] for i in iPoints], [i[1] for i in iPoints]
 
-    return [X_position_m, Y_position_m, X_position_e, Y_position_e, X_position_v, Y_position_v, X_position_vr, Y_position_vr, X_position_i, Y_position_i]
+    # Raw cancer-cell position tuples (2D or 3D) kept intact for the n-D
+    # histogram / radius / diameter analytics, which must not drop the z axis.
+    cancer_positions = mPoints + ePoints
+
+    return [X_position_m, Y_position_m, X_position_e, Y_position_e, X_position_v, Y_position_v, X_position_vr, Y_position_vr, X_position_i, Y_position_i, cancer_positions]
 
 def save_cancer(all_cells_dataframe, grid_id, step, real_time_at_step, tumor_data_path):
     coords_list = False
@@ -52,11 +74,11 @@ def save_cancer(all_cells_dataframe, grid_id, step, real_time_at_step, tumor_dat
         else:
             coords_list = read_coords_for_plot(step, all_cells_dataframe, grid_id)
             Xm, Ym, Xe, Ye, Xv, Yv, Xvr, Yvr = coords_list[0], coords_list[1], coords_list[2], coords_list[3], coords_list[4], coords_list[5], coords_list[6], coords_list[7]
-        df_positions = pd.DataFrame({'Position': zip(Xm + Xe, Ym + Ye)})
+        df_positions = pd.DataFrame({'Position': coords_list[10]})
         position_repetition_count = df_positions['Position'].value_counts()
         histogram = position_repetition_count.value_counts()
         histogram = pd.DataFrame({'Bins': histogram.index, 'Frequency': histogram.values})
-        number_of_empty_positions = metaspread.configs.gridsize * metaspread.configs.gridsize - len(position_repetition_count)
+        number_of_empty_positions = _number_of_grid_points() - len(position_repetition_count)
         new_row = pd.DataFrame({'Bins': [0], 'Frequency': [number_of_empty_positions]})
         histogram = pd.concat([histogram, new_row])
         histogram.to_csv(path)
@@ -70,9 +92,9 @@ def save_cancer(all_cells_dataframe, grid_id, step, real_time_at_step, tumor_dat
         else:
             coords_list = read_coords_for_plot(step, all_cells_dataframe, grid_id)
             Xm, Ym, Xe, Ye, Xv, Yv, Xvr, Yvr = coords_list[0], coords_list[1], coords_list[2], coords_list[3], coords_list[4], coords_list[5], coords_list[6], coords_list[7]
-        df_positions = pd.DataFrame({'Position': zip(Xm + Xe, Ym + Ye)})
+        df_positions = pd.DataFrame({'Position': coords_list[10]})
         return get_cluster_centroid_radius_and_diameter(df_positions, grid_id)
-    return ([np.nan, np.nan], np.nan, np.nan)
+    return ([np.nan] * getattr(metaspread.configs, "space_dimensions", 2), np.nan, np.nan)
     
 def save_growth_data(all_cells_dataframe, grid_id, cells_data_path, step_number, real_time_at_step, real_delta_time, df_csv_last_step):
     path_to_save = os.path.join(cells_data_path, f'CellsGrowth-grid{grid_id}-step{step_number} - {real_time_at_step/(3600*24):.2f} days.csv')
@@ -122,11 +144,11 @@ def generate_data(nameOfTheSimulation):
     
     print(f'\tAnalyzing data in the folder {simulation_path}\n')
 
-    # Get the Ecm and Mmp2 data filenames 
+    # Get the Ecm and Mmp2 data filenames (CSV in 2D, .npy in 3D)
     ecm_path = os.path.join(simulation_path, "Ecm")
     mmp2_path = os.path.join(simulation_path, "Mmp2")
-    ecm_files_name = [f for f in sorted(os.listdir(ecm_path), key=lambda x: int(re.findall(r'\d+(?=step)', x)[0])) if os.path.isfile(os.path.join(ecm_path, f)) and f.endswith(".csv")]
-    mmp2_files_name = [f for f in sorted(os.listdir(mmp2_path), key=lambda x: int(re.findall(r'\d+(?=step)', x)[0])) if os.path.isfile(os.path.join(mmp2_path, f)) and f.endswith(".csv")]
+    ecm_files_name = _field_files(ecm_path)
+    mmp2_files_name = _field_files(mmp2_path)
 
     # Get the vasculature data filename
     vasculature_path = os.path.join(simulation_path, "Vasculature")
@@ -192,13 +214,21 @@ def generate_data(nameOfTheSimulation):
         print(f'\nGrid: {grid_id}')
 
         print(f'\tSaving tumor data...')
-        df_radius_diameter_history = pd.DataFrame(columns=['Centroid x', 'Centroid y', 'Radius', 'Diameter', 'Step', 'Grid Id'])
+        # In 3D the centroid gains a z coordinate; keep the 2D column layout untouched.
+        is_3d = getattr(metaspread.configs, "space_dimensions", 2) == 3
+        history_columns = ['Centroid x', 'Centroid y', 'Radius', 'Diameter', 'Step', 'Grid Id']
+        if is_3d:
+            history_columns.insert(2, 'Centroid z')
+        df_radius_diameter_history = pd.DataFrame(columns=history_columns)
         for id, step in enumerate(range(step_size,max_step+1,step_size)):
             real_time_at_step = real_delta_time * step
             if grid_id == 1:
                 # save_cancer(all_cells_dataframe, grid_id, step, real_time_at_step, tumor_data_path)
                 (centroid, radius, diameter) = save_cancer(all_cells_dataframe, grid_id, step, real_time_at_step, tumor_data_path)
-                new_row = pd.DataFrame({'Centroid x': [centroid[0]], 'Centroid y': [centroid[1]],'Radius': [radius], 'Diameter': [diameter], 'Step': [step], 'Grid Id': [grid_id]})
+                row = {'Centroid x': [centroid[0]], 'Centroid y': [centroid[1]], 'Radius': [radius], 'Diameter': [diameter], 'Step': [step], 'Grid Id': [grid_id]}
+                if is_3d:
+                    row['Centroid z'] = [centroid[2]]
+                new_row = pd.DataFrame(row)
                 df_radius_diameter_history = pd.concat([df_radius_diameter_history, new_row])
             else:
                 save_cancer(all_cells_dataframe, grid_id, step, real_time_at_step, tumor_data_path)
@@ -282,7 +312,7 @@ def get_cluster_centroid_radius_and_diameter(ccells_positions, grid_id):
         diameter: the maximum of all the cell-cell distances.
     """
     if ccells_positions.empty or grid_id != 1:
-        return ([np.nan, np.nan], np.nan, np.nan)
+        return ([np.nan] * getattr(metaspread.configs, "space_dimensions", 2), np.nan, np.nan)
     ccells_positions= list(ccells_positions['Position'].unique())
     centroid = np.average(ccells_positions, axis=0)
     #calculating radius
