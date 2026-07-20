@@ -309,7 +309,11 @@ def generate_graphs(name_of_the_simulation, amount_of_pictures=0):
     if amount_of_pictures != 0:
         range_of_pictures = get_equally_spaced_array(range(step_size,max_step+1,step_size), amount_of_pictures)
     else:
-        range_of_pictures = enumerate(range(step_size,max_step+1,step_size))
+        # Materialize as a list: range_of_pictures is reused by every plotting loop
+        # below and once per grid, so a one-shot enumerate iterator would be
+        # exhausted after the first loop, silently skipping every subsequent field,
+        # grid and the vasculature plots.
+        range_of_pictures = list(enumerate(range(step_size,max_step+1,step_size)))
     fig_counter = 1
     for grid_id in range(1, grids_number+1):
         plt.style.use("default")
