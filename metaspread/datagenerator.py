@@ -21,13 +21,16 @@ def read_coords_for_plot(step, all_cells_dataframe, grid_id):
     ePoints = list(df_selected_step_and_grid.loc[df_selected_step_and_grid["Phenotype"] == "epithelial"]["Position"])
     vPoints = list(df_selected_step_and_grid.loc[(df_selected_step_and_grid["Agent Type"] == "vessel") & (df_selected_step_and_grid["Ruptured"] == False)]["Position"])
     vRupturedPoints = list(df_selected_step_and_grid.loc[(df_selected_step_and_grid["Agent Type"] == "vessel") & (df_selected_step_and_grid["Ruptured"] == True)]["Position"])
+    # Immune agents are only present when the run enabled them; the list is empty otherwise.
+    iPoints = list(df_selected_step_and_grid.loc[df_selected_step_and_grid["Agent Type"] == "immune"]["Position"])
 
     X_position_m, Y_position_m = [i[0] for i in mPoints], [i[1] for i in mPoints]
     X_position_e, Y_position_e = [i[0] for i in ePoints], [i[1] for i in ePoints]
     X_position_v, Y_position_v = [i[0] for i in vPoints], [i[1] for i in vPoints]
     X_position_vr, Y_position_vr = [i[0] for i in vRupturedPoints], [i[1] for i in vRupturedPoints]
+    X_position_i, Y_position_i = [i[0] for i in iPoints], [i[1] for i in iPoints]
 
-    return [X_position_m, Y_position_m, X_position_e, Y_position_e, X_position_v, Y_position_v, X_position_vr, Y_position_vr]
+    return [X_position_m, Y_position_m, X_position_e, Y_position_e, X_position_v, Y_position_v, X_position_vr, Y_position_vr, X_position_i, Y_position_i]
 
 def save_cancer(all_cells_dataframe, grid_id, step, real_time_at_step, tumor_data_path):
     coords_list = False
@@ -35,9 +38,10 @@ def save_cancer(all_cells_dataframe, grid_id, step, real_time_at_step, tumor_dat
     if not os.path.isfile(path):
         coords_list = read_coords_for_plot(step, all_cells_dataframe, grid_id)
         Xm, Ym, Xe, Ye, Xv, Yv, Xvr, Yvr = coords_list[0], coords_list[1], coords_list[2], coords_list[3], coords_list[4], coords_list[5], coords_list[6], coords_list[7]
+        Xi, Yi = coords_list[8], coords_list[9]
 
-        # save the data
-        df_export = pd.DataFrame([Xm, Ym, Xe, Ye, Xv, Yv, Xvr, Yvr]) 
+        # save the data (immune positions go in trailing rows 8-9; empty rows when immunity is off)
+        df_export = pd.DataFrame([Xm, Ym, Xe, Ye, Xv, Yv, Xvr, Yvr, Xi, Yi])
         df_export.to_csv(path)
 
     #create histogram of positions

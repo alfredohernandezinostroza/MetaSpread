@@ -57,6 +57,22 @@ def test_no_oxygen_run_produces_no_oxygen_artifacts(tmp_path, monkeypatch):
     assert not (sim_dir / "Graphical analysis" / "Oxygen dynamics").exists()  # no images
 
 
+def test_immune_run_marks_immune_cells_in_tumor_coords(tmp_path, monkeypatch):
+    import pandas as pd
+    # kill_prob 0 so the immune agents persist and show up at every saved step
+    cfg = _small_config(enable_immune=True, n_immune_cells=15, immune_kill_prob=0.0)
+    sim_dir = _run_and_postprocess(cfg, tmp_path, monkeypatch)
+
+    tumor_data = sim_dir / "Data analysis" / "Tumor dynamics"
+    coords_files = sorted(tumor_data.glob("Cells-grid1-step*Tumor size at*.csv"))
+    assert coords_files, "no tumor coords files were written"
+    coords = pd.read_csv(coords_files[-1], index_col=0)
+    assert len(coords) == 10                 # immune X/Y appended as rows 8-9
+    assert coords.iloc[8].notna().any()      # grid 1 actually carries immune positions
+    # and the scatter (which reads those rows) rendered without error
+    assert list((sim_dir / "Graphical analysis" / "Tumor dynamics").glob("*grid1-step*.png"))
+
+
 def test_all_pictures_renders_every_field_and_grid(tmp_path, monkeypatch):
     # Regression for the range_of_pictures exhaustion bug: with amount==0 the
     # generator must render Mmp2, Ecm and Tumor for BOTH grids, not just grid 1.
