@@ -54,17 +54,32 @@ def _(data, mo):
     field = mo.ui.dropdown(options=["(none)"] + data["fields"], value="(none)", label="field")
     z = mo.ui.slider(start=0, stop=max(data["gridsize_z"] - 1, 0), value=data["gridsize_z"] // 2,
                      label="z-slice")
-    controls = mo.hstack([step, grid, field, z], justify="start")
+    showcase = mo.ui.checkbox(value=False, label="showcase (animated)")
+    controls = mo.hstack([step, grid, field, z, showcase], justify="start")
     controls
-    return field, grid, step, z
+    return field, grid, showcase, step, z
 
 
 @app.cell
-def _(data, grid, mo, step, viewer3d):
+def _(current_step, data, grid, mo, viewer3d):
+    # stats HUD: the counts behind the picture, for the selected step/grid
+    _counts = viewer3d.agent_counts(data["cells"], current_step, grid.value)
+    _line = " · ".join(f"**{_k}** {_v}" for _k, _v in _counts.items())
+    mo.md(f"step **{current_step}** · grid **{grid.value}** — {_line}")
+    return
+
+
+@app.cell
+def _(data, grid, mo, showcase, step, viewer3d):
     current_step = data["steps"][step.value]
-    groups = viewer3d.agent_groups(data["cells"], current_step, grid.value)
-    fig = viewer3d.agent_scatter_figure(groups)
-    fig.update_layout(title=f"Agents — step {current_step}, grid {grid.value}")
+    if showcase.value:
+        # plays through every saved step on its own (the step slider then only
+        # drives the HUD and the field panel below)
+        fig = viewer3d.showcase_figure(data, grid=grid.value)
+    else:
+        fig = viewer3d.agent_scatter_figure(
+            viewer3d.agent_groups(data["cells"], current_step, grid.value))
+        fig.update_layout(title=f"Agents — step {current_step}, grid {grid.value}")
     mo.ui.plotly(fig)
     return (current_step,)
 

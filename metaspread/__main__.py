@@ -6,6 +6,27 @@ import metaspread.datagenerator as datagenerator
 import metaspread.graphgenerator as graphgenerator
 import metaspread.videogenerator as videogenerator
 
+
+def export_showcase(simulation_folder, out_path=None):
+    """Write a standalone HTML showcase view of a simulation.
+
+    Needs the optional 'viz' extra (plotly), so it is imported lazily: the rest
+    of the CLI keeps working on a base install.
+    """
+    if not os.path.isdir(simulation_folder):
+        simulation_folder = os.path.join("Simulations", simulation_folder)
+    if out_path is None:
+        out_path = os.path.join(simulation_folder, "showcase.html")
+    try:
+        from metaspread import viewer3d
+    except ImportError as exc:   # pragma: no cover - depends on the install
+        raise Exception("The showcase view needs the optional 'viz' extra: "
+                        "pip install 'metaspread[viz]'") from exc
+    print(f"Writing showcase view to {out_path} ...")
+    viewer3d.export_showcase_html(simulation_folder, out_path)
+    print("Done.")
+
+
 if __name__ == "__main__":
     # simple checks for misspellings in the arguments
     if len(sys.argv) >= 3 and sys.argv[1] == "postprocess":
@@ -28,9 +49,14 @@ if __name__ == "__main__":
         else:
             raise Exception("Incorrent amount of or unrecognized arguments!")
     elif len(sys.argv) == 3:
-        raise Exception("Incorrent amount of or unrecognized arguments!")
+        if sys.argv[1] == "showcase":
+            export_showcase(sys.argv[2])
+        else:
+            raise Exception("Incorrent amount of or unrecognized arguments!")
     elif len(sys.argv) == 4:
-        if sys.argv[1] == "run":
+        if sys.argv[1] == "showcase":
+            export_showcase(sys.argv[2], sys.argv[3])
+        elif sys.argv[1] == "run":
             total_steps     = int(sys.argv[2])
             interval_steps  = int(sys.argv[3])
             simrunner.run_simulation(total_steps, interval_steps)
